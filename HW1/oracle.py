@@ -1,6 +1,6 @@
 import numpy as np
 
-def generate(f, n, m):
+def gen_matrix(f, n, m):
     """
     Generates the quantum oracle corresponding to f, where f is defined as:
         f : {0,1}^n -> {0,1}^m
@@ -83,9 +83,9 @@ def h(x):
     return ans[x]
 
 # Tests
-U_f = generate(f, 3, 3)
+U_f = gen_matrix(f, 3, 3)
 assert is_unitary(U_f)
-U_g = generate(g, 2, 2)
+U_g = gen_matrix(g, 2, 2)
 assert is_unitary(U_g)
-U_h = generate(h, 1, 1)
+U_h = gen_matrix(h, 1, 1)
 assert is_unitary(U_h)

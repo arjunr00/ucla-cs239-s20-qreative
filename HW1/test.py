@@ -8,6 +8,6 @@ def f(x):
     }
     return ans[x]
 
-U_f = oracle.generate(f, 1, 1)
+U_f = oracle.gen_matrix(f, 1, 1)
 print(U_f)
 assert oracle.is_unitary(U_f)
