@@ -1,4 +1,57 @@
+from enum import Enum
+
 import numpy as np
+import itertools
+import random
+
+class Algos(Enum):
+    DJ    = 0
+    BV    = 1
+    SIMON = 2
+
+class DJ(Enum):
+    CONSTANT = 0
+    BALANCED = 1
+
+def init_bit_mapping(n, algo=None, func=None):
+    """
+    Generates a bit mapping for a given function:
+        f: {0,1}^n -> {0,1}^m
+    
+    Args:
+        n: the length of a input bitstring
+        algo: the algorithm in question (select from Enum[Algos]) 
+        func: the function f in question for bit mapping
+
+    Returns:
+        A bit mapping oracle_map of size 2^n. For every input bitstring x, oracle_map 
+        maps x to f(x). 
+            i.e. oracle_map = {x: f(x)} for all x in {0,1}^n
+    """
+    qubits = []       
+    # itertools.product does a cross product between two components ([0, 1] x [0, 1] x ... x [0, 1])
+    # https://stackoverflow.com/questions/1457814/get-every-combination-of-strings
+    for i in itertools.product(['0','1'], repeat=n):            
+        qubits.append(''.join(i))
+    # resulting qubits = ['000', '001', '010', '011', '100', '101', '110', '111']
+
+    if algo is Algos.DJ: 
+        # Constant: f(x) returns 0 or 1 for all x
+        if func is DJ.CONSTANT:       
+            val = np.random.choice(['0','1'])
+            oracle_map = {i: val for i in qubits}
+        # Balanced: f(x) returns 0 or 1 for all x
+        # val1 represents set of x that f(x) = 1
+        # val0 represents set of x that f(x) = 0
+        elif func is DJ.BALANCED:
+            val1 = random.sample(qubits, k=int(len(qubits)/2))  
+            val0 = set(qubits) - set(val1)
+            oracle_map = {i: '1' for i in val1}
+            temp = {i: '0' for i in val0}
+            oracle_map.update(temp)
+    
+    # oracle_map is bit map from {x: f(x)} for all {0,1}^n
+    return oracle_map
 
 def gen_matrix(f, n, m):
     """
@@ -16,8 +69,8 @@ def gen_matrix(f, n, m):
         m: The dimension of f's range.
 
     Returns:
-        A (2^n)x(2^m) matrix U_f which represents the quantum oracle corresp-
-        onding to f.
+        A (2^n)x(2^m) matrix U_f which represents the quantum oracle corresponding
+        to f.
     """
 
     # Accumulator to hold the value of the summation
@@ -27,7 +80,7 @@ def gen_matrix(f, n, m):
         x  = f'{xb:0{n+m}b}'[:int(n)]
         b  = f'{xb:0{n+m}b}'[int(n):]
         # Apply f to x
-        fx = f(x)
+        fx = f[x]
         # Calculate b + f(x)
         bfx = f'{int(b, 2) ^ int(fx, 2):0{n}b}'
 
@@ -44,48 +97,3 @@ def gen_matrix(f, n, m):
         U_f = np.add(np.kron(np.outer(xv, xv), np.outer(bfxv, bv)), U_f)
 
     return U_f
-
-def is_unitary(m):
-    return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
-
-def f(x):
-    # n = 3
-    # s = 110
-    ans = {
-        '000': '101',
-        '001': '010',
-        '010': '000',
-        '011': '110',
-        '100': '000',
-        '101': '110',
-        '110': '101',
-        '111': '010',
-    }
-    return ans[x]
-
-def g(x):
-    # n = 2
-    # s = 11
-    ans = {
-        '00': '01',
-        '01': '11',
-        '10': '11',
-        '11': '00'
-    }
-    return ans[x]
-
-def h(x):
-    # n = 2
-    ans = {
-        '0': '1',
-        '1': '0',
-    }
-    return ans[x]
-
-# Tests
-U_f = gen_matrix(f, 3, 3)
-assert is_unitary(U_f)
-U_g = gen_matrix(g, 2, 2)
-assert is_unitary(U_g)
-U_h = gen_matrix(h, 1, 1)
-assert is_unitary(U_h)
