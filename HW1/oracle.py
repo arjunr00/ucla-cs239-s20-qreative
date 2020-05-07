@@ -1,4 +1,22 @@
 import numpy as np
+import itertools
+import random
+
+def init_oracle_bit_mapping(n, dj=False, bv=False, simon=False, balanced=False):
+    qubits = []
+    for i in itertools.product(['0','1'], repeat=n):            # https://stackoverflow.com/questions/1457814/get-every-combination-of-strings
+        qubits.append(''.join(i))
+    if dj:
+        if not balanced:        # Constant: f(x) returns 0 or 1 for all x
+            val = np.random.choice([0,1])
+            oracle_map = {i: val for i in qubits}
+        else:
+            val1 = random.sample(qubits, k=int(len(qubits)/2))
+            val0 = set(qubits) - set(val1)
+            oracle_map = {i: 1 for i in val1}
+            temp = {i: 0 for i in val0}
+            oracle_map.update(temp)
+    return oracle_map
 
 def gen_matrix(f, n, m):
     """
@@ -45,9 +63,6 @@ def gen_matrix(f, n, m):
 
     return U_f
 
-def is_unitary(m):
-    return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
-
 def f(x):
     # n = 3
     # s = 110
@@ -82,10 +97,31 @@ def h(x):
     }
     return ans[x]
 
-# Tests
-U_f = gen_matrix(f, 3, 3)
-assert is_unitary(U_f)
-U_g = gen_matrix(g, 2, 2)
-assert is_unitary(U_g)
-U_h = gen_matrix(h, 1, 1)
-assert is_unitary(U_h)
+# Unit Test Functions
+
+def is_balanced_constant(m, balanced):
+    if not balanced:
+        x = next(iter(m.values()))
+        return all(val == x for val in m.values())
+    else:
+        val0 = sum(value == 0 for value in m.values())
+        val1 = sum(value == 1 for value in m.values())
+        return val0 == val1 and val0+val1 == len(m.values())
+
+def is_unitary(m):
+    return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
+
+def unit_tests(n):
+    # U_f = gen_matrix(f, 3, 3)
+    # assert is_unitary(U_f)
+    # U_g = gen_matrix(g, 2, 2)
+    # assert is_unitary(U_g)
+    # U_h = gen_matrix(h, 1, 1)
+    # assert is_unitary(U_h)
+    const_mapping = init_oracle_bit_mapping(n, dj=True, balanced=False)
+    assert is_balanced_constant(const_mapping, False)
+    balanced_mapping = init_oracle_bit_mapping(n, dj=True, balanced=True)
+    assert is_balanced_constant(balanced_mapping, True)
+
+for n in range(10):
+    unit_tests(n+1)
