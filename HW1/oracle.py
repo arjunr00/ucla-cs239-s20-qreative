@@ -34,8 +34,8 @@ def gen_matrix(f, n, m):
         m: The dimension of f's range.
 
     Returns:
-        A (2^n)x(2^m) matrix U_f which represents the quantum oracle corresp-
-        onding to f.
+        A (2^n)x(2^m) matrix U_f which represents the quantum oracle corresponding
+        to f.
     """
 
     # Accumulator to hold the value of the summation
