@@ -8,13 +8,13 @@ def init_oracle_bit_mapping(n, dj=False, bv=False, simon=False, balanced=False):
         qubits.append(''.join(i))
     if dj:
         if not balanced:        # Constant: f(x) returns 0 or 1 for all x
-            val = np.random.choice([0,1])
+            val = np.random.choice(['0','1'])
             oracle_map = {i: val for i in qubits}
         else:
             val1 = random.sample(qubits, k=int(len(qubits)/2))
             val0 = set(qubits) - set(val1)
-            oracle_map = {i: 1 for i in val1}
-            temp = {i: 0 for i in val0}
+            oracle_map = {i: '1' for i in val1}
+            temp = {i: '0' for i in val0}
             oracle_map.update(temp)
     return oracle_map
 
@@ -45,7 +45,7 @@ def gen_matrix(f, n, m):
         x  = f'{xb:0{n+m}b}'[:int(n)]
         b  = f'{xb:0{n+m}b}'[int(n):]
         # Apply f to x
-        fx = f(x)
+        fx = f[x]
         # Calculate b + f(x)
         bfx = f'{int(b, 2) ^ int(fx, 2):0{n}b}'
 
@@ -63,40 +63,40 @@ def gen_matrix(f, n, m):
 
     return U_f
 
-def f(x):
-    # n = 3
-    # s = 110
-    ans = {
-        '000': '101',
-        '001': '010',
-        '010': '000',
-        '011': '110',
-        '100': '000',
-        '101': '110',
-        '110': '101',
-        '111': '010',
-    }
-    return ans[x]
-
-def g(x):
-    # n = 2
-    # s = 11
-    ans = {
-        '00': '01',
-        '01': '11',
-        '10': '11',
-        '11': '00'
-    }
-    return ans[x]
-
-def h(x):
-    # n = 2
-    ans = {
-        '0': '1',
-        '1': '0',
-    }
-    return ans[x]
-
+# def f(x):
+#     # n = 3
+#     # s = 110
+#     ans = {
+#         '000': '101',
+#         '001': '010',
+#         '010': '000',
+#         '011': '110',
+#         '100': '000',
+#         '101': '110',
+#         '110': '101',
+#         '111': '010',
+#     }
+#     return ans[x]
+# 
+# def g(x):
+#     # n = 2
+#     # s = 11
+#     ans = {
+#         '00': '01',
+#         '01': '11',
+#         '10': '11',
+#         '11': '00'
+#     }
+#     return ans[x]
+# 
+# def h(x):
+#     # n = 2
+#     ans = {
+#         '0': '1',
+#         '1': '0',
+#     }
+#     return ans[x]
+# 
 # Unit Test Functions
 
 def is_balanced_constant(m, balanced):
@@ -104,24 +104,22 @@ def is_balanced_constant(m, balanced):
         x = next(iter(m.values()))
         return all(val == x for val in m.values())
     else:
-        val0 = sum(value == 0 for value in m.values())
-        val1 = sum(value == 1 for value in m.values())
+        val0 = sum(value == '0' for value in m.values())
+        val1 = sum(value == '1' for value in m.values())
         return val0 == val1 and val0+val1 == len(m.values())
 
 def is_unitary(m):
     return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
 
 def unit_tests(n):
-    # U_f = gen_matrix(f, 3, 3)
-    # assert is_unitary(U_f)
-    # U_g = gen_matrix(g, 2, 2)
-    # assert is_unitary(U_g)
-    # U_h = gen_matrix(h, 1, 1)
-    # assert is_unitary(U_h)
     const_mapping = init_oracle_bit_mapping(n, dj=True, balanced=False)
     assert is_balanced_constant(const_mapping, False)
     balanced_mapping = init_oracle_bit_mapping(n, dj=True, balanced=True)
     assert is_balanced_constant(balanced_mapping, True)
+    U_const_f = gen_matrix(const_mapping, n, 1)
+    assert is_unitary(U_const_f)
+    U_bal_f = gen_matrix(balanced_mapping, n, 1)
+    assert is_unitary(U_bal_f)
 
 for n in range(10):
     unit_tests(n+1)
