@@ -23,19 +23,19 @@ def unit_tests(n):
         os.mkdir('uf') 
     if not os.path.exists('uf/dj'):
         os.mkdir('uf/dj')
-    SAVEPATH = 'uf/dj'
+    SAVEPATH = 'uf/dj/'
     CONSTPATH = 'const'+str(n)
     BALPATH = 'bal'+str(n)
     
     if not os.path.exists(SAVEPATH + CONSTPATH+'.npy'):
-        const_mapping = oracle.init_bit_mapping(n, dj=True, func=oracle.DJ.CONSTANT)
+        const_mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.DJ, func=oracle.DJ.CONSTANT)
         assert is_bal_or_const(const_mapping, oracle.DJ.CONSTANT)
         U_const_f = oracle.gen_matrix(const_mapping, n, 1)
     else:
         U_const_f = np.load(SAVEPATH + CONSTPATH +'.npy')
 
     if not os.path.exists(SAVEPATH + BALPATH+'.npy'):
-        balanced_mapping = oracle.init_bit_mapping(n, dj=True, func=oracle.DJ.BALANCED)
+        balanced_mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.DJ, func=oracle.DJ.BALANCED)
         assert is_bal_or_const(balanced_mapping, oracle.DJ.BALANCED)
         U_bal_f = oracle.gen_matrix(balanced_mapping, n, 1)
     else:
@@ -46,8 +46,8 @@ def unit_tests(n):
         np.save(SAVEPATH + CONSTPATH, U_const_f)
 
     assert is_unitary(U_bal_f)
-    if not os.path.exists(SAVEPATH + CONSTPATH+'.npy'):
+    if not os.path.exists(SAVEPATH + BALPATH+'.npy'):
         np.save(SAVEPATH + BALPATH, U_bal_f)
 
-for n in range(1,10):
+for n in range(1,3):
     unit_tests(n)
