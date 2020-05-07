@@ -14,6 +14,7 @@ def is_bal_or_const(m, f):
         return val0 == val1 and val0+val1 == len(m.values())
 
 def is_unitary(m):
+    # https://stackoverflow.com/a/34997613
     return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
 
 def unit_tests(n):
