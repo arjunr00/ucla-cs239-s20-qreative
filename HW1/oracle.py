@@ -2,7 +2,7 @@ import numpy as np
 import itertools
 import random
 
-def init_oracle_bit_mapping(n, dj=False, bv=False, simon=False, balanced=False):
+def init_bit_mapping(n, dj=False, bv=False, simon=False, balanced=False):
     qubits = []
     for i in itertools.product(['0','1'], repeat=n):            # https://stackoverflow.com/questions/1457814/get-every-combination-of-strings
         qubits.append(''.join(i))
@@ -62,64 +62,3 @@ def gen_matrix(f, n, m):
         U_f = np.add(np.kron(np.outer(xv, xv), np.outer(bfxv, bv)), U_f)
 
     return U_f
-
-# def f(x):
-#     # n = 3
-#     # s = 110
-#     ans = {
-#         '000': '101',
-#         '001': '010',
-#         '010': '000',
-#         '011': '110',
-#         '100': '000',
-#         '101': '110',
-#         '110': '101',
-#         '111': '010',
-#     }
-#     return ans[x]
-# 
-# def g(x):
-#     # n = 2
-#     # s = 11
-#     ans = {
-#         '00': '01',
-#         '01': '11',
-#         '10': '11',
-#         '11': '00'
-#     }
-#     return ans[x]
-# 
-# def h(x):
-#     # n = 2
-#     ans = {
-#         '0': '1',
-#         '1': '0',
-#     }
-#     return ans[x]
-# 
-# Unit Test Functions
-
-def is_balanced_constant(m, balanced):
-    if not balanced:
-        x = next(iter(m.values()))
-        return all(val == x for val in m.values())
-    else:
-        val0 = sum(value == '0' for value in m.values())
-        val1 = sum(value == '1' for value in m.values())
-        return val0 == val1 and val0+val1 == len(m.values())
-
-def is_unitary(m):
-    return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
-
-def unit_tests(n):
-    const_mapping = init_oracle_bit_mapping(n, dj=True, balanced=False)
-    assert is_balanced_constant(const_mapping, False)
-    balanced_mapping = init_oracle_bit_mapping(n, dj=True, balanced=True)
-    assert is_balanced_constant(balanced_mapping, True)
-    U_const_f = gen_matrix(const_mapping, n, 1)
-    assert is_unitary(U_const_f)
-    U_bal_f = gen_matrix(balanced_mapping, n, 1)
-    assert is_unitary(U_bal_f)
-
-for n in range(10):
-    unit_tests(n+1)
