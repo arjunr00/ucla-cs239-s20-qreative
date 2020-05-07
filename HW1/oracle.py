@@ -1,16 +1,22 @@
+from enum import Enum
+
 import numpy as np
 import itertools
 import random
 
-def init_bit_mapping(n, dj=False, bv=False, simon=False, balanced=False):
+class DJ(Enum):
+    CONSTANT = 0
+    BALANCED = 1
+
+def init_bit_mapping(n, dj=False, bv=False, simon=False, func=None):
     qubits = []
     for i in itertools.product(['0','1'], repeat=n):            # https://stackoverflow.com/questions/1457814/get-every-combination-of-strings
         qubits.append(''.join(i))
     if dj:
-        if not balanced:        # Constant: f(x) returns 0 or 1 for all x
+        if func is DJ.CONSTANT:        # Constant: f(x) returns 0 or 1 for all x
             val = np.random.choice(['0','1'])
             oracle_map = {i: val for i in qubits}
-        else:
+        elif func is DJ.BALANCED:
             val1 = random.sample(qubits, k=int(len(qubits)/2))
             val0 = set(qubits) - set(val1)
             oracle_map = {i: '1' for i in val1}
