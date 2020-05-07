@@ -14,19 +14,43 @@ class DJ(Enum):
     BALANCED = 1
 
 def init_bit_mapping(n, algo=None, func=None):
-    qubits = []
-    for i in itertools.product(['0','1'], repeat=n):            # https://stackoverflow.com/questions/1457814/get-every-combination-of-strings
+    """
+    Generates a bit mapping for a given function:
+        f: {0,1}^n -> {0,1}^m
+    
+    Args:
+        n: the length of a input bitstring
+        algo: the algorithm in question (select from Enum[Algos]) 
+        func: the function f in question for bit mapping
+
+    Returns:
+        A bit mapping oracle_map of size 2^n. For every input bitstring x, oracle_map 
+        maps x to f(x). 
+            i.e. oracle_map = {x: f(x)} for all x in {0,1}^n
+    """
+    qubits = []       
+    # itertools.product does a cross product between two components ([0, 1] x [0, 1] x ... x [0, 1])
+    # https://stackoverflow.com/questions/1457814/get-every-combination-of-strings
+    for i in itertools.product(['0','1'], repeat=n):            
         qubits.append(''.join(i))
-    if algo is Algos.DJ:
-        if func is DJ.CONSTANT:        # Constant: f(x) returns 0 or 1 for all x
+    # resulting qubits = ['000', '001', '010', '011', '100', '101', '110', '111']
+
+    if algo is Algos.DJ: 
+        # Constant: f(x) returns 0 or 1 for all x
+        if func is DJ.CONSTANT:       
             val = np.random.choice(['0','1'])
             oracle_map = {i: val for i in qubits}
+        # Balanced: f(x) returns 0 or 1 for all x
+        # val1 represents set of x that f(x) = 1
+        # val0 represents set of x that f(x) = 0
         elif func is DJ.BALANCED:
-            val1 = random.sample(qubits, k=int(len(qubits)/2))
+            val1 = random.sample(qubits, k=int(len(qubits)/2))  
             val0 = set(qubits) - set(val1)
             oracle_map = {i: '1' for i in val1}
             temp = {i: '0' for i in val0}
             oracle_map.update(temp)
+    
+    # oracle_map is bit map from {x: f(x)} for all {0,1}^n
     return oracle_map
 
 def gen_matrix(f, n, m):
