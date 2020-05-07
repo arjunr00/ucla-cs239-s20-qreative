@@ -49,5 +49,5 @@ def unit_tests(n):
     if not os.path.exists(SAVEPATH + BALPATH+'.npy'):
         np.save(SAVEPATH + BALPATH, U_bal_f)
 
-for n in range(1,3):
+for n in range(1,10):
     unit_tests(n)
