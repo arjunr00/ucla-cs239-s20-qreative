@@ -47,8 +47,5 @@ def unit_tests(n):
     if not os.path.exists(SAVEPATH + CONSTPATH+'.npy'):
         np.save(SAVEPATH + BALPATH, U_bal_f)
 
-
 for n in range(1,10):
     unit_tests(n)
-print(np.load('uf/bal3.npy'))
-print(np.load('uf/const3.npy'))
