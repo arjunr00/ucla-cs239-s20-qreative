@@ -18,10 +18,10 @@ def is_unitary(m):
     return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
 
 def unit_tests(n):
-    const_mapping = oracle.init_bit_mapping(n, dj=True, func=oracle.DJ.CONSTANT)
+    const_mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.DJ, func=oracle.DJ.CONSTANT)
     assert is_bal_or_const(const_mapping, oracle.DJ.CONSTANT)
 
-    balanced_mapping = oracle.init_bit_mapping(n, dj=True, func=oracle.DJ.BALANCED)
+    balanced_mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.DJ, func=oracle.DJ.BALANCED)
     assert is_bal_or_const(balanced_mapping, oracle.DJ.BALANCED)
 
     U_const_f = oracle.gen_matrix(const_mapping, n, 1)

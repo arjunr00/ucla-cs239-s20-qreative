@@ -4,15 +4,20 @@ import numpy as np
 import itertools
 import random
 
+class Algos(Enum):
+    DJ    = 0
+    BV    = 1
+    SIMON = 2
+
 class DJ(Enum):
     CONSTANT = 0
     BALANCED = 1
 
-def init_bit_mapping(n, dj=False, bv=False, simon=False, func=None):
+def init_bit_mapping(n, algo=None, func=None):
     qubits = []
     for i in itertools.product(['0','1'], repeat=n):            # https://stackoverflow.com/questions/1457814/get-every-combination-of-strings
         qubits.append(''.join(i))
-    if dj:
+    if algo is Algos.DJ:
         if func is DJ.CONSTANT:        # Constant: f(x) returns 0 or 1 for all x
             val = np.random.choice(['0','1'])
             oracle_map = {i: val for i in qubits}
