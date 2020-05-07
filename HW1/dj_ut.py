@@ -21,7 +21,9 @@ def is_unitary(m):
 def unit_tests(n):
     if not os.path.exists('uf'):
         os.mkdir('uf') 
-    SAVEPATH = 'uf/'
+    if not os.path.exists('uf/dj'):
+        os.mkdir('uf/dj')
+    SAVEPATH = 'uf/dj'
     CONSTPATH = 'const'+str(n)
     BALPATH = 'bal'+str(n)
     
