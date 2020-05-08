@@ -1,5 +1,6 @@
 import numpy as np
 import sympy as sp
+import time
 import argparse
 import oracle
 
@@ -115,7 +116,9 @@ if __name__ == '__main__':
         print(f'                   reload U_f matrix = {r}')
     print('=======================================================\n')
 
+    start = time.time()
     ret = qc_program(n, m, r, v)
+    end = time.time()
     if ret is None:
         ret_str = "Indeterminate... (Try a larger m with the --trials option?)"
     elif ret is True:
@@ -123,3 +126,4 @@ if __name__ == '__main__':
     else:
         ret_str = "Fail :("
     print(f'Simon\'s Algorithm: {ret_str}')
+    print(f'(Took {end - start:.2f} s to complete.)')
