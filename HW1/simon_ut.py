@@ -9,14 +9,7 @@ def is_correct(m):
     print(m)
     correct = False
 
-    xa = list(m)[0]
-    xb = ""
-    fa = m[xa]
-    for x, fx in m.items():
-        if fx == fa and x != xa:
-            xb = x
-            break
-    s = f'{int(xa, 2) ^ int(xb, 2):0{len(fa)}b}'
+    s = s(m)
     print(s)
 
     for x in m:
@@ -25,6 +18,16 @@ def is_correct(m):
             return False
 
     return True
+
+def s(m):
+    xa = list(m)[0]
+    xb = xa
+    fa = m[xa]
+    for x, fx in m.items():
+        if fx == fa and x != xa:
+            xb = x
+            break
+    return f'{int(xa, 2) ^ int(xb, 2):0{len(fa)}b}'
 
 def is_unitary(m):
     # https://stackoverflow.com/a/34997613
@@ -41,6 +44,7 @@ def unit_tests(n):
     if not os.path.exists(SAVEDIR + FILEPATH+'.npy'):
         mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON, func=oracle.Simon.TWO_TO_ONE)
         assert is_correct(mapping)
+        s = s(mapping)
         U_f = oracle.gen_matrix(mapping, n, n)
     else:
         U_f = np.load(SAVEDIR + FILEPATH +'.npy')
