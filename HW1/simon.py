@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
     ret = qc_program(n, m, r, v)
     if ret is None:
-        ret_str = "Indeterminate... Try a larger m with the --trials option)?"
+        ret_str = "Indeterminate... (Try a larger m with the --trials option?)"
     elif ret is True:
         ret_str = "Success!"
     else:
