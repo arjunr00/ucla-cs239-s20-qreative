@@ -69,7 +69,11 @@ def init_bit_mapping(n, algo=None, func=None):
 
             for x in qubits:
                 sXx = f'{int(x, 2) ^ int(s, 2):0{n}b}'
-                fx = np.random.choice(qubits)
+                while True:
+                    fx = np.random.choice(qubits)
+                    if fx not in oracle_map.values():
+                        break
+
                 if x not in oracle_map:
                     oracle_map[x] = fx
                     oracle_map[sXx] = fx

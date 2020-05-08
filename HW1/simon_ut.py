@@ -49,6 +49,5 @@ def unit_tests(n):
     if not os.path.exists(SAVEDIR + FILEPATH+'.npy'):
         np.save(SAVEDIR + FILEPATH, U_f)
 
-# for n in range(1,10):
-#     unit_tests(n)
-unit_tests(3)
+for n in range(1,10):
+    unit_tests(n)
