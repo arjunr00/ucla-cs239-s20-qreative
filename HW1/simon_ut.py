@@ -45,7 +45,7 @@ def unit_tests(n):
     SPATH = 's_dict'
     
     if not os.path.exists(SAVEDIR + FILEPATH+'.npy'):
-        mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON, func=oracle.Simon.TWO_TO_ONE)
+        mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON)
         assert is_correct(mapping)
         U_f = oracle.gen_matrix(mapping, n, n)
 

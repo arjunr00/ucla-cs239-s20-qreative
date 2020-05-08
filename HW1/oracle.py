@@ -62,7 +62,7 @@ def init_bit_mapping(n, algo=None, func=None):
                     if fx not in oracle_map.values():
                         break
                 oracle_map[x] = fx
-        elif func is Simon.TWO_TO_ONE:
+        elif func is None or func is Simon.TWO_TO_ONE:
             s = ""
             for i in range(0,n):
                 s += np.random.choice(['0', '1'])
