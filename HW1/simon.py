@@ -29,10 +29,10 @@ def check_valid(ys, s):
     zero = [0] * len(ys[0])
     ys.append(zero)
     Mys = sp.Matrix(ys)
-    Z = sp.Matrix([0] * len(ys[0]))
+    Z = sp.Matrix(zero)
 
-    s1, s2, s3 = sp.symbols("x, y, z")
-    soln = sp.linsolve((Mys, Z), [s1, s2, s3]).subs([(s1, 1), (s2, 1), (s3, 1)])
+    s_elems = sp.symbols([f's{i}' for i in range(len(zero))])
+    soln = sp.linsolve((Mys, Z), s_elems).subs([(si, 1) for si in s_elems])
 
     solved_s_arr = [si % 2 for si in list(list(soln)[0])]
     solved_s = ''.join(str(si) for si in solved_s_arr)
