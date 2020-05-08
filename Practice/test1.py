@@ -3,9 +3,7 @@ from pyquil.gates   import *
 from pyquil.api     import local_forest_runtime
 
 p = Program(H(0), CNOT(0,1))
-print(p)
 p += X(1)
-print(p)
 
 with local_forest_runtime():
     qc = get_qc('9q-square-qvm')

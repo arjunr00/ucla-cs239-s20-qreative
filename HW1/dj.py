@@ -1,18 +1,27 @@
 import numpy as np
+import os
 import itertools
 import oracle
 import argparse
 
 from pyquil import Program, get_qc
 from pyquil.gates import *
-from pyquil.latex import * 
+# from pyquil.latex import * 
 
-def getUf(n, balanced, reload):
-    if not reload:
-        path = 'uf/dj/{}{}.npy'.format('bal' if balanced else 'const', n)
-        U_f = np.load(path)
-    else:
+def getUf(n, balanced, reload, v):
+    path = 'uf/dj/{}{}.npy'.format('bal' if balanced else 'const', n)
+    if not os.path.exists(path) or reload:
         U_f = oracle.uf(n, 1, oracle.Algos.DJ, oracle.DJ.BALANCED if balanced else oracle.DJ.CONSTANT)
+        if v:
+            print("New matrix U_f saved to path: "+path)
+        np.save(path, U_f)
+    else:
+        U_f = np.load(path)
+    if v:
+        print("Matrix U_f is as follows: ")
+        print(U_f)
+        print()
+
     return U_f
 
 def check_valid(m_bits, balanced):
@@ -20,7 +29,7 @@ def check_valid(m_bits, balanced):
 
 def qc_program(n, t, reload, balanced, v):
     p = Program()
-    p.defgate('U_f', getUf(n, balanced, reload))
+    p.defgate('U_f', getUf(n, balanced, reload, v))
     qc = get_qc(str(n+1)+'q-qvm')
     qc.compiler.client.timeout = 1000000
 
@@ -72,9 +81,9 @@ if __name__ == "__main__":
         print("                   reload U_f matrix = {}".format(r))
     print("=======================================================\n")
 
-    if int(n) > 8:
-        print("Haha so we would havent found out how to make a qvm of more than 9 qubits...\ Try something smaller :)")
-        exit()
+    # if int(n) > 8:
+    #     print("Haha so we would havent found out how to make a qvm of more than 9 qubits...\ Try something smaller :)")
+    #     exit()
 
     ret =  qc_program(n, t, r, b, v)
     print("Implemented Deutsch-Josza Algorithm {}\n".format('Success!!!' if ret else 'Fail :('))
