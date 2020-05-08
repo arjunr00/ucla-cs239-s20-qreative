@@ -97,3 +97,9 @@ def gen_matrix(f, n, m):
         U_f = np.add(np.kron(np.outer(xv, xv), np.outer(bfxv, bv)), U_f)
 
     return U_f
+
+def uf(n, m, algo=None, func=None):
+    """
+    Wrapper function for the purposes of obtaining new Uf matrix
+    """
+    return gen_matrix(init_bit_mapping(n, algo=algo, func=func), n, m)
