@@ -67,9 +67,9 @@ if __name__ == "__main__":
     print("Testing Deutsch-Josza Algorithm on {} Function".format('Balanced' if b else 'Constant'))
     if v:
         print("\n   Running with bit string of size n = {}".format(n))
-        print("                    number of trials t = {}".format(t))
-        print("                     reload U_f matrix = {}".format(r))
+        print("                  number of trials t = {}".format(t))
+        print("                   reload U_f matrix = {}".format(r))
     print("=======================================================\n")
 
     ret =  qc_program(n, t, r, b, v)
-    print("Implemented Deutsch-Josza Algorithm {}\n".format('Sucess!!!' if ret else 'Fail :('))
+    print("Implemented Deutsch-Josza Algorithm {}\n".format('Success!!!' if ret else 'Fail :('))
