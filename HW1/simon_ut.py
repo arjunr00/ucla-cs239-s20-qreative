@@ -42,7 +42,7 @@ def unit_tests(n):
 
     SAVEDIR = 'uf/simon/'
     FILEPATH = 'simon'+str(n)
-    SPATH = 's_dict'+str(n)
+    SPATH = 's_dict'
     
     if not os.path.exists(SAVEDIR + FILEPATH+'.npy'):
         mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON, func=oracle.Simon.TWO_TO_ONE)
@@ -64,5 +64,5 @@ def unit_tests(n):
     if not os.path.exists(SAVEDIR + FILEPATH+'.npy'):
         np.save(SAVEDIR + FILEPATH, U_f)
 
-for n in range(1,10):
+for n in range(1,7):
     unit_tests(n)
