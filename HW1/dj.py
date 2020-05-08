@@ -21,7 +21,7 @@ def check_valid(m_bits, balanced):
 def qc_program(n, t, reload, balanced, v):
     p = Program()
     p.defgate('U_f', getUf(n, balanced, reload))
-    qc = get_qc('9q-square-qvm')
+    qc = get_qc(str(n+1)+'q-qvm')
     qc.compiler.client.timeout = 1000000
 
     p.inst(X(n))
