@@ -9,17 +9,18 @@ def is_correct(m):
     print(m)
     correct = False
 
-    s = s(m)
-    print(s)
+    s = get_s(m)
+    print(f's: {s}')
 
     for x in m:
         count = sum(val == m[x] for val in m.values())
-        if (s == '0' * len(s) and count != 1) or count != 2:
+        if (s == '0' * len(s) and count != 1) or \
+           (s != '0' * len(s) and count != 2):
             return False
 
     return True
 
-def s(m):
+def get_s(m):
     xa = list(m)[0]
     xb = xa
     fa = m[xa]
@@ -38,14 +39,24 @@ def unit_tests(n):
         os.mkdir('uf') 
     if not os.path.exists('uf/simon'):
         os.mkdir('uf/simon')
+
     SAVEDIR = 'uf/simon/'
     FILEPATH = 'simon'+str(n)
+    SPATH = 's_dict'+str(n)
     
     if not os.path.exists(SAVEDIR + FILEPATH+'.npy'):
         mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON, func=oracle.Simon.TWO_TO_ONE)
         assert is_correct(mapping)
-        s = s(mapping)
         U_f = oracle.gen_matrix(mapping, n, n)
+
+        s = get_s(mapping)
+        if os.path.exists(SAVEDIR + SPATH+'.npy'):
+            s_list = np.load(SAVEDIR + SPATH+'.npy', allow_pickle=True).item()
+        else:
+            s_list = {}
+
+        s_list[n] = s
+        np.save(SAVEDIR + SPATH, s_list, allow_pickle=True)
     else:
         U_f = np.load(SAVEDIR + FILEPATH +'.npy')
 
