@@ -37,7 +37,6 @@ def check_valid(ys, s):
     solved_s_arr = [si % 2 for si in list(list(soln)[0])]
     solved_s = ''.join(str(si) for si in solved_s_arr)
     
-    print(solved_s)
     return solved_s == s
 
 def qc_program(n, m, reload, verbose):
