@@ -37,6 +37,8 @@ def check_valid(ys, s):
     solved_s_arr = [si % 2 for si in list(list(soln)[0])]
     solved_s = ''.join(str(si) for si in solved_s_arr)
     
+    print(f'Solution is {solved_s}.')
+    print(f'Actual is {s}.')
     return solved_s == s
 
 def qc_program(n, m, reload, verbose):
@@ -58,37 +60,26 @@ def qc_program(n, m, reload, verbose):
     p += U_f(*(tuple(range(2*n))))
     p += (H(i) for i in range(n))
 
-    result = qc.run_and_measure(p, trials=t)
-    if verbose:
-        print('====================================')
-        print('Measured Qubit State Across Trials:')
-        for i in range(n):
-            print(f'    {result[i]}')
-        print('====================================\n')
-
     if verbose:
         print('====================================')
         print('Measured y values:')
-
     for i in range(4*m):
+        result = qc.run_and_measure(p, trials=(n-1))
         if verbose:
             print(f'    Trial {i+1}:')
 
         ys=[]
-        for j in range((n-1)*i, (n-1)*(i+1)):
+        for j in range(n-1):
             measured = [result[q][j] for q in range(n)]
             y = "".join(str(b) for b in measured)
             ys.append(measured)
             if verbose:
-                print(f'        y_{j - (n-1)*i} = {y}')
+                print(f'        y_{j} = {y}')
         if check_lin_indep(ys):
             if verbose:
                 print(f'Found linearly independent ys!\nChecking if they solve to s correctly...')
                 print('====================================\n')
             return check_valid(ys, s)
-
-    if verbose:
-        print('====================================\n')
 
     return None
 
