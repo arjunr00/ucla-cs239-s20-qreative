@@ -16,7 +16,7 @@ def getUf(n, balanced, reload):
     return U_f
 
 def check_valid(m_bits, balanced):
-    return set(m_bits) == set([0,1]) if balanced else set(m_bits) == set([0])
+    return not all(x == 0 for x in m_bits) if balanced else all(x == 0 for x in m_bits)
 
 def qc_program(n, t, reload, balanced, v):
     p = Program()
@@ -44,16 +44,17 @@ def qc_program(n, t, reload, balanced, v):
             print("Measured State for Iteration {}:\n".format(i+1))
             print(measured_bits)
             print("====================================\n")
-        if not check_valid(measured_bits, False):
+        if not check_valid(measured_bits, balanced):
             return False
     return True
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Deustch-Josza', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.set_defaults(reload=False, balanced=False, verbose=False)
 parser.add_argument("--num", "-n", type=int, default=4, help="Set size of input string")
 parser.add_argument("--trials", "-t", type=int, default=10, help="Set num of trials")
-parser.add_argument("--reload", "-r", type=bool, default=False, help='Reload new U_f matrix')
-parser.add_argument("--balanced", "-b", type=bool, default=False, help='Set whether f(x) is balanced or constant')
-parser.add_argument("--verbose", "-v", type=bool, default=False, help='Print out measured bits and steps')
+parser.add_argument("--reload", "-r", action="store_true", help='Reload new U_f matrix')
+parser.add_argument("--balanced", "-b", action="store_true", help='Set whether f(x) is balanced or constant')
+parser.add_argument("--verbose", "-v", action="store_true", help='Print out measured bits and steps')
 args = parser.parse_args()
 
 if __name__ == "__main__":
@@ -70,6 +71,10 @@ if __name__ == "__main__":
         print("                  number of trials t = {}".format(t))
         print("                   reload U_f matrix = {}".format(r))
     print("=======================================================\n")
+
+    if int(n) > 8:
+        print("Haha so we would havent found out how to make a qvm of more than 9 qubits...\ Try something smaller :)")
+        exit()
 
     ret =  qc_program(n, t, r, b, v)
     print("Implemented Deutsch-Josza Algorithm {}\n".format('Success!!!' if ret else 'Fail :('))
