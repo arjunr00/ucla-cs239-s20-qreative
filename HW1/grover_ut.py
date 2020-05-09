@@ -9,8 +9,6 @@ def is_unitary(m):
     return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
 
 def unit_tests(n):
-    print(f'Testing n = {str(n)}')
-
     if not os.path.exists('uf'):
         os.mkdir('uf')
     if not os.path.exists('uf/grover'):
@@ -28,8 +26,6 @@ def unit_tests(n):
     assert is_unitary(U_f)
     if not os.path.exists(FILEPATH):
         np.save(FILEPATH, U_f)
-
-    print(f'Finished n = {str(n)}')
 
 for n in range (1, 10):
     unit_tests(n)
