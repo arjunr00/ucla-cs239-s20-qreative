@@ -82,8 +82,8 @@ def init_bit_mapping(n, algo=None, func=None):
         oracle_map = {}
         # Weight 1 so that it occurs more frequently, because it's a nice
         # and common special case for Grover's algorithm
-        indices = [ 1 ] * (len(qubits)/2) + [ i + 1 for i in range (len(qubits)) ]
-        k = random.choice(1, len(qubits) - 1)
+        indices = [ 1 ] * int(len(qubits)/2) + [ i + 1 for i in range (len(qubits)) ]
+        k = random.choice(indices)
         # There are k values of x for which f returns 1
         val1 = random.sample(qubits, k)
         # f returns 0 for everything else
