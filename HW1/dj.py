@@ -44,7 +44,6 @@ def qc_program(n, t, reload, balanced, v):
         print("Measured Qubit State Accross Trials:\n")
         print(result)
         print("====================================\n")
-        
 
     for i in range(t):
         measured_bits = [result[q][i] for q in range(n)]

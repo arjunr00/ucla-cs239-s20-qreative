@@ -13,13 +13,21 @@ def unit_tests(n):
         os.mkdir('uf')
     if not os.path.exists('uf/grover'):
         os.mkdir('uf/grover')
-    SAVEPATH = 'uf/grover/'
-    FILEPATH = f'{SAVEPATH}grover{str(n)}.npy'
+    SAVEDIR = 'uf/grover/'
+    FILEPATH = f'{SAVEDIR}grover{str(n)}.npy'
+    FPATH = f'{SAVEDIR}f_dict.npy'
 
     if not os.path.exists(FILEPATH):
         mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.GROVER)
-        print(mapping)
         U_f  = oracle.gen_matrix(mapping, n, 1)
+
+        if os.path.exists(FPATH):
+            f_dict = np.load(FPATH, allow_pickle=True).item()
+        else:
+            f_dict = {}
+
+        f_dict[n] = mapping
+        np.save(FPATH, f_dict, allow_pickle=True)
     else:
         U_f = np.load(FILEPATH)
 
