@@ -5,13 +5,14 @@ import oracle
 import argparse
 
 from pyquil import Program, get_qc
-from pyquil.gates import *
+from pyquil.quil import DefGate
+from pyquil.gates import X, H
 from pyquil.latex import * 
 
 class Algo():
     def measure(self, result, n, t, args):
         if v:
-            print("====================================")
+            print("\n====================================")
             print("Measured Qubit State Accross Trials:\n")
             print(result)
             print("====================================\n")
@@ -48,25 +49,54 @@ class DJ(Algo):
         return not all(x == 0 for x in m_bits) if balanced else all(x == 0 for x in m_bits)
 
     def qc_program(self, n, t, reload, balanced, v):
-        p = Program()
-        p.defgate('U_f', self.__getUf(n, balanced, reload, v))
+        path = "compiled_programs/dj/{}{}".format('bal' if balanced else 'const', n)
+
         qc = get_qc(str(n+1)+'q-qvm')
         qc.compiler.client.timeout = 1000000
 
-        p.inst(X(n))
-        p.inst(H(i) for i in range(n+1))
-        p.inst(('U_f',) + tuple(range(n+1)))
-        p.inst(H(i) for i in range(n))
-        print("**Running Quantum Program**")
-        result = qc.run_and_measure(p, trials=t)
-        print("**Measuring Results**")
-        return self.measure(result, n, t, balanced)
+        U_f_def = DefGate('U_f', self.__getUf(n, balanced, reload, v))
+        U_f = U_f_def.get_constructor()
+
+        p = Program()
+        p += U_f_def
+        p += X(0)
+        p += (H(i) for i in range(n+1))
+        p += U_f(*(tuple(range(n+1))))
+        p += (H(i) for i in range(1,n+1))
+
+        # if not os.path.exists(path) or reload:
+        #     with open(path, 'wb+') as c:
+        #         ep = qc.compile(p)
+        #         c.write(ep)
+        #         c.close()
+        # else:
+        #     ep = open(path, rb)
+        # if v:
+        #     print("===========================")
+        #     print("   **Compiling Program**   ")
+        #     print("===========================\n")
+        # ep = qc.compile(p)
+        # print(ep)
+        if v:
+            print("===========================")
+            print("**Running Quantum Program**")
+            print("===========================\n")
+        # results = []
+        # for i in range(t):
+        #     if v:
+        #         print("     Measuring Result For [{}]".format(i+1))
+        #     result = qc.run(ep)
+        #     print(result)
+        #     results.append(result)
+            
+        results = qc.run_and_measure(p, trials=t)
+        return self.measure(results, n, t, balanced)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Deustch-Josza', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.set_defaults(reload=False, balanced=False, verbose=False)
     parser.add_argument("--num", "-n", type=int, default=4, help="Set size of input string")
-    parser.add_argument("--trials", "-t", type=int, default=1, help="Set num of trials")
+    parser.add_argument("--trials", "-t", type=int, default=2, help="Set num of trials")
     parser.add_argument("--reload", "-r", action="store_true", help='Reload new U_f matrix')
     parser.add_argument("--balanced", "-b", action="store_true", help='Set whether f(x) is balanced or constant')
     parser.add_argument("--verbose", "-v", action="store_true", help='Print out measured bits and steps')
