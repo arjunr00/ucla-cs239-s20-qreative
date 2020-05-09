@@ -18,7 +18,7 @@ def getUf(n, reload):
             oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON),
             n, n
         )
-    
+
     return U_f
 
 def check_lin_indep(ys):
@@ -37,7 +37,7 @@ def check_valid(ys, s):
 
     solved_s_arr = [si % 2 for si in list(list(soln)[0])]
     solved_s = ''.join(str(si) for si in solved_s_arr)
-    
+
     return solved_s == s
 
 def qc_program(n, m, reload, verbose):
