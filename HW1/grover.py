@@ -46,10 +46,12 @@ def qc_program(n, reload, verbose):
     if verbose:
         print('====================================')
         # U+2248 is the Unicode encoding for approximately equal to
+        # U+230A is the Unicode encoding for left floor
+        # U+230B is the Unicode encoding for right floor
         # U+03C0 is the Unicode encoding for lowercase pi
         # U+221A is the Unicode encoding for sqrt
         # U+207f is the Unicode encoding for ^n
-        print(f'k \u2248 (\u03c0\u221aN)/4 = {k}\t(N = 2\u207f = 2^{n})\n')
+        print(f'[k \u2248 \u230a(\u03c0\u221aN)/4\u230b = {k}\t(N = 2\u207f = 2^{n})]\n')
 
     Z_0_def = DefGate('Z_0', z0(n))
     Z_0 = Z_0_def.get_constructor()
