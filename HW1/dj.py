@@ -63,31 +63,11 @@ class DJ(Algo):
         p += (H(i) for i in range(n+1))
         p += U_f(*(tuple(range(n+1))))
         p += (H(i) for i in range(1,n+1))
-
-        # if not os.path.exists(path) or reload:
-        #     with open(path, 'wb+') as c:
-        #         ep = qc.compile(p)
-        #         c.write(ep)
-        #         c.close()
-        # else:
-        #     ep = open(path, rb)
-        # if v:
-        #     print("===========================")
-        #     print("   **Compiling Program**   ")
-        #     print("===========================\n")
-        # ep = qc.compile(p)
-        # print(ep)
+        
         if v:
             print("===========================")
             print("**Running Quantum Program**")
             print("===========================\n")
-        # results = []
-        # for i in range(t):
-        #     if v:
-        #         print("     Measuring Result For [{}]".format(i+1))
-        #     result = qc.run(ep)
-        #     print(result)
-        #     results.append(result)
             
         results = qc.run_and_measure(p, trials=t)
         return self.measure(results, n, t, balanced)
