@@ -13,6 +13,10 @@ class DJ(Enum):
     CONSTANT = 0
     BALANCED = 1
 
+class Simon(Enum):
+    ONE_TO_ONE = 0
+    TWO_TO_ONE = 1
+
 def init_bit_mapping(n, algo=None, func=None):
     """
     Generates a bit mapping for a given function:
@@ -49,6 +53,30 @@ def init_bit_mapping(n, algo=None, func=None):
             oracle_map = {i: '1' for i in val1}
             temp = {i: '0' for i in val0}
             oracle_map.update(temp)
+    elif algo is Algos.SIMON:
+        oracle_map = {}
+        if func is Simon.ONE_TO_ONE:
+            for x in qubits:
+                while True:
+                    fx = np.random.choice(qubits)
+                    if fx not in oracle_map.values():
+                        break
+                oracle_map[x] = fx
+        elif func is None or func is Simon.TWO_TO_ONE:
+            s = ""
+            for i in range(0,n):
+                s += np.random.choice(['0', '1'])
+
+            for x in qubits:
+                sXx = f'{int(x, 2) ^ int(s, 2):0{n}b}'
+                while True:
+                    fx = np.random.choice(qubits)
+                    if fx not in oracle_map.values():
+                        break
+
+                if x not in oracle_map:
+                    oracle_map[x] = fx
+                    oracle_map[sXx] = fx
     
     # oracle_map is bit map from {x: f(x)} for all {0,1}^n
     return oracle_map
