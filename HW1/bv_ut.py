@@ -29,7 +29,7 @@ def unit_tests(n):
         a_list[n] = a
         np.save(SAVEPATH + SPATH, a_list, allow_pickle=True)
 
-        f_mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.BV, func=a)
+        f_mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.BV, func=(a,0))
         assert is_correct(f_mapping, a)
 
         U_f = oracle.gen_matrix(f_mapping, n, 1)
