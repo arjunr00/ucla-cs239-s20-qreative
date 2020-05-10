@@ -2,6 +2,7 @@ import numpy as np
 import sympy as sp
 import time
 import argparse
+import os
 import oracle
 
 from pyquil import Program, get_qc
@@ -38,14 +39,20 @@ def check_valid(ys, s):
     solved_s_arr = [si % 2 for si in list(list(soln)[0])]
     solved_s = ''.join(str(si) for si in solved_s_arr)
 
-    return solved_s == s
+    if s is not None:
+        return solved_s == s
+    else:
+        return True
 
 def qc_program(n, m, reload, verbose):
     # Simon's algorithm uses (n - 1) * 4m iterations
     t = (n-1) * (4*m)
     SAVEDIR = 'uf/simon/'
     SPATH = 's_dict.npy'
-    s = np.load(SAVEDIR + SPATH, allow_pickle=True).item()[n]
+    if os.path.exists(SAVEDIR + SPATH):
+        s = np.load(SAVEDIR + SPATH, allow_pickle=True).item()[n]
+    else:
+        s = None
 
     U_f_def = DefGate('U_f', getUf(n, reload))
     U_f = U_f_def.get_constructor()

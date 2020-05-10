@@ -36,14 +36,14 @@ def is_unitary(m):
 
 def unit_tests(n):
     if not os.path.exists('uf'):
-        os.mkdir('uf') 
+        os.mkdir('uf')
     if not os.path.exists('uf/simon'):
         os.mkdir('uf/simon')
 
     SAVEDIR = 'uf/simon/'
     FILEPATH = 'simon'+str(n)
     SPATH = 's_dict'
-    
+
     if not os.path.exists(SAVEDIR + FILEPATH+'.npy'):
         mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON)
         assert is_correct(mapping)

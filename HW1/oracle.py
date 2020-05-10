@@ -5,9 +5,10 @@ import itertools
 import random
 
 class Algos(Enum):
-    DJ    = 0
-    BV    = 1
-    SIMON = 2
+    DJ     = 0
+    BV     = 1
+    SIMON  = 2
+    GROVER = 3
 
 class DJ(Enum):
     CONSTANT = 0
@@ -21,34 +22,34 @@ def init_bit_mapping(n, algo=None, func=None):
     """
     Generates a bit mapping for a given function:
         f: {0,1}^n -> {0,1}^m
-    
+
     Args:
         n: the length of a input bitstring
-        algo: the algorithm in question (select from Enum[Algos]) 
+        algo: the algorithm in question (select from Enum[Algos])
         func: the function f in question for bit mapping
 
     Returns:
-        A bit mapping oracle_map of size 2^n. For every input bitstring x, oracle_map 
-        maps x to f(x). 
+        A bit mapping oracle_map of size 2^n. For every input bitstring x, oracle_map
+        maps x to f(x).
             i.e. oracle_map = {x: f(x)} for all x in {0,1}^n
     """
-    qubits = []       
+    qubits = []
     # itertools.product does a cross product between two components ([0, 1] x [0, 1] x ... x [0, 1])
     # https://stackoverflow.com/questions/1457814/get-every-combination-of-strings
-    for i in itertools.product(['0','1'], repeat=n):            
+    for i in itertools.product(['0','1'], repeat=n):
         qubits.append(''.join(i))
     # resulting qubits = ['000', '001', '010', '011', '100', '101', '110', '111']
 
-    if algo is Algos.DJ: 
+    if algo is Algos.DJ:
         # Constant: f(x) returns 0 or 1 for all x
-        if func is DJ.CONSTANT:       
+        if func is DJ.CONSTANT:
             val = np.random.choice(['0','1'])
             oracle_map = {i: val for i in qubits}
         # Balanced: f(x) returns 0 or 1 for all x
         # val1 represents set of x that f(x) = 1
         # val0 represents set of x that f(x) = 0
         elif func is DJ.BALANCED:
-            val1 = random.sample(qubits, k=int(len(qubits)/2))  
+            val1 = random.sample(qubits, k=int(len(qubits)/2))
             val0 = set(qubits) - set(val1)
             oracle_map = {i: '1' for i in val1}
             temp = {i: '0' for i in val0}
@@ -77,6 +78,21 @@ def init_bit_mapping(n, algo=None, func=None):
                 if x not in oracle_map:
                     oracle_map[x] = fx
                     oracle_map[sXx] = fx
+    elif algo is Algos.GROVER:
+        oracle_map = {}
+        # Weight 0 and 1 so that they occur more frequently, because they're nice
+        # and common special cases for Grover's algorithm
+        indices = [ 0 ] * int(len(qubits)/2) \
+                + [ 1 ] * int(len(qubits)/2) \
+                + [ i + 1 for i in range (len(qubits)) ]
+        k = random.choice(indices)
+        # There are k values of x for which f returns 1
+        val1 = random.sample(qubits, k)
+        # f returns 0 for everything else
+        val0 = set(qubits) - set(val1)
+        oracle_map = {i: '1' for i in val1}
+        temp = {i: '0' for i in val0}
+        oracle_map.update(temp)
     elif algo is Algos.BV:
         oracle_map = {}
         a, b = func
