@@ -20,13 +20,13 @@ def is_unitary(m):
 
 def unit_tests(n):
     if not os.path.exists('uf'):
-        os.mkdir('uf') 
+        os.mkdir('uf')
     if not os.path.exists('uf/dj'):
         os.mkdir('uf/dj')
     SAVEPATH = 'uf/dj/'
     CONSTPATH = 'const'+str(n)
     BALPATH = 'bal'+str(n)
-    
+
     if not os.path.exists(SAVEPATH + CONSTPATH+'.npy'):
         const_mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.DJ, func=oracle.DJ.CONSTANT)
         assert is_bal_or_const(const_mapping, oracle.DJ.CONSTANT)
