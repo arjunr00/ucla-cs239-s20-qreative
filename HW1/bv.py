@@ -3,6 +3,7 @@ import os
 import itertools
 import oracle
 import argparse
+import random
 
 from pyquil import Program, get_qc
 from pyquil.quil import DefGate
@@ -48,12 +49,15 @@ class BV(Algo):
     def __getUf(self, n, reload, v):
         path = 'uf/bv/bv{}.npy'.format(n)
         self.a = self.__load_a_list(n, reload)
+        self.b = random.randint(0,1)
         if v:
             print("Alpha is as follows: ")
             print(self.a)
+            print("Beta is as follows: ")
+            print(self.b)
             print()
         if not os.path.exists(path) or reload:
-            U_f = oracle.uf(n, 1, algo=oracle.Algos.BV, func=self.a)
+            U_f = oracle.uf(n, 1, algo=oracle.Algos.BV, func=(self.a, self.b))
             if v:
                 print("New matrix U_f saved to path: "+path)
             np.save(path, U_f)

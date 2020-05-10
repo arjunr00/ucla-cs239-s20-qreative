@@ -79,9 +79,9 @@ def init_bit_mapping(n, algo=None, func=None):
                     oracle_map[sXx] = fx
     elif algo is Algos.BV:
         oracle_map = {}
-        a = func
+        a, b = func
         for q in qubits:
-            dp = 0
+            dp = b
             for index, val in enumerate(q):
                 dp += a[index] * int(val)
             oracle_map[q] = str(dp % 2)
