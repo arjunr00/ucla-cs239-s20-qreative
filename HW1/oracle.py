@@ -77,7 +77,14 @@ def init_bit_mapping(n, algo=None, func=None):
                 if x not in oracle_map:
                     oracle_map[x] = fx
                     oracle_map[sXx] = fx
-    
+    elif algo is Algos.BV:
+        oracle_map = {}
+        a = func
+        for q in qubits:
+            dp = 0
+            for index, val in enumerate(q):
+                dp += a[index] * int(val)
+            oracle_map[q] = str(dp % 2)
     # oracle_map is bit map from {x: f(x)} for all {0,1}^n
     return oracle_map
 
