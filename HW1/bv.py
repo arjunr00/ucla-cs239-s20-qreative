@@ -53,6 +53,7 @@ class BV(Algo):
         if v:
             print("Alpha is as follows: ")
             print(self.a)
+            print()
             print("Beta is as follows: ")
             print(self.b)
             print()
