@@ -8,7 +8,7 @@ class Algo():
             print("Measured Qubit State Accross Trials:\n")
             print(result)
             print("====================================\n")
-            
+
         for i in range(t):
             measured_bits = [result[q][i] for q in range(n)]
             if v:
@@ -19,7 +19,7 @@ class Algo():
             if not self.check_valid(measured_bits, args):
                 return False
         return True
-        
+
     def obtain_parameters(self):
 
 
