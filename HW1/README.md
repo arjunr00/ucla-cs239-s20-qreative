@@ -76,6 +76,36 @@ Extensive documentation visible inside dj.py file.
 ### Problem Statement
 Given function ```f(x): {0,1}^n -> {0,1}^n``` where ```f(x) = a*x + b```. Find ***a*** and ***b***.
 
+### Usage
+We randomized the function f(x) with different ***a*** and ***b*** to reduce undefined behavior from the user. Mostly because our ***a*** must be stored as a bitstring so it seemed functional to keep it abstracted.
+
+```
+To run:
+    python3 bv.py [-h] [--num NUM] [--trials TRIALS] [--reload] [--verbose]
+
+Defaults:
+    num     (size of bitstring): 4
+    trials   (number of trials): 2
+    reload   (reload Uf matrix): False (loads matrix if it exists)
+    verbose     (Display state): False
+```
+
+Run ```python3 bv.py -v``` for defaults and to look at state of algorithm. 
+
+### Output
+Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, bv.py will simply return whether the algorithm was successful or not. 
+
+```
+With --verbose flag:
+    Display of alpha
+    Display of beta
+    Message to where U_f matrix is saved
+    Display of U_f matrix.
+    Measured values of all qubits across iterations
+    Measured state of each iteration [must match alpha]
+    Validity Message (Success or Failure)
+```
+
 Extensive documentation visible inside bv.py file.
 
 ## Simon's
