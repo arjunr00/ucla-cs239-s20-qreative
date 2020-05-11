@@ -33,32 +33,61 @@ We decided that function input from the user could lead to undefined behavior, s
 
 If you want to see the nitty gritty details of the state of our algorithm during run time and not just an output telling you if the algorithm worked or not, make sure to add the **-v** or **--verbose** flag.
 
+We also save all our matrices in a ```/uf/{algo}``` folder to reduce compute time during testing. Use the **-r** or **--reload** flag to reload U_f matrix.
+
 ## Deutsch-Josza
 
-**Problem Statement:**
-Given function **f(x): {0,1}^n -> {0, 1}** determine whether the function is *balanced* or *constant*.
+### Problem Statement
+Given function ```f(x): {0,1}^n -> {0, 1}```. Determine whether the function is ***balanced*** or ***constant***.
 
+### Usage
+We randomized the function f(x) but allow users to select whether they want their function to be ***balanced*** or ***constant***.
 
+```
+To run:
+    python3 dj.py [-h] [--num NUM] [--trials TRIALS] [--reload] [--balanced] [--verbose]
+
+Defaults:
+    num     (size of bitstring): 4
+    trials   (number of trials): 2
+    reload   (reload Uf matrix): False (loads matrix if it exists)
+    balanced    (function type): False (function by default is constant)
+    verbose     (Display state): False
+```
+
+Run ```python3 dj.py -v``` for defaults and to look at state of algorithm. 
+
+### Output
+Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, dj.py will simply return whether the algorithm was successful or not. 
+
+```
+With --verbose flag:
+    Message to where U_f matrix is saved
+    Display of U_f matrix.
+    Measured values of all qubits across iterations
+    Measured state of each iteration
+    Validity Message (Success or Failure)
+```
 
 Extensive documentation visible inside dj.py file.
 
 ## Bernstein-Vazirani
 
-**Problem Statement:**
-Given function **f(x): {0,1}^n -> {0,1}^n** where **f(x) = a\*x + b** find *a* and *b*.
+### Problem Statement
+Given function ```f(x): {0,1}^n -> {0,1}^n``` where ```f(x) = a*x + b```. Find ***a*** and ***b***.
 
 Extensive documentation visible inside bv.py file.
 
 ## Simon's
 
-**Problem Statement:**
-Given function **f(x): {0,1}^n -> {0,1}^m** and that there exists **f(x0) = f(x1)** for all **x0, x1** if and only if **x0 + x1 = {0^n, s}**. Find *s*.
+### Problem Statement
+Given function ```f(x): {0,1}^n -> {0,1}^m``` and that there exists ```f(x0) = f(x1)``` for all ```x0, x1``` if and only if ```x0 + x1 = {0^n, s}```. Find ***s***.
 
 Extensive documentation visible inside simon.py file.
 
 ## Grover's
 
-**Problem Statement:**
-Given function **f(x): {0,1}^n -> {0, 1}** where there exist an **x in {0,1}^n** where f(x) = 1. Find *x*.
+### Problem Statement
+Given function ```f(x): {0,1}^n -> {0, 1}``` where there exist an ```x in {0,1}^n``` where ```f(x) = 1```. Find ***x***.
 
 Extensive documentation visible inside grover.py file.

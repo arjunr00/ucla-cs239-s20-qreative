@@ -8,7 +8,6 @@ import random
 from pyquil import Program, get_qc
 from pyquil.quil import DefGate
 from pyquil.gates import X, H
-from pyquil.latex import * 
 
 class Algo():
     def measure(self, result, n, t, args):
