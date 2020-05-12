@@ -58,7 +58,7 @@ Defaults:
 Run ```python3 dj.py -v``` for defaults and to look at state of algorithm. 
 
 ### Output
-Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, dj.py will simply return whether the algorithm was successful or not. 
+Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, ```dj.py``` will simply return whether the algorithm was successful or not. 
 
 ```
 With --verbose flag:
@@ -69,7 +69,7 @@ With --verbose flag:
     Validity Message (Success or Failure)
 ```
 
-Extensive documentation visible inside dj.py file.
+Extensive documentation visible inside ```dj.py``` file.
 
 ## Bernstein-Vazirani
 
@@ -93,7 +93,7 @@ Defaults:
 Run ```python3 bv.py -v``` for defaults and to look at state of algorithm. 
 
 ### Output
-Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, bv.py will simply return whether the algorithm was successful or not. 
+Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, ```bv.py``` will simply return whether the algorithm was successful or not. 
 
 ```
 With --verbose flag:
@@ -106,7 +106,7 @@ With --verbose flag:
     Validity Message (Success or Failure)
 ```
 
-Extensive documentation visible inside bv.py file.
+Extensive documentation visible inside ```bv.py``` file.
 
 ## Simon's
 
@@ -130,7 +130,7 @@ Defaults:
 Run ```python3 simon.py -v``` for defaults and to look at state of algorithm. 
 
 ### Output
-Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, simon.py will simply return whether the algorithm was successful or not. 
+Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, ```simon.py``` will simply return whether the algorithm was successful or not. 
 
 ```
 With --verbose flag:
@@ -141,7 +141,7 @@ With --verbose flag:
     Time to Completion
 ```
 
-Extensive documentation visible inside simon.py file.
+Extensive documentation visible inside ```simon.py``` file.
 
 ## Grover's
 
@@ -164,7 +164,7 @@ Defaults:
 Run ```python3 grover.py -v``` for defaults and to look at state of algorithm. 
 
 ### Output
-Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, grover.py will simply return whether the algorithm was successful or not. 
+Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, ```grover.py``` will simply return whether the algorithm was successful or not. 
 
 ```
 With --verbose flag:
@@ -176,4 +176,4 @@ With --verbose flag:
     Time to Completion
 ```
 
-Extensive documentation visible inside grover.py file.
+Extensive documentation visible inside ```grover.py``` file.
