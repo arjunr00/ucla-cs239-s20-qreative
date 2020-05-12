@@ -206,15 +206,31 @@ However, this was abandoned mostly due to the fact that the assignment required 
 
 \section{Reflection on PyQuil}
 
+Our brief introduction to PyQuil showed us that there were a handful of gates which were provided as part of the library.
+A such, we expected that it would be challenging to create our own gates.
+Fortunately, we discovered that it was in fact very simple.
+We had to generate our own matrix, which was straightforward with the help of \texttt{numpy}, but the creation of an actual quantum gate was quite literally only two lines (see \autoref{code:pyquil-gate}).
+
+\codesnippet[language=Python, linerange={57-58}, firstnumber=57]{../simon.py}{The two lines needed to create a quantum gate that can be used in a PyQuil program.}{pyquil-gate}
+
+Some pros of the PyQuil documentation include:
+\begin{itemize}
+    \item It provides a fine introduction to PyQuil and quantum programming.
+\end{itemize}
+
+Some cons of the documentation are:
+\begin{itemize}
+    \item TODO
+\end{itemize}
+
 \textbf{TODO: Answer the following:}
 \begin{itemize}
-    \item List three aspects of quantum programming in PyQuil that turned out to be easy to learn and list three aspects that were difficult to learn.
+    \item (IP) List three aspects of quantum programming in PyQuil that turned out to be easy to learn and list three aspects that were difficult to learn.
     \item List three aspects of quantum programming in PyQuil that the language supports well and list three aspects that PyQuil supports poorly.
     \item Which feature would you like PyQuil to support to make the quantum programming easier?  
-    \item List three positives and three negatives of the documentation of PyQuil.  
+    \item (IP) List three positives and three negatives of the documentation of PyQuil.
     \item In some cases, PyQuil has its own names for key concepts in quantum programming.  Give a dictionary that maps key concepts in quantum programming to the names used in PyQuil.
     \item How much type checking does the PyQuil implementation do at run time when a program passes data from the classical side to the quantum side and back?
-
 \end{itemize}
 
 \bib{unsrt}
