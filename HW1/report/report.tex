@@ -3,6 +3,7 @@
 \usepackage{report}
 \usepackage{braket}
 \usepackage{amsthm}
+\usetikzlibrary{quantikz}
 
 \orgname{COM SCI 239}
 \project{Quantum Programming}
@@ -38,7 +39,17 @@
         isbn = {1441412697},
         publisher = {CreateSpace},
         address = {Scotts Valley, CA}
-    }
+    },
+    @manual{cirq,
+        author = {The Cirq Developers},
+        title = {Cirq Documentation},
+        year = {2020}
+    },
+    @manual{rigetti,
+        author = {Rigetti},
+        title = {Forest SDK Documentation},
+        year = {2020}
+    },
 \end{filecontents}
 
 \begin{document}
@@ -342,33 +353,92 @@ Deutsch-Josza is an outlier in this regard, but it is once again likely because 
 
 \section{Reflection on PyQuil}
 
+\subsection{Learning to use PyQuil}
+
 Our brief introduction to PyQuil showed us that there were a handful of gates which were provided as part of the library.
 A such, we expected that it would be challenging to create our own gates.
 Fortunately, we discovered that it was in fact very simple.
 We had to generate our own matrix, which was straightforward with the help of \texttt{numpy}, but the creation of an actual quantum gate was quite literally only two lines (see \autoref{code:pyquil-gate}).
 
-\codesnippet[language=Python, linerange={57-58}, firstnumber=57]{../simon.py}{The two lines needed to create a quantum gate that can be used in a PyQuil program.}{pyquil-gate}
+\codesnippet[language=Python, linerange={57-58}, firstnumber=57]{../simon.py}{The two lines needed to create a quantum gate that can be used in a PyQuil program. Excerpt from \texttt{simon.py}}{pyquil-gate}
 
-Some pros of the PyQuil documentation include:
+In addition, building the program was actually quite easy and intuitive.
+It seemed quite natural to use simple concatenation operators as \texttt{p+=<gate>} to build our program.
+The ability to ``run and measure'' was also very helpful, because it entirely abstracted the compilation process from quil $\to$ native quil $\to$ binary executable $\to$ result from the user.
+For people who are more interested in functionality and output, it is extremely useful to have that process abstracted but also readily available to use.
+The \texttt{quilc} and \texttt{qvm} server logs were verbose resources for debugging, whether it be a memory issue or a logical issue in our coding.
+Indeed, the act of programming these circuits was actually trivial in comparison to debugging and understanding the underlying operation of the simulator.
+
+We of course had some gripes with PyQuil.
+As mentioned previously, the ability to pre-compile executables or amortize compilation time a lot quicker is something that PyQuil lacks support for.
+Also, we ran into a lot of problems with the allocated heap for \texttt{qvm} running out of space.
+Some way to mitigate the sheer amount of space used or to understand how to combat it technically would be useful.
+Finally, it would be nice to better methods of visualizing our quantum circuits.
+Especially while using our custom gates, we had to resort to a rather unusual notation to expand a tuple into function arguments (which can be seen in our submitted code, as seen in \autoref{code:simon-tuple}.
+
+\codesnippet[language=Python, linerange={66-66}, firstnumber=66]{../simon.py}{Passing a variable number of inputs to a custom quantum gate. Excerpt from \texttt{simon.py}}{simon-tuple}
+
+We do have the option of doing \texttt{print(to\_latex(p))} to generate a Ti\textit{k}z diagram, but it is a cumbersome process to copy the output into a file and compile it into a PDF or PNG when we would much prefer to be able to instantly view the state of our circuit (not unlike how Google's Cirq does it \cite{cirq}).
+
+% \mathdiag{%
+%     \lstick{\ket{q_{0}}} & \gate{H} & \qw & \gate[wires=3]{Z_f} & \gate{H} & \gate[wires=2]{Z_0} & \gate{H} & \qw \\%
+%     \lstick{\ket{q_{1}}} & \gate{H} & \qw & \qw & \gate{H} & \qw & \gate{H} & \qw \\%
+%     \lstick{\ket{q_{2}}} & \gate{X} & \gate{H} & \qw & \qw & \qw & \qw & \qw%
+% }{caption}{label}
+
+\subsection{A suggestion}
+
+Similar to how a C or C++ program can be compiled by something like \texttt{gcc}, it would be extremely beneficial if PyQuil could support externally saving compiled quantum programs.
+Obviously, it would be somewhat impractical as to the volatility of user input.
+For example, a compiled program or \texttt{PyQuilExecutableResponse} for a \texttt{3q-qvm} would not work for a 5 qubit system.
+Still, a way to reduce programming downtime would be at least to amortize compilation.
+
+We also noticed that one of the biggest challenges in terms of time was the conversion of pyquil program to native quil or (shown in the logs as \texttt{quil\_to\_native\_quil}).
+While PyQuil supports a handful of gates including the Hadamard gate, controlled NOT, and more, Rigetti QPUs (and by extension the QVM we would use) have gate operators constrained to lie in $RZ(\theta)$, $RX(k\pi/2)$, and $CZ$---in other words, in the $Z$ basis.
+With simple quantum oracle matrices like identity matrices, the compiler did not have to worry about calculating the correct rotation matrices.
+However, for most other gates, especially unoptimized ones like our generated $U_f$ gates, the compiler would spend a lot of time transforming them into a combination of the three above gates.
+
+Unfortunately, this always needs to be executed after every step, and the PyquilExecutableResponse is sometimes inspectable.
+For security and for compilation purposes, it might be better to make the compiled object to be a BinaryExecutableResponse and opaque.
+
+\subsection{Reading the documentation}
+
+The documentation for PyQuil provides a fine introduction to PyQuil and quantum programming.
+The \textbf{Getting Started} page clearly and concisely explains how to build a quantum circuit, make a custom gate, and more.
+Also, the documentation provides a lot of sample code for everything it explains, which was especially useful for the both of us, given that we are both not overly experienced with Python\footnote{Our fortes lie more in the field of statically-typed languages.}.
+We discovered an \textbf{Exercises} section in the documentation which we want to explore further; it provides a set of problems and solutions for implementing quantum algorithms. (We chose not to look at this in more detail during this assignment because one of these problems was in fact Grover's algorithm! We had rather figure that out ourselves.)
+
+However, explaining more intermediate or advanced usage and concepts is where the documentation fell short, in our opinion.
+We found it difficult to understand things like what exactly \texttt{run\_and\_measure} does under all those layers of abstraction, or how to manually compile and store a PyQuil program.
+A specific issue we faced was what kind of QVM to choose when running our programs.
+It seemed there were only a couple of options, such as \texttt{9q-qvm} or \texttt{9q-square-qvm}.
+To use a larger number of qubits seemed impossible, until we discovered that the number of qubits in these directives could was in fact variable---we could just as easily use \texttt{3q-qvm} or \texttt{14q-qvm}.
+This was not very clearly stated in the documentation, relegated to a single statement under a block of code.
+However, the documentation seemed to lack information on the implication of choosing arbitrary values like this.
+It was entirely possible that there are certain numbers of qubits on a virtual QPU that more closely mimic a real QPU, but we were not aware of this.
+
+\subsection{Translating key concepts}
+
+As is our understanding, below are some key concepts in quantum programming as they are referred to with PyQuil:
 \begin{itemize}
-    \item It provides a fine introduction to PyQuil and quantum programming.
+    \item \textbf{quil}: pyquil program ($H$(0) $H$(1) … $H$($n$))
+    \item \textbf{native quil}: modified quil program that is dependent on the ISA of the compiler, built of all native rotations matrices
+    \item \textbf{PyQuilExecutableResponse:} Executable for a QVM or QPU
+    \item \textbf{RX gate:} Universal gate for native quil, rotation gate for angle = +/- π/2
+    \item \textbf{RZ gate:} Universal gate for native quil, rotation gate for an arbitrary angle
+    \item \textbf{CZ gate:} Universal gate for native quil, Controlled-Z gate for neighboring qubits
+    \item \textbf{Measure:} Measure instruction to measure qubit state into a classical register
 \end{itemize}
 
-Some cons of the documentation are:
-\begin{itemize}
-    \item TODO
-\end{itemize}
+\subsection{Joining PyQuil with classical code}
 
-\textbf{TODO: Answer the following:}
-\begin{itemize}
-    \item (IP) List three aspects of quantum programming in PyQuil that turned out to be easy to learn and list three aspects that were difficult to learn.
-    \item List three aspects of quantum programming in PyQuil that the language supports well and list three aspects that PyQuil supports poorly.
-    \item Which feature would you like PyQuil to support to make the quantum programming easier?  
-    \item (IP) List three positives and three negatives of the documentation of PyQuil.
-    \item In some cases, PyQuil has its own names for key concepts in quantum programming.  Give a dictionary that maps key concepts in quantum programming to the names used in PyQuil.
-    \item How much type checking does the PyQuil implementation do at run time when a program passes data from the classical side to the quantum side and back?
-\end{itemize}
+Our approach to our PyQuil implementation was to make the most robust program possible to show the true power of quantum computing.
+We reasoned that user input will most likely lead to undefined behavior and decided to mitigate that by randomizing function parameters.
+While doing so, we made it easy to substitute our function parameters with whatever desired parameters of your choosing, but for the purposes of showing the prowess of quantum computing, we reasoned it would be best to abstract that classical input.
 
+For example, Deutsch-Josza gave users the ability to choose if they wanted a balanced or constant function as opposed to putting in their own function.
+If we allowed users to put in their own function, we would first have to check whether the function is balanced or constant classically to determine if it was a valid function to pass into our algorithm.
+This would entirely defeat the purpose of running the algorithm, hence the utilization of entirely random balanced/constant $U_f$ matrices.
 \bib{unsrt}
 
 \end{document}
