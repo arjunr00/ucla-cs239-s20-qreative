@@ -30,6 +30,14 @@
         volume={13},
         number={2},
         pages={22-30},
+    },
+    @book{python3,
+        author = {Van Rossum, Guido and Drake, Fred L.},
+        title = {Python 3 Reference Manual},
+        year = {2009},
+        isbn = {1441412697},
+        publisher = {CreateSpace},
+        address = {Scotts Valley, CA}
     }
 \end{filecontents}
 
@@ -141,7 +149,7 @@ An example of this for Deutsch-Josza can be seen in \autoref{code:py-init}.
 
 Our implementation of generating $U_f$ with this generalized method had the additional benefit of making it very easy to parametrize our solutions in $n$.
 The \texttt{oracle.gen\_matrix} method, along with any other methods which require the dimension of the domain and/or range of $f$, accepts \texttt{n} and \texttt{m} (as defined previously) as arguments.
-While \texttt{m} is algorithm-dependent and so assigned inside the code, the user can, as we discuss in further detail in the README file, pass in a value for $n$ using the \texttt{--num} option.
+While \texttt{m} is algorithm-dependent and so assigned inside the code, the user can pass in a value for $n$ using the \texttt{--num} option\footnote{Discussed in further detail in the README.}.
 
 \codesnippet[language=Python, linerange={127-148}, firstnumber=148]{../oracle.py}{Excerpt from the \texttt{gen\_matrix} function in \texttt{oracle.py} showing the implementation of \autoref{eq:1} using \texttt{numpy}}{py-uf}
 
@@ -167,16 +175,48 @@ We have also taken care to maintain limited line lengths (keeping 80 characters 
 \subsection{Shared code}
 As opposed to copying identical sections of code between each of our four programs, we opted to have a central module, \texttt{oracle.py}, which contains common code relating to the generation of functions $f$ (bit mappings, to be precise) and quantum oracles, which was discussed in the previous section.
 
+Of course, there is still some duplication of code between programs.
+Each program has a \texttt{getUf} function (named \texttt{getZf} for Grover) which checks if a $U_f$ matrix for the desired value of $n$ has already been generated and stored\footnote{This generation and storing of matrices ahead of actually running the algorithms is discussed in the README.},
+in which case it loads it from its file; otherwise, it simply generates a new $U_f$.
+All the implementations of this function are identical.
+
+Also, our programs use the \href{https://docs.python.org/3/library/argparse.html}{\texttt{argparse}} library \cite{python3} to read and process user-defined options\footnote{Also discussed in the README.}.
+The code for doing so is largely the same across programs, save for some minor algorithm-specific differences (like the names).
+
+Overall, we estimate that each program file has an average of approximately 38 lines of code that is shared (within a reasonable threshold of a few characters' difference) with the other files.
+Excluding \texttt{oracle.py}, the average length of a single program's Python file is 122 lines.
+As such, the percentage of shared code between programs is approximately 31\%.
+
+There are certainly avenues for reducing code reuse.
+We began to adopt a \texttt{class} structure for the entire project, having each algorithm inherit from an \texttt{Algo} class which itself had methods common to all four programs.
+This can in fact be seen in the code for \texttt{dj.py} and \texttt{bv.py}.
+However, this was abandoned mostly due to the fact that the assignment required individual files for each program, and so this would end up unnecessarily increasing the amount of code reused between files.
+
 \subsection{Testing}
+
+\begin{itemize}
+    \item Discuss your effort to test the two programs and present results from the testing.  Discuss whether different cases of $U_f$ lead to different execution times.
+\end{itemize}
 
 \subsection{Scalability}
 
+\begin{itemize}
+    \item What is your experience with scalability as n grows?  Present a diagram that maps n to execution time.
+\end{itemize}
+
 \section{Reflection on PyQuil}
 
-\subsection{Programming in PyQuil}
+\textbf{TODO: Answer the following:}
+\begin{itemize}
+    \item List three aspects of quantum programming in PyQuil that turned out to be easy to learn and list three aspects that were difficult to learn.
+    \item List three aspects of quantum programming in PyQuil that the language supports well and list three aspects that PyQuil supports poorly.
+    \item Which feature would you like PyQuil to support to make the quantum programming easier?  
+    \item List three positives and three negatives of the documentation of PyQuil.  
+    \item In some cases, PyQuil has its own names for key concepts in quantum programming.  Give a dictionary that maps key concepts in quantum programming to the names used in PyQuil.
+    \item How much type checking does the PyQuil implementation do at run time when a program passes data from the classical side to the quantum side and back?
 
-\subsection{Documentation}
+\end{itemize}
 
-\bib
+\bib{unsrt}
 
 \end{document}
