@@ -115,6 +115,9 @@ Given function ```f(x): {0,1}^n -> {0,1}^m``` and that there exists ```f(x0) = f
 
 ### Usage
 We randomized the function f(x) with load or generated ***s*** to reduce undefined behavior from the user. Mostly because our ***s*** must be stored as a bitstring so it seemed robust to keep it abstracted.
+Note that here, the whole algorithm runs `(n-1)` times to generate a set of `(n-1)` ys in the hopes that they are linearly independent.
+Furthermore, to maximize the probability that a single set of iterations generates linearly independent ys, a factor of `4` is multiplied into the number of desired trials.
+Thus, if m is the number passed as `--trials` below, then the total number of iterations performed is actually `4m(n-1)`.
 
 ```
 To run:
@@ -150,6 +153,8 @@ Given function ```f(x): {0,1}^n -> {0, 1}``` where there exist an ```x in {0,1}^
 
 ### Usage
 We randomized the function f(x) with randomly determined ***x*** to reduce undefined behavior from the user. Mostly because our ***x*** must be stored as a bitstring so it seemed robust to keep it abstracted.
+Note the lack of a `--trials` argument.
+This is because the number of applications (k) of the Grover rotation matrix `G` is calculated from the number of qubits supplied (n) by the formula `k ≈ ⌊(π√N)/4⌋`.
 
 ```
 To run:
