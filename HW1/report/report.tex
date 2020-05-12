@@ -421,13 +421,13 @@ It was entirely possible that there are certain numbers of qubits on a virtual Q
 
 As is our understanding, below are some key concepts in quantum programming as they are referred to with PyQuil:
 \begin{itemize}
-    \item \textbf{quil}: pyquil program ($H$(0) $H$(1) … $H$($n$))
-    \item \textbf{native quil}: modified quil program that is dependent on the ISA of the compiler, built of all native rotations matrices
-    \item \textbf{PyQuilExecutableResponse:} Executable for a QVM or QPU
-    \item \textbf{RX gate:} Universal gate for native quil, rotation gate for angle = +/- π/2
-    \item \textbf{RZ gate:} Universal gate for native quil, rotation gate for an arbitrary angle
-    \item \textbf{CZ gate:} Universal gate for native quil, Controlled-Z gate for neighboring qubits
-    \item \textbf{Measure:} Measure instruction to measure qubit state into a classical register
+    \item \textbf{quil}: pyquil program ($H$(0) $H$(1) … $H$($n$)).
+    \item \textbf{native quil}: modified quil program that is dependent on the ISA of the compiler, built of all native rotations matrices.
+    \item \textbf{PyQuilExecutableResponse:} Executable for a QVM or QPU.
+    \item \textbf{RX gate:} Universal gate for native quil, rotation gate for angle $= \pm\pi/2$.
+    \item \textbf{RZ gate:} Universal gate for native quil, rotation gate for an arbitrary angle.
+    \item \textbf{CZ gate:} Universal gate for native quil, Controlled-Z gate for neighboring qubits.
+    \item \textbf{Measure:} Measure instruction to measure qubit state into a classical register.
 \end{itemize}
 
 \subsection{Joining PyQuil with classical code}
