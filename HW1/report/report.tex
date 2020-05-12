@@ -225,106 +225,127 @@ We measured both the compilation as well as execution time of each run for the f
 The execution time was obtained from the logged output of \texttt{qvm -S}.
 The compilation time was measured simply by measuring the system clock before and after calling \texttt{QuantumComputer.run\_and\_measure}\footnote{A more accurate measure of this would be to subtract execution time from the total measured time to ``run and measure'', but as mentioned before, compilation time vastly dwarfs execution time.}.
 
+\diagram{%
+    \begin{axis}[
+        xlabel={Length $n$ of input bitstring $x$},
+        ylabel={Execution time [ms]},
+        xmin=0, xmax=7,
+        ymin=0, ymax=180,
+        xtick={0,1,2,3,4,5,6,7},
+        ytick={0,20,40,60,80,100,120,140,160,180},
+        legend pos=outer north east,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    \addplot[
+        color=blue,
+        mark=square,
+        ]
+        coordinates {
+        (2,0)(3, 0)(4, 20)(5, 3)(6, 18)(7, 179)
+        };
+        \addlegendentry{Deutsch-Josza}
+    \addplot[
+        color=olive,
+        mark=square,
+        ]
+        coordinates {
+        (2,30)(3,1)(4,2)(5, 46)(6, 171)
+        };
+        \addlegendentry{Bernstein-Vazirani}
+    \addplot[
+        color=orange,
+        mark=square,
+        ]
+        coordinates {
+        (2,3)(3, 154)(4, 10015)
+        };
+        \addlegendentry{Simon}
+    \addplot[
+        color=purple,
+        mark=square,
+        ]
+        coordinates {
+        (1,0)(2, 0)(3, 1)(4, 7)(5, 37)(6, 820)
+        };
+        \addlegendentry{Grover}
+    \end{axis}
+}{Graph of execution time (ms) vs. the length of the input bitstring.}{exec}
+
+\autoref{fig:exec} portrays execution time against $n$.
+As expected, execution time seems to increase exponentially as the size of the input increases.
+Note the the value of Simon's execution time for $n=4$ is off the graph as an outlier, as it had a value of $10,015$ m.
+
+There is an apparent discrepancy in the plot for Deutsch-Josza.
+This is due to the nature of our tests, which generated randomized input functions $f$.
+In the case of $n=5$ and $n=6$, the generated function was constant, not balanced.
+We chose to include these points as opposed to running the tests again on a homogenous input function set so as to demonstrate the impact having a constant function versus a balanced function had on execution time.
+It is likely that PyQuil (or the QVM itself) is performing some sort of optimization when using identity matrices.
+
+Overall, as expected, runtime increases exponentially with $n$, both in terms of execution and compilation.
+
+\diagram{%
+    \begin{axis}[
+        xlabel={Length $n$ of input bitstring $x$},
+        ylabel={Compilation time [s]},
+        xmin=0, xmax=7,
+        ymin=0, ymax=800,
+        xtick={0,1,2,3,4,5,6,7},
+        %ytick={0,10,20,50,80,120,150,200,400,800},
+        legend pos=outer north east,
+        ymajorgrids=true,
+        grid style=dashed,
+        ymode=log,
+        log basis y=10
+    ]
+    \addplot[
+        color=blue,
+        mark=square,
+        ]
+        coordinates {
+        (2,0.56)(3, 0.5)(4, 2.4)(5, 1.02)(6, 15.38)(7, 767.56)
+        };
+        \addlegendentry{Deutsch-Josza}
+    \addplot[
+        color=olive,
+        mark=square,
+        ]
+        coordinates {
+        (2,1.06)(3,4.87)(4,10.39)(5, 137.75)(6, 589.24)
+        };
+        \addlegendentry{Bernstein-Vazirani}
+    \addplot[
+        color=orange,
+        mark=square,
+        ]
+        coordinates {
+        (2,4.24)(3, 74.43)(4, 2215.49)
+        };
+        \addlegendentry{Simon}
+    \addplot[
+        color=purple,
+        mark=square,
+        ]
+        coordinates {
+        (1,0.38)(2, 0.74)(3, 3.74)(4, 20.98)(5, 95.47)(6, 633.47)
+        };
+        \addlegendentry{Grover}
+    \end{axis}
+}{Graph of compilation time (s) vs. the length of the input bitstring. Notice that the $y$-axis is a logarithmic scale; this is because the time taken to compile grows exponentially as $n$ increases.}{compile}
+
+\autoref{fig:compile} portrays compilation time against $n$.
+Notice two significant differences from \autoref{fig:exec}.
+For one, the units of the $y$-axis are seconds, not milliseconds.
+Also, the scale is logarithmic, not linear---this is because the growth rate too large to be accurately displayed on a linear scale.
+It is clear that growth here is once again exponential, as the lines for each algorithm are almost straight.
+Deutsch-Josza is an outlier in this regard, but it is once again likely because for $n=4$ and $n=5$ a constant function was generated.
+
 \section{Reflection on PyQuil}
 
 Our brief introduction to PyQuil showed us that there were a handful of gates which were provided as part of the library.
 A such, we expected that it would be challenging to create our own gates.
 Fortunately, we discovered that it was in fact very simple.
 We had to generate our own matrix, which was straightforward with the help of \texttt{numpy}, but the creation of an actual quantum gate was quite literally only two lines (see \autoref{code:pyquil-gate}).
-
-\diagram{%
-    \begin{axis}[
-        xlabel={Length $n$ of input bitstring $x$},
-        ylabel={Execution time [ms]},
-        xmin=0, xmax=7,
-        ymin=0, ymax=180,
-        xtick={0,1,2,3,4,5,6,7},
-        ytick={0,20,40,60,80,100,120,140,160,180},
-        legend pos=outer north east,
-        ymajorgrids=true,
-        grid style=dashed,
-    ]
-    \addplot[
-        color=blue,
-        mark=square,
-        ]
-        coordinates {
-        (2,0)(3, 0)(4, 2)(5, 20)(6, 79)(7, 179)
-        };
-        \addlegendentry{Deutsch-Josza}
-    \addplot[
-        color=olive,
-        mark=square,
-        ]
-        coordinates {
-        (2,30)(3,1)(4,2)(5, 46)(6, 171)
-        };
-        \addlegendentry{Bernstein-Vazirani}
-    \addplot[
-        color=orange,
-        mark=square,
-        ]
-        coordinates {
-        (2,3)(3, 154)(4, 10015)
-        };
-        \addlegendentry{Simon}
-    \addplot[
-        color=purple,
-        mark=square,
-        ]
-        coordinates {
-        (1,0)(2, 0)(3, 1)(4, 7)(5, 37)(6, 820)
-        };
-        \addlegendentry{Grover}
-    \end{axis}
-}{label}{exec}
-
-\diagram{%
-    \begin{axis}[
-        xlabel={Length $n$ of input bitstring $x$},
-        ylabel={Execution time [ms]},
-        xmin=0, xmax=7,
-        ymin=0, ymax=180,
-        xtick={0,1,2,3,4,5,6,7},
-        ytick={0,20,40,60,80,100,120,140,160,180},
-        legend pos=outer north east,
-        ymajorgrids=true,
-        grid style=dashed,
-    ]
-    \addplot[
-        color=blue,
-        mark=square,
-        ]
-        coordinates {
-        (2,0)(3, 0)(4, 2)(5, 20)(6, 79)(7, 179)
-        };
-        \addlegendentry{Deutsch-Josza}
-    \addplot[
-        color=olive,
-        mark=square,
-        ]
-        coordinates {
-        (2,30)(3,1)(4,2)(5, 46)(6, 171)
-        };
-        \addlegendentry{Bernstein-Vazirani}
-    \addplot[
-        color=orange,
-        mark=square,
-        ]
-        coordinates {
-        (2,3)(3, 154)(4, 10015)
-        };
-        \addlegendentry{Simon}
-    \addplot[
-        color=purple,
-        mark=square,
-        ]
-        coordinates {
-        (1,0)(2, 0)(3, 1)(4, 7)(5, 37)(6, 820)
-        };
-        \addlegendentry{Grover}
-    \end{axis}
-}{label}{compile}
 
 \codesnippet[language=Python, linerange={57-58}, firstnumber=57]{../simon.py}{The two lines needed to create a quantum gate that can be used in a PyQuil program.}{pyquil-gate}
 
