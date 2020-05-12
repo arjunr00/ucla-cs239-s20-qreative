@@ -1,0 +1,33 @@
+# Note: numbers indicate length of input bitstring to f, not
+#       number of total qubits passed to program.
+
+BV:
+    2: 30ms
+    3: 1ms
+    4: 2ms
+    5: 46ms
+    6: 171ms
+    7: CRASH
+
+DJ:
+    2: 0ms
+    3: 0ms
+    4: 2ms
+    5: 0ms
+    6: 1ms
+    7: 179ms
+    8: CRASH
+
+Simon:
+    2: 3ms
+    3: 154ms
+    4: 10015ms 
+    5: CRASH
+
+Grover:
+    1: 0ms
+    2: 0ms
+    3: 1ms
+    4: 37ms
+    5: 7ms
+    6: 820ms

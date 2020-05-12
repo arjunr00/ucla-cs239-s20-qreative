@@ -1,0 +1,329 @@
+=======================================================
+         Testing Bernstein-Vazirani Algorithm          
+
+   Running with bit string of size n = 2
+                  number of trials t = 1
+                   reload U_f matrix = False
+=======================================================
+
+Alpha is as follows: 
+[0 0]
+
+Beta is as follows: 
+0
+
+Matrix U_f is as follows: 
+[[1. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 1. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 1. 0. 0. 0. 0.]
+ [0. 0. 1. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 1. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 1. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 1.]
+ [0. 0. 0. 0. 0. 0. 1. 0.]]
+
+===========================
+**Running Quantum Program**
+===========================
+
+
+====================================
+Measured Qubit State Accross Trials:
+
+{0: array([0]), 1: array([1]), 2: array([0])}
+====================================
+
+====================================
+Measured State for Iteration 1:
+
+[0, 1]
+====================================
+
+Implemented Bernstein-Varizani Algorithm Fail :(
+
+(Took 1.06 s to complete.)
+=======================================================
+         Testing Bernstein-Vazirani Algorithm          
+
+   Running with bit string of size n = 3
+                  number of trials t = 1
+                   reload U_f matrix = False
+=======================================================
+
+Alpha is as follows: 
+[1 1 1]
+
+Beta is as follows: 
+1
+
+Matrix U_f is as follows: 
+[[1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 0.]]
+
+===========================
+**Running Quantum Program**
+===========================
+
+
+====================================
+Measured Qubit State Accross Trials:
+
+{0: array([1]), 1: array([1]), 2: array([1]), 3: array([1])}
+====================================
+
+====================================
+Measured State for Iteration 1:
+
+[1, 1, 1]
+====================================
+
+Implemented Bernstein-Varizani Algorithm Success!!!
+
+(Took 4.87 s to complete.)
+=======================================================
+         Testing Bernstein-Vazirani Algorithm          
+
+   Running with bit string of size n = 4
+                  number of trials t = 1
+                   reload U_f matrix = False
+=======================================================
+
+Alpha is as follows: 
+[0 1 0 0]
+
+Beta is as follows: 
+0
+
+Matrix U_f is as follows: 
+[[0. 1. 0. ... 0. 0. 0.]
+ [1. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 1. 0. 0.]
+ [0. 0. 0. ... 0. 1. 0.]
+ [0. 0. 0. ... 0. 0. 1.]]
+
+===========================
+**Running Quantum Program**
+===========================
+
+
+====================================
+Measured Qubit State Accross Trials:
+
+{0: array([0]), 1: array([0]), 2: array([0]), 3: array([1]), 4: array([0])}
+====================================
+
+====================================
+Measured State for Iteration 1:
+
+[0, 1, 0, 0]
+====================================
+
+Implemented Bernstein-Varizani Algorithm Success!!!
+
+(Took 10.39 s to complete.)
+=======================================================
+         Testing Bernstein-Vazirani Algorithm          
+
+   Running with bit string of size n = 5
+                  number of trials t = 1
+                   reload U_f matrix = False
+=======================================================
+
+Alpha is as follows: 
+[1 1 0 0 1]
+
+Beta is as follows: 
+0
+
+Matrix U_f is as follows: 
+[[1. 0. 0. ... 0. 0. 0.]
+ [0. 1. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 1. 0. 0.]
+ [0. 0. 0. ... 0. 0. 1.]
+ [0. 0. 0. ... 0. 1. 0.]]
+
+===========================
+**Running Quantum Program**
+===========================
+
+
+====================================
+Measured Qubit State Accross Trials:
+
+{0: array([1]), 1: array([1]), 2: array([1]), 3: array([0]), 4: array([0]), 5: array([1])}
+====================================
+
+====================================
+Measured State for Iteration 1:
+
+[1, 0, 0, 1, 1]
+====================================
+
+Implemented Bernstein-Varizani Algorithm Fail :(
+
+(Took 137.74 s to complete.)
+=======================================================
+         Testing Bernstein-Vazirani Algorithm          
+
+   Running with bit string of size n = 6
+                  number of trials t = 1
+                   reload U_f matrix = False
+=======================================================
+
+Alpha is as follows: 
+[1 1 0 0 0 0]
+
+Beta is as follows: 
+0
+
+Matrix U_f is as follows: 
+[[1. 0. 0. ... 0. 0. 0.]
+ [0. 1. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 1. 0.]
+ [0. 0. 0. ... 0. 0. 1.]]
+
+===========================
+**Running Quantum Program**
+===========================
+
+
+====================================
+Measured Qubit State Accross Trials:
+
+{0: array([1]), 1: array([1]), 2: array([1]), 3: array([1]), 4: array([1]), 5: array([0]), 6: array([0])}
+====================================
+
+====================================
+Measured State for Iteration 1:
+
+[0, 0, 1, 1, 1, 1]
+====================================
+
+Implemented Bernstein-Varizani Algorithm Fail :(
+
+(Took 589.24 s to complete.)
+=======================================================
+         Testing Bernstein-Vazirani Algorithm          
+
+   Running with bit string of size n = 7
+                  number of trials t = 1
+                   reload U_f matrix = False
+=======================================================
+
+Alpha is as follows: 
+[0 0 1 0 0 0 0]
+
+Beta is as follows: 
+1
+
+Matrix U_f is as follows: 
+[[1. 0. 0. ... 0. 0. 0.]
+ [0. 1. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 1. 0. 0.]
+ [0. 0. 0. ... 0. 0. 1.]
+ [0. 0. 0. ... 0. 1. 0.]]
+
+===========================
+**Running Quantum Program**
+===========================
+
+Traceback (most recent call last):
+  File "bv.py", line 130, in <module>
+    ret =  bv.qc_program(n, t, r, v)
+  File "bv.py", line 96, in qc_program
+    results = qc.run_and_measure(p, trials=t)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 420, in run_and_measure
+    executable = self.compile(program)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 481, in compile
+    nq_program = self.compiler.quil_to_native_quil(program, protoquil=protoquil)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_compiler.py", line 414, in quil_to_native_quil
+    response = self.client.call("quil_to_native_quil", request, protoquil=protoquil).asdict()
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/rpcq/_client.py", line 205, in call
+    raise utils.RPCError(reply.error)
+rpcq._utils.RPCError: Unhandled error in host program:
+Heap exhausted (no more space for allocation).
+10092544 bytes available, 16777232 requested.
+
+PROCEED WITH CAUTION.
+=======================================================
+         Testing Bernstein-Vazirani Algorithm          
+
+   Running with bit string of size n = 8
+                  number of trials t = 1
+                   reload U_f matrix = False
+=======================================================
+
+Alpha is as follows: 
+[1 1 1 0 1 0 0 0]
+
+Beta is as follows: 
+1
+
+Matrix U_f is as follows: 
+[[1. 0. 0. ... 0. 0. 0.]
+ [0. 1. 0. ... 0. 0. 0.]
+ [0. 0. 1. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 1. 0. 0.]
+ [0. 0. 0. ... 0. 1. 0.]
+ [0. 0. 0. ... 0. 0. 1.]]
+
+===========================
+**Running Quantum Program**
+===========================
+
+Traceback (most recent call last):
+  File "bv.py", line 130, in <module>
+    ret =  bv.qc_program(n, t, r, v)
+  File "bv.py", line 96, in qc_program
+    results = qc.run_and_measure(p, trials=t)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 420, in run_and_measure
+    executable = self.compile(program)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 481, in compile
+    nq_program = self.compiler.quil_to_native_quil(program, protoquil=protoquil)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_compiler.py", line 414, in quil_to_native_quil
+    response = self.client.call("quil_to_native_quil", request, protoquil=protoquil).asdict()
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/rpcq/_client.py", line 186, in call
+    if self._socket.poll(timeout) == 0:
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/zmq/sugar/socket.py", line 702, in poll
+    evts = dict(p.poll(timeout))
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/zmq/sugar/poll.py", line 99, in poll
+    return zmq_poll(self.sockets, timeout=timeout)
+  File "zmq/backend/cython/_poll.pyx", line 123, in zmq.backend.cython._poll.zmq_poll
+  File "zmq/backend/cython/checkrc.pxd", line 13, in zmq.backend.cython.checkrc._check_rc
+KeyboardInterrupt
