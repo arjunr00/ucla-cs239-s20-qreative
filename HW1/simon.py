@@ -14,10 +14,28 @@ def getUf(n, reload):
         path = f'uf/simon/simon{n}.npy'
         U_f = np.load(path)
     else:
-        U_f = oracle.gen_matrix(
-            oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON),
-            n, n
-        )
+        SAVEDIR = 'uf/simon/'
+        SPATH = 's_dict.npy'
+
+        f = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON)
+        xa = list(f)[0]
+        xb = xa
+        fa = f[xa]
+        for x, fx in f.items():
+            if fx == fa and x != xa:
+                xb = x
+                break
+        s = f'{int(xa, 2) ^ int(xb, 2):0{len(fa)}b}'
+
+        if os.path.exists(SAVEDIR + SPATH):
+            s_list = np.load(SAVEDIR + SPATH, allow_pickle=True).item()
+        else:
+            s_list = {}
+
+        s_list[n] = s
+        np.save(SAVEDIR + SPATH, s_list, allow_pickle=True)
+
+        U_f = oracle.gen_matrix(f, n, n)
 
     return U_f
 
@@ -40,7 +58,7 @@ def check_valid(ys, s):
 
     print(f'Simon says s = {solved_s}')
 
-    if s is not None:
+    if s is not None or s != '0' * len(s):
         return solved_s == s
     else:
         return True
@@ -50,13 +68,14 @@ def qc_program(n, m, reload, verbose):
     t = (n-1) * (4*m)
     SAVEDIR = 'uf/simon/'
     SPATH = 's_dict.npy'
+
+    U_f_def = DefGate('U_f', getUf(n, reload))
+    U_f = U_f_def.get_constructor()
+
     if os.path.exists(SAVEDIR + SPATH):
         s = np.load(SAVEDIR + SPATH, allow_pickle=True).item()[n]
     else:
         s = None
-
-    U_f_def = DefGate('U_f', getUf(n, reload))
-    U_f = U_f_def.get_constructor()
 
     qc = get_qc(f'{str(2*n)}q-qvm')
     qc.compiler.client.timeout = 1000000
