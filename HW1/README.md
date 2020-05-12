@@ -113,11 +113,67 @@ Extensive documentation visible inside bv.py file.
 ### Problem Statement
 Given function ```f(x): {0,1}^n -> {0,1}^m``` and that there exists ```f(x0) = f(x1)``` for all ```x0, x1``` if and only if ```x0 + x1 = {0^n, s}```. Find ***s***.
 
+### Usage
+We randomized the function f(x) with load or generated ***s*** to reduce undefined behavior from the user. Mostly because our ***s*** must be stored as a bitstring so it seemed robust to keep it abstracted.
+
+```
+To run:
+    python3 simon.py [-h] [--num NUM] [--trials TRIALS] [--reload] [--verbose]
+
+Defaults:
+    num     (size of bitstring): 3
+    trials   (number of trials): 1
+    reload   (reload Uf matrix): False (loads matrix if it exists)
+    verbose     (Display state): False
+```
+
+Run ```python3 simon.py -v``` for defaults and to look at state of algorithm. 
+
+### Output
+Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, simon.py will simply return whether the algorithm was successful or not. 
+
+```
+With --verbose flag:
+    Display of measured qubits.
+    Display of [y] values across trials 
+    Display of s
+    Validity Message (Success or Failure)
+    Time to Completion
+```
+
 Extensive documentation visible inside simon.py file.
 
 ## Grover's
 
 ### Problem Statement
 Given function ```f(x): {0,1}^n -> {0, 1}``` where there exist an ```x in {0,1}^n``` where ```f(x) = 1```. Find ***x***.
+
+### Usage
+We randomized the function f(x) with randomly determined ***x*** to reduce undefined behavior from the user. Mostly because our ***x*** must be stored as a bitstring so it seemed robust to keep it abstracted.
+
+```
+To run:
+    python3 grover.py [-h] [--num NUM] [--reload] [--verbose]
+
+Defaults:
+    num     (size of bitstring): 4
+    reload   (reload Uf matrix): False (loads matrix if it exists)
+    verbose     (Display state): False
+```
+
+Run ```python3 grover.py -v``` for defaults and to look at state of algorithm. 
+
+### Output
+Since we added a **--verbose** flag, we decided to take a minimalist approach to outputing validity. Without the **--verbose** flag, grover.py will simply return whether the algorithm was successful or not. 
+
+```
+With --verbose flag:
+    Display of parameters
+    Number of rotations [k]
+    Measured values of valid qubits
+    Display of measured bits equivalent to one
+    Validity Message (Success or Failure)
+    Time to Completion
+```
 
 Extensive documentation visible inside grover.py file.
