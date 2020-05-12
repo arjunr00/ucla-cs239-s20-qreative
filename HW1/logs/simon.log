@@ -1,0 +1,139 @@
+=======================================================
+Testing Simon's Algorithm
+
+   Running with bit string of size n = 1,
+                  number of trials m = 1,
+                   reload U_f matrix = False
+=======================================================
+
+Traceback (most recent call last):
+  File "simon.py", line 127, in <module>
+    ret = qc_program(n, m, r, v)
+  File "simon.py", line 69, in qc_program
+    result = qc.run_and_measure(p, trials=t)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 424, in run_and_measure
+    bitstring_dict[q] = bitstring_array[:, i]
+IndexError: index 0 is out of bounds for axis 1 with size 0
+=======================================================
+Testing Simon's Algorithm
+
+   Running with bit string of size n = 2,
+                  number of trials m = 1,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+Measured Qubit State Across Trials:
+    [1 1 1 1]
+    [1 1 1 1]
+====================================
+
+====================================
+Measured y values:
+    Trial 1:
+        y_0 = 11
+Found linearly independent ys!
+Checking if they solve to s correctly...
+====================================
+
+Simon's Algorithm: Success!
+(Took 4.24 s to complete.)
+=======================================================
+Testing Simon's Algorithm
+
+   Running with bit string of size n = 3,
+                  number of trials m = 1,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+Measured Qubit State Across Trials:
+    [1 0 1 0 0 1 1 1]
+    [0 0 0 0 0 1 0 1]
+    [0 0 0 0 0 1 0 1]
+====================================
+
+====================================
+Measured y values:
+    Trial 1:
+        y_0 = 100
+        y_1 = 000
+    Trial 2:
+        y_0 = 100
+        y_1 = 000
+    Trial 3:
+        y_0 = 000
+        y_1 = 111
+    Trial 4:
+        y_0 = 100
+        y_1 = 111
+Found linearly independent ys!
+Checking if they solve to s correctly...
+====================================
+
+Simon's Algorithm: Success!
+(Took 74.43 s to complete.)
+=======================================================
+Testing Simon's Algorithm
+
+   Running with bit string of size n = 4,
+                  number of trials m = 1,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+Measured Qubit State Across Trials:
+    [1 0 1 1 0 1 1 0 0 0 0 0]
+    [0 1 1 0 1 0 0 0 0 0 0 1]
+    [0 1 1 0 1 0 0 0 0 0 0 1]
+    [1 1 0 1 1 0 0 0 0 1 1 0]
+====================================
+
+====================================
+Measured y values:
+    Trial 1:
+        y_0 = 1001
+        y_1 = 0111
+        y_2 = 1110
+Found linearly independent ys!
+Checking if they solve to s correctly...
+====================================
+
+Simon's Algorithm: Success!
+(Took 2215.49 s to complete.)
+=======================================================
+Testing Simon's Algorithm
+
+   Running with bit string of size n = 5,
+                  number of trials m = 1,
+                   reload U_f matrix = False
+=======================================================
+
+Traceback (most recent call last):
+  File "simon.py", line 127, in <module>
+    ret = qc_program(n, m, r, v)
+  File "simon.py", line 69, in qc_program
+    result = qc.run_and_measure(p, trials=t)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 420, in run_and_measure
+    executable = self.compile(program)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 481, in compile
+    nq_program = self.compiler.quil_to_native_quil(program, protoquil=protoquil)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_compiler.py", line 414, in quil_to_native_quil
+    response = self.client.call("quil_to_native_quil", request, protoquil=protoquil).asdict()
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/rpcq/_client.py", line 186, in call
+    if self._socket.poll(timeout) == 0:
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/zmq/sugar/socket.py", line 702, in poll
+    evts = dict(p.poll(timeout))
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/zmq/sugar/poll.py", line 99, in poll
+    return zmq_poll(self.sockets, timeout=timeout)
+  File "zmq/backend/cython/_poll.pyx", line 123, in zmq.backend.cython._poll.zmq_poll
+  File "zmq/backend/cython/checkrc.pxd", line 13, in zmq.backend.cython.checkrc._check_rc
+KeyboardInterrupt

@@ -3,6 +3,7 @@ import os
 import itertools
 import oracle
 import argparse
+import time
 
 from pyquil import Program, get_qc
 from pyquil.quil import DefGate
@@ -159,5 +160,8 @@ if __name__ == "__main__":
             print("Good Choice :)")
             exit()
 
+    start = time.time()
     ret =  dj.qc_program(n, t, r, b, v)
+    end = time.time()
     print("Implemented Deutsch-Josza Algorithm {}\n".format('Success!!!' if ret else 'Fail :('))
+    print(f'(Took {end - start:.2f} s to complete.)')

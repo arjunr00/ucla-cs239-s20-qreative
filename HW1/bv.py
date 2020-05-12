@@ -4,6 +4,7 @@ import itertools
 import oracle
 import argparse
 import random
+import time
 
 from pyquil import Program, get_qc
 from pyquil.quil import DefGate
@@ -203,5 +204,8 @@ if __name__ == "__main__":
             print("Good Choice :)")
             exit()
 
+    start = time.time()
     ret =  bv.qc_program(n, t, r, v)
+    end = time.time()
     print("Implemented Bernstein-Varizani Algorithm {}\n".format('Success!!!' if ret else 'Fail :('))
+    print(f'(Took {end - start:.2f} s to complete.)')

@@ -38,6 +38,8 @@ def check_valid(ys, s):
     solved_s_arr = [si % 2 for si in list(list(soln)[0])]
     solved_s = ''.join(str(si) for si in solved_s_arr)
 
+    print(f'Simon says s = {solved_s}')
+
     if s is not None:
         return solved_s == s
     else:

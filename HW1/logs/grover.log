@@ -1,0 +1,212 @@
+=======================================================
+Testing Grover's Algorithm
+
+   Running with bit string of size n = 1,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+[k ≈ ⌊(π√N)/4⌋ = 1	(N = 2ⁿ = 2^1)]
+
+Measured Qubits: 0
+    => f(0) = 0
+====================================
+
+Grover's Algorithm: Fail :(
+(Took 0.38 s to complete.)
+=======================================================
+Testing Grover's Algorithm
+
+   Running with bit string of size n = 2,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+[k ≈ ⌊(π√N)/4⌋ = 1	(N = 2ⁿ = 2^2)]
+
+Measured Qubits: 01
+    => f(01) = 1
+====================================
+
+Grover's Algorithm: Success!
+(Took 0.74 s to complete.)
+=======================================================
+Testing Grover's Algorithm
+
+   Running with bit string of size n = 3,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+[k ≈ ⌊(π√N)/4⌋ = 2	(N = 2ⁿ = 2^3)]
+
+Measured Qubits: 001
+    => f(001) = 0
+====================================
+
+Grover's Algorithm: Fail :(
+(Took 3.74 s to complete.)
+=======================================================
+Testing Grover's Algorithm
+
+   Running with bit string of size n = 4,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+[k ≈ ⌊(π√N)/4⌋ = 3	(N = 2ⁿ = 2^4)]
+
+Measured Qubits: 0100
+    => f(0100) = 0
+====================================
+
+Grover's Algorithm: Fail :(
+(Took 95.47 s to complete.)
+=======================================================
+Testing Grover's Algorithm
+
+   Running with bit string of size n = 5,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+[k ≈ ⌊(π√N)/4⌋ = 4	(N = 2ⁿ = 2^5)]
+
+Measured Qubits: 00011
+    => f(00011) = 0
+====================================
+
+Grover's Algorithm: Fail :(
+(Took 20.98 s to complete.)
+=======================================================
+Testing Grover's Algorithm
+
+   Running with bit string of size n = 6,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+[k ≈ ⌊(π√N)/4⌋ = 6	(N = 2ⁿ = 2^6)]
+
+Measured Qubits: 100111
+    => f(100111) = 1
+====================================
+
+Grover's Algorithm: Success!
+(Took 633.47 s to complete.)
+Killed
+WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f864c135828>: Failed to establish a new connection: [Errno 111] Connection refused')': /
+WARNING - Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f864c135cc0>: Failed to establish a new connection: [Errno 111] Connection refused')': /
+WARNING - Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f864b0ea240>: Failed to establish a new connection: [Errno 111] Connection refused')': /
+=======================================================
+Testing Grover's Algorithm
+
+   Running with bit string of size n = 8,
+                   reload U_f matrix = False
+=======================================================
+
+====================================
+[k ≈ ⌊(π√N)/4⌋ = 12	(N = 2ⁿ = 2^8)]
+
+Traceback (most recent call last):
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connection.py", line 160, in _new_conn
+    (self._dns_host, self.port), self.timeout, **extra_kw
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/util/connection.py", line 84, in create_connection
+    raise err
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/util/connection.py", line 74, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connectionpool.py", line 677, in urlopen
+    chunked=chunked,
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connectionpool.py", line 392, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/usr/local/lib/python3.7/http/client.py", line 1229, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/local/lib/python3.7/http/client.py", line 1275, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/local/lib/python3.7/http/client.py", line 1224, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/lib/python3.7/http/client.py", line 1016, in _send_output
+    self.send(msg)
+  File "/usr/local/lib/python3.7/http/client.py", line 956, in send
+    self.connect()
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connection.py", line 187, in connect
+    conn = self._new_conn()
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connection.py", line 172, in _new_conn
+    self, "Failed to establish a new connection: %s" % e
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x7f864b0ea3c8>: Failed to establish a new connection: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/requests/adapters.py", line 449, in send
+    timeout=timeout
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connectionpool.py", line 765, in urlopen
+    **response_kw
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connectionpool.py", line 765, in urlopen
+    **response_kw
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connectionpool.py", line 765, in urlopen
+    **response_kw
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/connectionpool.py", line 725, in urlopen
+    method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/urllib3/util/retry.py", line 439, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f864b0ea3c8>: Failed to establish a new connection: [Errno 111] Connection refused'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_qvm.py", line 492, in connect
+    version_dict = self.get_version_info()
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_qvm.py", line 504, in get_version_info
+    return cast(str, self.connection._qvm_get_version_info())
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_base_connection.py", line 625, in _qvm_get_version_info
+    response = post_json(self.session, self.sync_endpoint, {"type": "version"})
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_base_connection.py", line 63, in post_json
+    res = session.post(url, json=json)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/requests/sessions.py", line 578, in post
+    return self.request('POST', url, data=data, json=json, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_base_connection.py", line 469, in request
+    response = super().request(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/requests/sessions.py", line 530, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/requests/sessions.py", line 643, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/requests/adapters.py", line 516, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f864b0ea3c8>: Failed to establish a new connection: [Errno 111] Connection refused'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "grover.py", line 109, in <module>
+    ret = qc_program(n, r, v)
+  File "grover.py", line 61, in qc_program
+    qc = get_qc(f'{str(2*n)}q-qvm')
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 882, in get_qc
+    name=name, connection=connection, noisy=noisy, n_qubits=n_qubits, qvm_type=qvm_type
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 755, in _get_unrestricted_qvm
+    qvm_type=qvm_type,
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 699, in _get_qvm_with_topology
+    requires_executable=requires_executable,
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 654, in _get_qvm_qc
+    requires_executable=requires_executable,
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_quantum_computer.py", line 612, in _get_qvm_or_pyqvm
+    connection=connection, noise_model=noise_model, requires_executable=requires_executable
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_error_reporting.py", line 251, in wrapper
+    val = func(*args, **kwargs)
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_qvm.py", line 488, in __init__
+    self.connect()
+  File "/home/arjunraghavan/.pyvirtualenvs/cs239-pyquil/lib/python3.7/site-packages/pyquil/api/_qvm.py", line 495, in connect
+    raise QVMNotRunning(f"No QVM server running at {self.connection.sync_endpoint}")
+pyquil.api._qvm.QVMNotRunning: No QVM server running at http://127.0.0.1:5000
