@@ -4,6 +4,7 @@ __pycache__
 
 ## Intermediate/temporary files
 *.swp
+.fuse*
 
 ### LATEX ###
 ## Core latex/pdflatex auxiliary files:
