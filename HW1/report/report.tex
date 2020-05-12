@@ -9,7 +9,7 @@
 \title{Algorithms in PyQuil}
 \author{Arjun Raghavan and Bryan Pan}
 \date{May 12, 2020}
-\contentsfalse
+\contentstrue
 
 \newtheorem{lemma}{Lemma}
 
@@ -48,7 +48,7 @@
 \section{Overview}
 \section{Design}
 
-\subsection{Implementing the black-box quantum oracle}
+\subsection{Mathematical explanation}
 
 All four algorithms take as input a function $f$ in the form:
 \[
@@ -74,8 +74,6 @@ Notice that this is precisely the application of the phase kickback trick for ga
 \]
 Clearly, we can also define $Z_f$ as a quantum oracle for Grover's algorithm in the same way $U_f$ was defined for the three other algorithms.
 Given that all four algorithms' quantum oracles have the same general form, we created a single function which could generate a quantum oracle and reused it for each program.
-
-\subsubsection{Mathematical explanation}
 
 \begin{lemma}
     $\sum_{q \in \{0,1\}^k}{\ket{q}\bra{q}} = I_{2^k}$ where $I_{2^k}$ is the identity matrix in $\mathcal{H}_{2^k}$ (corresponding to $k$ qubits).
@@ -137,7 +135,7 @@ And so:
         U_f = \sum_{xb \in \{0,1\}^{k}}\ket{x}\bra{x} \ket{b \oplus f(x)}\bra{b}
 \end{equation}
 
-\subsubsection{Python implementation}
+\subsection{Python implementation}
 
 As shown in \autoref{code:py-uf}, \autoref{eq:1} is straightforwardly implemented in Python thanks to the \href{https://numpy.org/}{\texttt{numpy}} library using methods such as \texttt{np.kron} (the Kronecker product is a special case of the tensor product over complex matrices and is the nomenclature used by \texttt{numpy}) and \texttt{np.outer} \cite{numpy}.
 Notice in line 155 that \texttt{f} is a dictionary, not a function.
@@ -163,7 +161,7 @@ We eventually settled on the approach seen in \autoref{code:py-uf}, which we fel
 The dimension of $\{0,1\}^{n+m} =: S$ is $2^{n+m}$.
 Furthermore, each element of $S$ is a bitstring which has a decimal equivalent.
 Thus, it would be just as effective to iterate through each of these decimal equivalents, convert them to binary, and extract $x$ and $b$, which is precisely what we did.
-We felt that this was more concise than generating the entirety of $S$ or nesting \texttt{for} loops while still maintaining some clarity of our approach.
+We felt that this was more concise than generating the entirety of $S$ or nesting \texttt{for} loops while still maintaining some clarity of our approach, assisting in readability.
 
 In more general terms, we made sure to thoroughly comment our code wherever we felt it was necessary.
 Our primary functions all have PyDocs (loosely conforming to PEP/8 guidelines \cite{pep8}), and further comments are added when specific lines of code require further clarification.
@@ -194,15 +192,38 @@ However, this was abandoned mostly due to the fact that the assignment required 
 
 \subsection{Testing}
 
+As mentioned earlier, our implementation of generating and storing quantum oracle gate matrices and usage of \texttt{argparse} to handle user input greatly facilitated testing.
+We quickly realized that compiling and running our code was (naturally) CPU-intensive, so we also used a couple of \href{https://www.oracle.com/cloud/}{Oracle Cloud Infrastructure} \href{https://www.oracle.com/cloud/compute/}{Compute instances} so that we could run our code while freeing up our own computers for further work.
+
+For our implementation of Grover, we configured the program such that it would automatically calculate the minimum number of trials required to minimize error based on the size of the input using the equation $k = \lfloor\pi\sqrt{N}/4\rfloor$ with $N = 2^n$. For our implementation of Simon, given that a full "iteration" was $n-1$ applications of the quantum oracle (to generate $n-1$ values for $y$), we multiplied the user's input number of trials by $4$ to minimize error using the equation $\mathcal{P}(\text{not linearly independent}) = \exp(-t/4)$ with $t$ being the number of trials.
+
+We tested our code with a variety of values of $n$ (the length of the input bit string).
+For Simon and Grover, we also tested with differing values of $t$ (the number of trials); this was unnecessary for Deutsch-Josza and Bernstein-Vazirani, which are deterministic algorithms.
+We found that our results very closely matched the expected outcomes of applying our algorithms.
+
+For each value of $n$ up to about 7-9 depending on the algorithm, we generated randomized functions (following the appropriate constraints for its corresponding algorithm) and subsequently $U_f$ matrices, storing them locally for later use.
+We limited $n$ to 7-9 mostly because any values greater than those resulted in massive $U_f$ matrices (the file size of a $10$-qubit $U_f$ matrix stored as an \texttt{.npy} array exceeded 100 MB).
+This proved to be a reasonable restriction, because none of our programs were able to operate on more than 7 qubits before the PyQuil compiler crashed or the program itself exceeded its allocated heap space.
+
+For smaller $n$, however, we were able to make some observations:
+
 \begin{itemize}
-    \item Discuss your effort to test the two programs and present results from the testing.  Discuss whether different cases of $U_f$ lead to different execution times.
+    \item Deutsch-Josza was the fastest algorithm of the four, able to reach 7 qubits before crashing.
+    \item Whether the input function to Deutsch-Josza was balanced or constant was a large factor in its compilation and execution time. For constant functions, the quantum oracle was simply a large identity matrix, and it appears that PyQuil optimizes for such a case, as can be seen below.
+    \item Despite being probabilistic, Simon's and Grover's algorithms are in fact quite accurate even for a smaller number of trials. Of course, this is in an ideal setting on a Quantum Virtual Machine without noise.
+    \item Compilation time is orders of magnitude larger than execution time. All of the programs' execution time were under 10 seconds; compilation time, on the other hand, increased dramatically as $n$ increased---for Simon's algorithm, an input of $n=4$ had a compilation time of a whopping 36 minutes. It would have been beneficial to compile ahead of time, but this was not feasible for two reasons: a new gate had to be used for each value of $n$, meaning the quantum circuit would have to be recompiled for each input regardless, and it was not clear whether we could compile a quantum program and store it as a file.
+    \item Simon's algorithm is the slowest to compile, crashing \texttt{quilc} at only 5 input qubits. This is expected behavior; while the other three algorithms have one additional helper qubit, Simon's algorithm must use $n$ additional qubits. Thus, increasing the input bitstring by 1 causes the resulting quantum oracle matrix to balloon to $2^4 = 16$ times its original size.
 \end{itemize}
 
-\subsection{Scalability}
+\subsection{Scalability}\label{section:scale}
 
-\begin{itemize}
-    \item What is your experience with scalability as n grows?  Present a diagram that maps n to execution time.
-\end{itemize}
+While as mentioned above we used Oracle Cloud Infrastructure, we were limited to 2 CPU cores on each of our instances.
+So, one of our local machines was used to perform tests for execution time.
+Said machine has an \texttt{8-core Intel(R) Core(TM) i7-8550U @ 1.80GHz} and a RAM of \texttt{16GiB System Memory} (x2 \texttt{8GiB SODIMM DDR4 Synchronous Unbuffered 2400 MHz}).
+
+We measured both the compilation as well as execution time of each run for the four algorithms.
+The execution time was obtained from the logged output of \texttt{qvm -S}.
+The compilation time was measured simply by measuring the system clock before and after calling \texttt{QuantumComputer.run\_and\_measure}\footnote{A more accurate measure of this would be to subtract execution time from the total measured time to ``run and measure'', but as mentioned before, compilation time vastly dwarfs execution time.}.
 
 \section{Reflection on PyQuil}
 
@@ -210,6 +231,100 @@ Our brief introduction to PyQuil showed us that there were a handful of gates wh
 A such, we expected that it would be challenging to create our own gates.
 Fortunately, we discovered that it was in fact very simple.
 We had to generate our own matrix, which was straightforward with the help of \texttt{numpy}, but the creation of an actual quantum gate was quite literally only two lines (see \autoref{code:pyquil-gate}).
+
+\diagram{%
+    \begin{axis}[
+        xlabel={Length $n$ of input bitstring $x$},
+        ylabel={Execution time [ms]},
+        xmin=0, xmax=7,
+        ymin=0, ymax=180,
+        xtick={0,1,2,3,4,5,6,7},
+        ytick={0,20,40,60,80,100,120,140,160,180},
+        legend pos=outer north east,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    \addplot[
+        color=blue,
+        mark=square,
+        ]
+        coordinates {
+        (2,0)(3, 0)(4, 2)(5, 20)(6, 79)(7, 179)
+        };
+        \addlegendentry{Deutsch-Josza}
+    \addplot[
+        color=olive,
+        mark=square,
+        ]
+        coordinates {
+        (2,30)(3,1)(4,2)(5, 46)(6, 171)
+        };
+        \addlegendentry{Bernstein-Vazirani}
+    \addplot[
+        color=orange,
+        mark=square,
+        ]
+        coordinates {
+        (2,3)(3, 154)(4, 10015)
+        };
+        \addlegendentry{Simon}
+    \addplot[
+        color=purple,
+        mark=square,
+        ]
+        coordinates {
+        (1,0)(2, 0)(3, 1)(4, 7)(5, 37)(6, 820)
+        };
+        \addlegendentry{Grover}
+    \end{axis}
+}{label}{exec}
+
+\diagram{%
+    \begin{axis}[
+        xlabel={Length $n$ of input bitstring $x$},
+        ylabel={Execution time [ms]},
+        xmin=0, xmax=7,
+        ymin=0, ymax=180,
+        xtick={0,1,2,3,4,5,6,7},
+        ytick={0,20,40,60,80,100,120,140,160,180},
+        legend pos=outer north east,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    \addplot[
+        color=blue,
+        mark=square,
+        ]
+        coordinates {
+        (2,0)(3, 0)(4, 2)(5, 20)(6, 79)(7, 179)
+        };
+        \addlegendentry{Deutsch-Josza}
+    \addplot[
+        color=olive,
+        mark=square,
+        ]
+        coordinates {
+        (2,30)(3,1)(4,2)(5, 46)(6, 171)
+        };
+        \addlegendentry{Bernstein-Vazirani}
+    \addplot[
+        color=orange,
+        mark=square,
+        ]
+        coordinates {
+        (2,3)(3, 154)(4, 10015)
+        };
+        \addlegendentry{Simon}
+    \addplot[
+        color=purple,
+        mark=square,
+        ]
+        coordinates {
+        (1,0)(2, 0)(3, 1)(4, 7)(5, 37)(6, 820)
+        };
+        \addlegendentry{Grover}
+    \end{axis}
+}{label}{compile}
 
 \codesnippet[language=Python, linerange={57-58}, firstnumber=57]{../simon.py}{The two lines needed to create a quantum gate that can be used in a PyQuil program.}{pyquil-gate}
 
