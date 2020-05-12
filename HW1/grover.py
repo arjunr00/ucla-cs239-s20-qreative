@@ -8,7 +8,6 @@ import time
 from pyquil import Program, get_qc
 from pyquil.quil import DefGate
 from pyquil.gates import H, X
-from pyquil.latex import *
 
 def z0(n):
     m = np.identity(2**n)

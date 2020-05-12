@@ -95,12 +95,15 @@ def init_bit_mapping(n, algo=None, func=None):
         oracle_map.update(temp)
     elif algo is Algos.BV:
         oracle_map = {}
+        # alpha and beta given as parameters
         a, b = func
+        # for every qubit string x => calculate (a*x + b) % 2
         for q in qubits:
             dp = b
             for index, val in enumerate(q):
                 dp += a[index] * int(val)
             oracle_map[q] = str(dp % 2)
+            
     # oracle_map is bit map from {x: f(x)} for all {0,1}^n
     return oracle_map
 
