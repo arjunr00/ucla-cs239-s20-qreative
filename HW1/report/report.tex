@@ -1,0 +1,128 @@
+\documentclass[12pt]{article}
+
+\usepackage{report}
+\usepackage{braket}
+\usepackage{amsthm}
+
+\orgname{COM SCI 239}
+\project{Quantum Programming}
+\title{Algorithms in PyQuil}
+\author{Arjun Raghavan and Bryan Pan}
+\date{May 12, 2020}
+\contentsfalse
+
+\newtheorem{lemma}{Lemma}
+
+\begin{document}
+\mktitle
+\startbody
+
+\section{Overview}
+\section{Design}
+
+\subsection{Implementing the black-box quantum oracle}
+
+All four algorithms take as input a function $f$ in the form:
+\[
+    f : \{0,1\}^n \to \{0,1\}^m
+\]
+In the case of Deutsch-Josza, Bernstein-Vazirani, and Grover, we have $m=1$.
+Simon, on the other hand, has $m=n$.
+
+For Deutsch-Josza, Bernstein-Vazirani, and Simon, the quantum oracle of $f$, denoted $U_f$, is defined as:
+\[
+    U_f\ket{x}\ket{b} = \ket{x}\ket{b \oplus f(x)}
+\]
+Here, we have $b \in \{0,1\}^m$.
+The $\oplus$ operator represents bitwise XOR, or equivalently bitwise addition mod 2.
+
+Grover's algorithm makes use of a gate denoted by $Z_f$, which is defined as:
+\[
+    Z_f\ket{x} = (-1)^{f(x)}\ket{x}
+\]
+Notice that this is precisely the application of the phase kickback trick for gates of a form equivalent to $U_f$ where $\ket{b} = \ket{-}$:
+\[
+    Z_f\ket{x}\ket{-} = (-1)^{f(x)}\ket{x}\ket{-}
+\]
+Clearly, we can also define $Z_f$ as a quantum oracle for Grover's algorithm in the same way $U_f$ was defined for the three other algorithms.
+Given that all four algorithms' quantum oracles have the same general form, we created a single function which could generate a quantum oracle and reused it for each program.
+
+\subsubsection{Mathematical explanation}
+
+\begin{lemma}
+    $\sum_{q \in \{0,1\}^k}{\ket{q}\bra{q}} = I_{2^k}$ where $I_{2^k}$ is the identity matrix in $\mathcal{H}_{2^k}$ (corresponding to $k$ qubits).
+\end{lemma}
+
+\begin{proof}
+    Let $q \in \{0, 1\}^k$.
+    We have $\ket{q} = \begin{bmatrix} q_1 & q_2 & \dots & q_{2^k} \end{bmatrix}^T$ where $q_i = 1$  for some $1 \le i \le 2^k$ and $q_j = 0$ for all $j \neq i$.
+    Then, $\ket{q}\bra{q}$ is a $2^k \times 2^k$ matrix of the form$ \begin{bmatrix} q_{ab} \end{bmatrix}$ where:
+    \[
+        q_{ab} =
+        \begin{cases}
+            1 & \text{if } a = b = i \\
+            0 & \text{otherwise}
+        \end{cases}
+    \]
+
+    For $\alpha, \beta \in \{0,1\}^k$ such that $\alpha \neq \beta$, we have $\ket{\alpha} \neq \ket{\beta} \implies \ket{\alpha}\bra{\alpha} \neq \ket{\beta}\bra{\beta}$.
+    Thus:
+    \begin{align*}
+        \sum_{q \in \{0,1\}^k}{\ket{q}\bra{q}} &=
+            \begin{bmatrix}
+                1 & 0 & \dots & 0 \\
+                0 & 0 & \dots & 0 \\
+                \vdots & \vdots & \ddots & \vdots \\
+                0 & 0 & \dots & 0
+            \end{bmatrix} +
+            \begin{bmatrix}
+                0 & 0 & \dots & 0 \\
+                0 & 1 & \dots & 0 \\
+                \vdots & \vdots & \ddots & \vdots \\
+                0 & 0 & \dots & 0
+            \end{bmatrix} + \dots + 
+            \begin{bmatrix}
+                0 & 0 & \dots & 0 \\
+                0 & 0 & \dots & 0 \\
+                \vdots & \vdots & \ddots & \vdots \\
+                0 & 0 & \dots & 1
+            \end{bmatrix} = I_{2^k}
+    \end{align*}
+\end{proof}
+
+Consider the application of $U_f$ to the outer product of $\ket{x}\ket{b}$ with itself:
+\begin{align*}
+    U_f \ket{x}\ket{b}\bra{x}\bra{b} &= \ket{x}\ket{b \oplus f(x)} \bra{x}\bra{b} \\
+                                     &= \ket{x}\bra{x} \ket{b \oplus f(x)}\bra{b} \\
+\end{align*}
+
+Let $k = n+m$. By taking the sum of this over all bit strings $xb \in \{0,1\}^k$, we get:
+\begin{align*}
+    \sum_{xb \in \{0,1\}^{k}}U_f\left(\ket{x}\ket{b}\bra{x}\bra{b}\right)
+        &= U_f \left(\sum_{xb \in \{0,1\}^{k}}\ket{x}\ket{b}\bra{x}\bra{b}\right) \\
+        &= U_f \circ I_{2^{k}} \\
+        &= U_f
+\end{align*}
+
+And so:
+\begin{equation}\label{eq:1}
+        U_f = \sum_{xb \in \{0,1\}^{k}}\ket{x}\bra{x} \ket{b \oplus f(x)}\bra{b}
+\end{equation}
+
+\subsubsection{Python implementation}
+
+As shown in \autoref{code:py-uf}, \autoref{eq:1} is straightforwardly implemented in Python thanks to the \href{https://numpy.org/}{\texttt{numpy}} library.
+Notice in line 155 that \texttt{f} is a dictionary, not a function.
+Indeed, we chose to treat the input function $f$ for all four programs as a dictionary (or a "mapping" as we mostly referred to it) for a few reasons.
+
+For one, this would allow a user more flexibility in providing $f$ as an input to our programs without having to possibly construct tedious \texttt{if-elif} statements.
+In addition, this allowed us to more easily test our programs---we could randomly generate dictionaries representing functions which followed whatever assumptions were required for each algorithm.
+And example of this for Deutsch-Josza can be seen in \autoref{code:py-init}
+
+\codesnippet[language=Python, linerange={127-148}, firstnumber=148]{../oracle.py}{Excerpt from the \texttt{gen\_matrix} function in \texttt{oracle.py} showing the implementation of \autoref{eq:1} using \texttt{numpy}}{py-uf}
+\codesnippet[language=Python, linerange={43-56}, firstnumber=43]{../oracle.py}{Excerpt from the \texttt{init\_bit\_mapping} function in \texttt{oracle.py} showing how we randomly generate a function for testing Deutsch-Josza.}{py-init}
+
+\section{Evaluation}
+\section{Reflection on PyQuil}
+
+\end{document}
