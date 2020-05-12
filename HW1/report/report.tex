@@ -13,6 +13,26 @@
 
 \newtheorem{lemma}{Lemma}
 
+\begin{filecontents}{\jobname.bib}
+    @techreport{pep8,
+        author  = {Guido van Rossum and Barry Warsaw and Nick Coghlan},
+        title   = {Style Guide for {Python} Code},
+        year    = {2001},
+        type    = {PEP},
+        number  = {8},
+        url     = {https://www.python.org/dev/peps/pep-0008/},
+    },
+    @article{numpy,
+        author={S. {van der Walt} and S. C. {Colbert} and G. {Varoquaux}},
+        journal={Computing in Science \& Engineering},
+        title={The {NumPy} Array: A Structure for Efficient Numerical Computation},
+        year={2011},
+        volume={13},
+        number={2},
+        pages={22-30},
+    }
+\end{filecontents}
+
 \begin{document}
 \mktitle
 \startbody
@@ -111,18 +131,42 @@ And so:
 
 \subsubsection{Python implementation}
 
-As shown in \autoref{code:py-uf}, \autoref{eq:1} is straightforwardly implemented in Python thanks to the \href{https://numpy.org/}{\texttt{numpy}} library.
+As shown in \autoref{code:py-uf}, \autoref{eq:1} is straightforwardly implemented in Python thanks to the \href{https://numpy.org/}{\texttt{numpy}} library using methods such as \texttt{np.kron} (the Kronecker product is a special case of the tensor product over complex matrices and is the nomenclature used by \texttt{numpy}) and \texttt{np.outer} \cite{numpy}.
 Notice in line 155 that \texttt{f} is a dictionary, not a function.
 Indeed, we chose to treat the input function $f$ for all four programs as a dictionary (or a "mapping" as we mostly referred to it) for a few reasons.
 
 For one, this would allow a user more flexibility in providing $f$ as an input to our programs without having to possibly construct tedious \texttt{if-elif} statements.
 In addition, this allowed us to more easily test our programs---we could randomly generate dictionaries representing functions which followed whatever assumptions were required for each algorithm.
-And example of this for Deutsch-Josza can be seen in \autoref{code:py-init}
+An example of this for Deutsch-Josza can be seen in \autoref{code:py-init}.
+
+Our implementation of generating $U_f$ with this generalized method had the additional benefit of making it very easy to parametrize our solutions in $n$.
+The \texttt{oracle.gen\_matrix} method, along with any other methods which require the dimension of the domain and/or range of $f$, accepts \texttt{n} and \texttt{m} (as defined previously) as arguments.
+While \texttt{m} is algorithm-dependent and so assigned inside the code, the user can, as we discuss in further detail in the README file, pass in a value for $n$ using the \texttt{--num} option.
 
 \codesnippet[language=Python, linerange={127-148}, firstnumber=148]{../oracle.py}{Excerpt from the \texttt{gen\_matrix} function in \texttt{oracle.py} showing the implementation of \autoref{eq:1} using \texttt{numpy}}{py-uf}
+
 \codesnippet[language=Python, linerange={43-56}, firstnumber=43]{../oracle.py}{Excerpt from the \texttt{init\_bit\_mapping} function in \texttt{oracle.py} showing how we randomly generate a function for testing Deutsch-Josza.}{py-init}
 
+\subsubsection{Readability}
+
+There were a couple of possible approaches we could have taken to iterating over all $xb \in \{0,1\}^{n+m}$, including nested \texttt{for} loops or generating the entire set of bit strings and iterating over that.
+We eventually settled on the approach seen in \autoref{code:py-uf}, which we felt was more elegant.
+
+The dimension of $\{0,1\}^{n+m} =: S$ is $2^{n+m}$.
+Furthermore, each element of $S$ is a bitstring which has a decimal equivalent.
+Thus, it would be just as effective to iterate through each of these decimal equivalents, convert them to binary, and extract $x$ and $b$, which is precisely what we did.
+We felt that this was more concise than generating the entirety of $S$ or nesting \texttt{for} loops while still maintaining some clarity of our approach.
+
+In more general terms, we made sure to thoroughly comment our code wherever we felt it was necessary.
+Our primary functions all have PyDocs (loosely conforming to PEP/8 guidelines \cite{pep8}), and further comments are added when specific lines of code require further clarification.
+Overall, though, our code is self-documenting as much as possible.
+We have also taken care to maintain limited line lengths (keeping 80 characters as a soft limit) and proper indentation (although the Python language just about forces the latter).
+
 \section{Evaluation}
+
+
 \section{Reflection on PyQuil}
+
+\bib
 
 \end{document}
