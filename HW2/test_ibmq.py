@@ -1,5 +1,6 @@
 from qiskit import IBMQ, QuantumCircuit, execute, assemble, transpile
 from dotenv import load_dotenv
+import matplotlib
 import os
 
 def load_api_token():
@@ -28,6 +29,8 @@ def define_circuit(ifDraw):
 
   if ifDraw:
     print(circuit.draw('text'))
+    circuit.draw('mpl')
+    matplotlib.pyplot.savefig('plots/circuit.png')
   return circuit
 
   
