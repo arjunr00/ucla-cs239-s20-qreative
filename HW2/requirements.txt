@@ -1,6 +1,5 @@
 qiskit
 matplotlib
-juypter
 ipywidgets
 seaborn
 pygments
