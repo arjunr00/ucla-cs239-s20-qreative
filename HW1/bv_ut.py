@@ -19,7 +19,7 @@ def unit_tests(n):
     SAVEPATH = 'uf/bv/'
     FILEPATH = 'bv'+str(n)
     SPATH = 'a_dict'
-    
+
     if not os.path.exists(SAVEPATH + FILEPATH+'.npy'):
         if os.path.exists(SAVEPATH + SPATH+'.npy'):
             a_list = np.load(SAVEPATH+ SPATH+'.npy', allow_pickle=True).item()
