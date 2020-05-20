@@ -5,5 +5,3 @@ ipywidgets
 seaborn
 pygments
 
-pip3 install --upgrade pip
-sudo yum install python3-devel
