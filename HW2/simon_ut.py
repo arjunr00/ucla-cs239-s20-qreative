@@ -66,7 +66,9 @@ def unit_test(n):
         U_f = Operator(np.load(f'{SAVEDIR}simon{str(n)}.npy'))   
         print("done")
 
+    print(f'Check if U_f is unitary .. ', end='', flush=True)
     assert U_f.is_unitary()
+    print('done')
     if not os.path.exists(f'{SAVEDIR}simon{str(n)}.npy'):
         print(f'Saving U_f for {n}-qubit Simon from {SAVEDIR}simon{str(n)}.npy .. ', end='', flush=True)
         np.save(f'{SAVEDIR}simon{str(n)}.npy', U_f.data)
