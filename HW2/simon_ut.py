@@ -47,14 +47,14 @@ def unit_test(n):
         print('done')
 
         if os.path.exists(f'{SAVEDIR}{SLIST}.npy'):
-            print(f'Loading s_list for Simon from {SAVEPATH}{SLIST}.npy .. ', end='', flush=True)
+            print(f'Loading s_list for Simon from {SAVEDIR}{SLIST}.npy .. ', end='', flush=True)
             s_list = np.load(f'{SAVEDIR}{SLIST}.npy', allow_pickle=True).item()
             print('done')
         else:
             s_list={}
         s_list[n] = s
 
-        print(f'Saving s_list for Simon to {SAVEPATH}{SLIST}.npy .. ', end='', flush=True)
+        print(f'Saving s_list for Simon to {SAVEDIR}{SLIST}.npy .. ', end='', flush=True)
         np.save(f'{SAVEDIR}{SLIST}.npy', s_list, allow_pickle=True)
         print('done')
 
@@ -62,13 +62,13 @@ def unit_test(n):
         U_f = oracle.gen_matrix(mapping, n, n)
         print('done')
     else:
-        print(f'Loading U_f for {n}-qubit Simon from {SAVEPATH}simon{str(n)}.npy .. ', end='', flush=True)
+        print(f'Loading U_f for {n}-qubit Simon from {SAVEDIR}simon{str(n)}.npy .. ', end='', flush=True)
         U_f = Operator(np.load(f'{SAVEDIR}simon{str(n)}.npy'))   
         print("done")
 
     assert U_f.is_unitary()
     if not os.path.exists(f'{SAVEDIR}simon{str(n)}.npy'):
-        print(f'Saving U_f for {n}-qubit Simon from {SAVEPATH}simon{str(n)}.npy .. ', end='', flush=True)
+        print(f'Saving U_f for {n}-qubit Simon from {SAVEDIR}simon{str(n)}.npy .. ', end='', flush=True)
         np.save(f'{SAVEDIR}simon{str(n)}.npy', U_f.data)
         print("done")
 
