@@ -72,5 +72,5 @@ def unit_test(n):
         np.save(f'{SAVEDIR}simon{str(n)}.npy', U_f.data)
         print("done")
 
-for n in range(1, 7):
+for n in range(1, 6):
     unit_test(n)
