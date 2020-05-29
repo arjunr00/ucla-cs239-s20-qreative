@@ -272,6 +272,19 @@ It is possible for us to minimize code reuse.
 A lot of the aforementioned code to measure execution time is largely identical between programs, save for small differences.
 With more time, perhaps this could be removed and placed into a separate utility Python module.
 
+\subsection{Visualization}
+
+Qiskit comes packaged with a number of ways to visually express a built quantum circuit.
+This was extremely useful for us in running and testing our programs to make sure we had understood Qiskit's \texttt{QuantumCircuit}s properly, especially in regards to qubit ordering (discussed below in Section 3).
+
+For example, consider the generated diagram for a 2-bit input Deutsch-Josza circuit in \autoref{fig:dj2} below:
+\img[width=0.7\linewidth]{../plots/dj_2.pdf}{Circuit diagram for 2-bit input Deutsch-Josza.}{dj2}
+
+Here, we can see precisely what is going on with each of our input qubits.
+Furthermore, by observing the input indices on the purple \textit{Unitary} gate, we can ensure that the order of qubits being supplied is as desired.
+
+By supplying the \texttt{-{}-verbose} or \texttt{-v} option when running our programs, one can view such a circuit diagram within their terminal as well.
+
 \subsection{Testing}
 
 As mentioned earlier, our implementation of generating and storing quantum oracle gate matrices and usage of \texttt{argparse} to handle user input greatly facilitated testing.
@@ -412,80 +425,116 @@ On a log-log graph, the plots for these two algorithms' growth rates would indee
 
 \subsection{Learning to use PyQuil}
 
-Our brief introduction to PyQuil showed us that there were a handful of gates which were provided as part of the library.
-A such, we expected that it would be challenging to create our own gates.
-Fortunately, we discovered that it was in fact very simple.
-We had to generate our own matrix, which was straightforward with the help of \texttt{numpy}, but the creation of an actual quantum gate was quite literally only two lines (see \autoref{code:pyquil-gate}).
+Some aspects of Qiskit that were easy to learn are:
+\begin{itemize}
+    \item For basic circuits, Qiskit is incredibly intuitive. When we look at how to utilize multiple basic gates such as Hadamard or CNOT, we can easily instantiate them into our circuit by applying a range, with \texttt{circuit.H(range(n))}.
+This proved to be extremely useful and much easier to read when debugging in the future. It also gave a lot of flexibility in terms of easily maneuvering our gates across qubits.
+\item The fact that we didn’t have to start a server to compile our Qiskit circuit was actually amazing. The \texttt{qasm-simulator} proved to be so easy to use and incredibly fast. As opposed to PyQuil where we ran into many problems with the \texttt{qvm} and \texttt{qcuil} servers, we didn’t face any problems with compilation whatsoever.
+\item The ability to customize and set your measure registers in Qiskit was quite easy to pick up. It provided an easy and intuitive way to set a range, list or integer to determine which qubits will be measured and to which classical bits.
 
-\codesnippet[language=Python, linerange={57-58}, firstnumber=57]{../simon.py}{The two lines needed to create a quantum gate that can be used in a PyQuil program. Excerpt from \texttt{simon.py}}{pyquil-gate}
+\begin{figure}[h]
+    \centering
+    \begin{lstlisting}[numbers=none, language=Python]
+    circuit.measure(n,n)
+    circuit.measure(range(1, n+1), range(n))
+\end{lstlisting}
+\end{figure}
+This made circuit customization super easy and by having it all in one line, made our life super easy in terms of debugging and understanding how it was used.
+\end{itemize}
 
-In addition, building the program was actually quite easy and intuitive.
-It seemed quite natural to use simple concatenation operators as \texttt{p+=<gate>} to build our program.
-The ability to ``run and measure'' was also very helpful, because it entirely abstracted the compilation process from quil $\to$ native quil $\to$ binary executable $\to$ result from the user.
-For people who are more interested in functionality and output, it is extremely useful to have that process abstracted but also readily available to use.
-The \texttt{quilc} and \texttt{qvm} server logs were verbose resources for debugging, whether it be a memory issue or a logical issue in our coding.
-Indeed, the act of programming these circuits was actually trivial in comparison to debugging and understanding the underlying operation of the simulator.
+Some aspects of Qiskit that were hard to learn are:
+\begin{itemize}
+    \item The fact that Qiskit has its bits flipped was a tough concept to grasp. Mainly due to the fact that our matrices were generated in a way that fits a more traditional qubit model, s0 when it came to debugging, it was quite common to second guess oneself as to whether or not we need to invert the range:
+\begin{figure}[h]
+    \centering
+    \begin{lstlisting}[numbers=none, language=Python]
+    circuit.append(U_f, range(n)[::-1]
+\end{lstlisting}
+\end{figure}
+As it turns out, 100\% of the time the answer to that question was yes, and we’re sure after more exposure to programming in Qiskit that this notation will become second nature.
+    \item Qiskit operators have amazing functionality and usage, however, using them correctly proved to be a learning curve. One, it’s quite hard to find amazing documentation on how operators work and how to utilize it completely on the Qiskit documentation website. Two, if you generate your Operator from a numpy array, you can’t name/label it because apparently labeling happens at the Gate level. 
+    \item The different Qiskit elements proved to be challenging to wrap our heads around in terms of looking through the documentation. When looking for API references, it was definitely hard at first to determine where to look. Most of our API’s we found in Terra, but understanding where to look at first definitely was a challenge
+\end{itemize}
 
-We of course had some gripes with PyQuil.
-As mentioned previously, the ability to pre-compile executables or amortize compilation time a lot quicker is something that PyQuil lacks support for.
-Also, we ran into a lot of problems with the allocated heap for \texttt{qvm} running out of space.
-Some way to mitigate the sheer amount of space used or to understand how to combat it technically would be useful.
-Finally, it would be nice to better methods of visualizing our quantum circuits.
-Especially while using our custom gates, we had to resort to a rather unusual notation to expand a tuple into function arguments (which can be seen in our submitted code, as seen in \autoref{code:simon-tuple}.
+Qiskit is great when it comes to usability and testing. Their embedded print functionality made debugging simple and reduced a lot of the overhead complexity of the PyQuil implementation. We also found that the fact that there is no quilc or qvm server allowed for greater abstraction and usability as developers. So long are the days when I had to worry about running a server to compile my quantum circuit. Finally, the speed at which Qiskit performs our algorithms far surpasses that of PyQuils. The compilation time of Qiskit with the Aer backend makes development quick and responsive. It was extremely fast to tell whether or not our circuits are working and to simply bootstrap code.
 
-\codesnippet[language=Python, linerange={66-66}, firstnumber=66]{../simon.py}{Passing a variable number of inputs to a custom quantum gate. Excerpt from \texttt{simon.py}}{simon-tuple}
+Qiskit doesn’t allow you to label your custom operators/instructions when appending it to a circuit. This can help for debugging however it’s not too necessary as the developer is responsible for understanding what their circuit generally looks likes. We mention this later in our suggestion, but a way to reverse the qubit ordering would be fantastic. You can do it already when it comes to drawing the circuit through:
+\begin{figure}[h]
+    \centering
+    \begin{lstlisting}[numbers=none, language=Python]
+    circuit.draw('mlp', reverse_bits=True)
+\end{lstlisting}
+\end{figure}
 
-We do have the option of doing \texttt{print(to\_latex(p))} to generate a Ti\textit{k}z diagram, but it is a cumbersome process to copy the output into a file and compile it into a PDF or PNG when we would much prefer to be able to instantly view the state of our circuit (not unlike how Google's Cirq does it \cite{cirq}).
+However, letting it work on an implementation level would be fantastic.
 
-% \mathdiag{%
-%     \lstick{\ket{q_{0}}} & \gate{H} & \qw & \gate[wires=3]{Z_f} & \gate{H} & \gate[wires=2]{Z_0} & \gate{H} & \qw \\%
-%     \lstick{\ket{q_{1}}} & \gate{H} & \qw & \qw & \gate{H} & \qw & \gate{H} & \qw \\%
-%     \lstick{\ket{q_{2}}} & \gate{X} & \gate{H} & \qw & \qw & \qw & \qw & \qw%
-% }{caption}{label}
 
 \subsection{A suggestion}
 
-Similar to how a C or C++ program can be compiled by something like \texttt{gcc}, it would be extremely beneficial if PyQuil could support externally saving compiled quantum programs.
-Obviously, it would be somewhat impractical as to the volatility of user input.
-For example, a compiled program or \texttt{PyQuilExecutableResponse} for a \texttt{3q-qvm} would not work for a 5 qubit system.
-Still, a way to reduce programming downtime would be at least to amortize compilation.
+Using other quantum programming languages and through academia, we have been continuously taught by making the top qubit in a graphical diagram to be the most significant qubit and thus our custom Operators will reflect that understanding.
+Furthermore, in most conventions we've seen, the tensor product $\ket{a} \otimes \ket{b}$ is expressed as $\ket{ab}$; with Qiskit, it is expressed as $\ket{ba}$.
 
-We also noticed that one of the biggest challenges in terms of time was the conversion of pyquil program to native quil or (shown in the logs as \texttt{quil\_to\_native\_quil}).
-While PyQuil supports a handful of gates including the Hadamard gate, controlled NOT, and more, Rigetti QPUs (and by extension the QVM we would use) have gate operators constrained to lie in $RZ(\theta)$, $RX(k\pi/2)$, and $CZ$---in other words, in the $Z$ basis.
-With simple quantum oracle matrices like identity matrices, the compiler did not have to worry about calculating the correct rotation matrices.
-However, for most other gates, especially unoptimized ones like our generated $U_f$ gates, the compiler would spend a lot of time transforming them into a combination of the three above gates.
-
-Unfortunately, this always needs to be executed after every step, and the PyquilExecutableResponse is sometimes inspectable.
-For security and for compilation purposes, it might be better to make the compiled object to be a BinaryExecutableResponse and opaque.
+It would be extremely helpful if Qiskit made their qubit ordering such that the most significant qubit is qubit 0. Mainly because our brains are wired to look out the circuit display top to bottom and having to continually invert our Operators and our outputs are quite cumbersome and unintuitive.  
+A homogenization on the circuit level with other quantum programming languages and academia would greater support the usage and bootstrapping of Qiskit.
 
 \subsection{Reading the documentation}
 
-The documentation for PyQuil provides a fine introduction to PyQuil and quantum programming.
-The \textbf{Getting Started} page clearly and concisely explains how to build a quantum circuit, make a custom gate, and more.
-Also, the documentation provides a lot of sample code for everything it explains, which was especially useful for the both of us, given that we are both not overly experienced with Python\footnote{Our fortes lie more in the field of statically-typed languages.}.
-We discovered an \textbf{Exercises} section in the documentation which we want to explore further; it provides a set of problems and solutions for implementing quantum algorithms. (We chose not to look at this in more detail during this assignment because one of these problems was in fact Grover's algorithm! We had rather figure that out ourselves.)
+Three things we found great about Qiskit documentation are:
+\begin{itemize}
+    \item The ease of starting with Qiskit through “Installing Qiskit” and “Getting Started with Qiskit” proved to be really helpful in terms of bootstrapping Qiskit for the first time
+Qiskit has an amazing “Tutorials” section that was documentation amazingly.
+    \item The “Advanced Circuits” subsection we found to be extremely helpful and made the process of programming the algorithms extremely smooth.
+    \item The builtin print functionality which allowed us to simply run \texttt{print(circuit)} in order to visualize our circuit, as mentioned earlier.
+No documentation really needed, but they also included a “Visualizing a Quantum Circuit” subsection that covers great material in terms of drawing to \texttt{matplotlib} and \LaTeX.
+\end{itemize}
 
-However, explaining more intermediate or advanced usage and concepts is where the documentation fell short, in our opinion.
-We found it difficult to understand things like what exactly \texttt{run\_and\_measure} does under all those layers of abstraction, or how to manually compile and store a PyQuil program.
-A specific issue we faced was what kind of QVM to choose when running our programs.
-It seemed there were only a couple of options, such as \texttt{9q-qvm} or \texttt{9q-square-qvm}.
-To use a larger number of qubits seemed impossible, until we discovered that the number of qubits in these directives could was in fact variable---we could just as easily use \texttt{3q-qvm} or \texttt{14q-qvm}.
-This was not very clearly stated in the documentation, relegated to a single statement under a block of code.
-However, the documentation seemed to lack information on the implication of choosing arbitrary values like this.
-It was entirely possible that there are certain numbers of qubits on a virtual QPU that more closely mimic a real QPU, but we were not aware of this.
+
+Three things we found challenging about Qiskit documentation are:
+\begin{itemize}
+    \item The separation of API references through the Elements was quite confusing at first. Sometimes, as a developer, you just need to see all options and be able to scan through the API with just the objects themselves. Working with Qiskit Elements it was challenging at first as to where to look for specific API references and to check whether or not certain function calls were possible.
+    \item If they gave more scripture describing the specific objects and their functionality. For example, if you look at the Terra API Reference in \autoref{fig:terra}.
+        \img[width=0.5\linewidth]{images/aer.png}{Terra API reference.}{terra}
+
+There is literally no description of what each object is used for and how it can be utilized with respect to a quantum circuit, transpiling, or visualization. A little description of each of them would make it more beginner-friendly and easier to reference.
+    \item Following the discussion of the API reference, it would be great if while giving an example of how functions worked, if the API reference could also link you to the return object in question and give an example output.
+	For example, consider \autoref{fig:api}.
+    \img[width=0.6\linewidth]{images/api.png}{\texttt{execute} API reference.}{api}
+
+    It describes the API reference for execute.
+    While it does have a link to the return object, it doesn’t tell us how we can utilize the job instance of Base Job.
+    Some functions don’t even have example usage, so there is quite a good amount of flipping back and forth to understand the API.
+
+\end{itemize}
+
+
 
 \subsection{Translating key concepts}
 
-As is our understanding, below are some key concepts in quantum programming as they are referred to with PyQuil:
+As is our understanding, below are some key concepts in quantum programming as they are referred to with Qiskit:
+
 \begin{itemize}
-    \item \textbf{quil}: pyquil program ($H$(0) $H$(1) … $H$($n$)).
-    \item \textbf{native quil}: modified quil program that is dependent on the ISA of the compiler, built of all native rotations matrices.
-    \item \textbf{PyQuilExecutableResponse:} Executable for a QVM or QPU.
-    \item \textbf{RX gate:} Universal gate for native quil, rotation gate for angle $= \pm\pi/2$.
-    \item \textbf{RZ gate:} Universal gate for native quil, rotation gate for an arbitrary angle.
-    \item \textbf{CZ gate:} Universal gate for native quil, Controlled-Z gate for neighboring qubits.
-    \item \textbf{Measure:} Measure instruction to measure qubit state into a classical register.
+    \item \textbf{Backend}:  	Overarching class that envelops different providers (Aer or IBMQ) and their simulators
+    \item \textbf{Shots}: 	Number of Trials
+    \item \textbf{Operator}:	Objects with a matrix that can be applied onto a Qiskit circuit
+    \item \textbf{Transpiler}:	Circuit -> Circuit. Primarily used to optimize of gates for a quantum program. It is used to optimize and produce better circuits for more robust implementation
+    \item \textbf{Terra}:	Foundation of Qiskit and has the underlying modules to build circuits, transpile, providers, visualization etc.
+    \item \textbf{Aer}:	High Performant simulators that allow the development of quantum programs to happen faster
+    \item \textbf{Ignis}:	Combatting noise through mitigation and filters and control over errors and gates
+    \item \textbf{Aqua}:	For real-world application and algorithms
 \end{itemize}
+
+\subsection{Type checking in Qiskit}
+
+Qiskit automatically checks if custom matrices are unitary. Extremely important in the case of ensuring nothing exceedingly strange happens to our output. Qiskit also checks whether or not the dimensions of the custom gate you created matches the range you specified when you append it to the circuit.
+
+\begin{figure}[h]
+    \centering
+    \begin{lstlisting}[numbers=none, language=Python]
+    circuit.append(Uf, range(n))
+\end{lstlisting}
+\end{figure}
+
+If the length of the range you supply doesn’t match the dimensions of the Operator, Qiskit will throw an error to prevent undefined behavior.
 
 \subsection{Joining PyQuil with classical code}
 
