@@ -5,7 +5,6 @@ from qiskit.visualization import plot_histogram
 simulator = Aer.get_backend('qasm_simulator')
 # Create a Quantum Circuit acting on the q register
 circuit = QuantumCircuit(2, 2)
-1
 # Add a H gate on qubit 0
 circuit.h(0)
 # Add a CX (CNOT) gate on control qubit 0 and target qubit 1
