@@ -420,11 +420,11 @@ For Grover's algorithm, the entire circuit is to be called once, but the Grover 
 As such, it is natural that the execution time for each of these algorithms increases at a double-exponential rate.
 On a log-log graph, the plots for these two algorithms' growth rates would indeed appear in a linear form.
 
-\section{Reflection on PyQuil}
+\section{Reflection on Qiskit}
 
-\subsection{Learning to use PyQuil}
+\subsection{Learning to use Qiskit}
 
-Some aspects of Qiskit that were easy to learn are:
+Some aspects of Qiskit that were rather easy to learn are:
 \begin{itemize}
     \item For basic circuits, Qiskit is incredibly intuitive. When we look at how to utilize multiple basic gates such as Hadamard or CNOT, we can easily instantiate them into our circuit by applying a range, with \texttt{circuit.H(range(n))}.
 This proved to be extremely useful and much easier to read when debugging in the future. It also gave a lot of flexibility in terms of easily maneuvering our gates across qubits.
@@ -534,16 +534,6 @@ Qiskit automatically checks if custom matrices are unitary. Extremely important 
 \end{figure}
 
 If the length of the range you supply doesn’t match the dimensions of the Operator, Qiskit will throw an error to prevent undefined behavior.
-
-\subsection{Joining PyQuil with classical code}
-
-Our approach to our PyQuil implementation was to make the most robust program possible to show the true power of quantum computing.
-We reasoned that user input will most likely lead to undefined behavior and decided to mitigate that by randomizing function parameters.
-While doing so, we made it easy to substitute our function parameters with whatever desired parameters of your choosing, but for the purposes of showing the prowess of quantum computing, we reasoned it would be best to abstract that classical input.
-
-For example, Deutsch-Josza gave users the ability to choose if they wanted a balanced or constant function as opposed to putting in their own function.
-If we allowed users to put in their own function, we would first have to check whether the function is balanced or constant classically to determine if it was a valid function to pass into our algorithm.
-This would entirely defeat the purpose of running the algorithm, hence the utilization of entirely random balanced/constant $U_f$ matrices.
 
 \nocite{pyquil}
 \nocite{Qiskit}
