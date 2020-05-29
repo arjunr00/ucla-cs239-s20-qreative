@@ -35,6 +35,7 @@ def unit_test(n):
         print(f'Generating oracle matrix for {n}-qubit Grover .. ', end='', flush=True)
         U_f = oracle.gen_matrix(mapping, n, 1)
         print('done')
+        
     else:
         print(f'Loading U_f for {n}-qubit Grover from {SAVEDIR}grover{str(n)}.npy .. ', end='', flush=True)
         U_f = Operator(np.load(f'{SAVEDIR}grover{str(n)}.npy'))   
