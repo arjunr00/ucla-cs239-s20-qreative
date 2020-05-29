@@ -30,8 +30,13 @@ def is_valid(s, mapping):
 
 def getUf(n, reload):
     path = f'uf/simon/simon{n}.npy'
+    SAVEDIR = 'uf/simon/'
+    SLIST = 's_list.npy'
+
     if not reload and os.path.exists(path):
         U_f = np.load(path)
+        s_list = np.load(SAVEDIR+SLIST, allow_pickle=True).item()
+        s = s_list[n]
     else:
         SAVEDIR = 'uf/simon/'
         SLIST = 's_list.npy'
@@ -50,7 +55,7 @@ def getUf(n, reload):
         np.save(SAVEDIR + SLIST, s_list, allow_pickle=True)
         U_f = oracle.gen_matrix(mapping, n, n)
 
-    return U_f
+    return U_f, s
 
 def is_lin_indep(potential_ys):
     return ('0' * n) not in potential_ys and len(potential_ys) == len(set(potential_ys))
@@ -77,15 +82,10 @@ def check_validity(potential_ys, s):
 
 def qc_program(n, t, reload, verbose):
     trials = (n-1) * (4*t)
-    SAVEDIR = 'uf/simon/'
-    SLIST = 's_list.npy'
 
-    if os.path.exists(SAVEDIR + SLIST):
-        s = np.load(SAVEDIR + SLIST, allow_pickle=True).item()[n]
-    else:
-        s = None
+    u_f, s = getUf(n,reload)
 
-    U_f = Operator(getUf(n, reload))
+    U_f = Operator(u_f)
     simulator = Aer.get_backend('qasm_simulator')
     circuit = QuantumCircuit(2*n, n)
 
