@@ -86,11 +86,9 @@ def init_bit_mapping(n, algo=None, func=None):
         indices = [ 0 ] * int(len(qubits)/2) \
                 + [ 1 ] * int(len(qubits)/2) \
                 + [ i + 1 for i in range (len(qubits)) ]
-        print(indices)
         k = random.choice(indices)
         # There are k values of x for which f returns 1
         val1 = random.sample(qubits, k)
-        print(val1)
         # f returns 0 for everything else
         val0 = set(qubits) - set(val1)
         oracle_map = {i: '1' for i in val1}
