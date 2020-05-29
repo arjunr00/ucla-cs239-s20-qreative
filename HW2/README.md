@@ -1,6 +1,6 @@
 # CS 239 - Qiskit Implementation - HW 2
 
-Pyquil implementation of the following algorithms:
+Qiskit implementation of the following algorithms:
 
 - Deutsch-Josza
 - Bernstein-Vazirani
