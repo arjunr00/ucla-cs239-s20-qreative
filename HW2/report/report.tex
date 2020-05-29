@@ -1,0 +1,504 @@
+\documentclass[12pt]{article}
+
+\usepackage{report}
+\usepackage{braket}
+\usepackage{amsthm}
+\usetikzlibrary{quantikz}
+
+\orgname{COM SCI 239}
+\project{Quantum Programming}
+\title{Algorithms in Qiskit}
+\author{Arjun Raghavan and Bryan Pan}
+\date{May 29, 2020}
+\contentstrue
+
+\newtheorem{lemma}{Lemma}
+
+\begin{filecontents}{\jobname.bib}
+    @misc{ Qiskit,
+           author = {H{\'e}ctor Abraham and AduOffei and Ismail Yunus Akhalwaya and Gadi Aleksandrowicz and Thomas Alexander and Gadi Alexandrowics and Eli Arbel and Abraham Asfaw and Carlos Azaustre and AzizNgoueya and Panagiotis Barkoutsos and George Barron and Luciano Bello and Yael Ben-Haim and Daniel Bevenius and Lev S. Bishop and Sorin Bolos and Samuel Bosch and Sergey Bravyi and David Bucher and Artemiy Burov and Fran Cabrera and Padraic Calpin and Lauren Capelluto and Jorge Carballo and Gin{\'e}s Carrascal and Adrian Chen and Chun-Fu Chen and Richard Chen and Jerry M. Chow and Christian Claus and Christian Clauss and Abigail J. Cross and Andrew W. Cross and Simon Cross and Juan Cruz-Benito and Chris Culver and Antonio D. C{\'o}rcoles-Gonzales and Sean Dague and Tareq El Dandachi and Matthieu Dartiailh and DavideFrr and Abd{\'o}n Rodr{\'\i}guez Davila and Anton Dekusar and Delton Ding and Jun Doi and Eric Drechsler and Drew and Eugene Dumitrescu and Karel Dumon and Ivan Duran and Kareem EL-Safty and Eric Eastman and Pieter Eendebak and Daniel Egger and Mark Everitt and Paco Mart{\'\i}n Fern{\'a}ndez and Axel Hern{\'a}ndez Ferrera and Albert Frisch and Andreas Fuhrer and MELVIN GEORGE and Julien Gacon and Gadi and Borja Godoy Gago and Claudio Gambella and Jay M. Gambetta and Adhisha Gammanpila and Luis Garcia and Shelly Garion and Austin Gilliam and Juan Gomez-Mosquera and Salvador de la Puente Gonz{\'a}lez and Jesse Gorzinski and Ian Gould and Donny Greenberg and Dmitry Grinko and Wen Guan and John A. Gunnels and Mikael Haglund and Isabel Haide and Ikko Hamamura and Vojtech Havlicek and Joe Hellmers and {\L}ukasz Herok and Stefan Hillmich and Hiroshi Horii and Connor Howington and Shaohan Hu and Wei Hu and Haruki Imai and Takashi Imamichi and Kazuaki Ishizaki and Raban Iten and Toshinari Itoko and JamesSeaward and Ali Javadi and Ali Javadi-Abhari and Jessica and Kiran Johns and Tal Kachmann and Naoki Kanazawa and Kang-Bae and Anton Karazeev and Paul Kassebaum and Spencer King and Knabberjoe and Arseny Kovyrshin and Rajiv Krishnakumar and Vivek Krishnan and Kevin Krsulich and Gawel Kus and Ryan LaRose and Rapha{\"e}l Lambert and Joe Latone and Scott Lawrence and Dennis Liu and Peng Liu and Yunho Maeng and Aleksei Malyshev and Jakub Marecek and Manoel Marques and Dolph Mathews and Atsushi Matsuo and Douglas T. McClure and Cameron McGarry and David McKay and Dan McPherson and Srujan Meesala and Martin Mevissen and Antonio Mezzacapo and Rohit Midha and Zlatko Minev and Abby Mitchell and Nikolaj Moll and Michael Duane Mooring and Renier Morales and Niall Moran and MrF and Prakash Murali and Jan M{\"u}ggenburg and David Nadlinger and Ken Nakanishi and Giacomo Nannicini and Paul Nation and Edwin Navarro and Yehuda Naveh and Scott Wyman Neagle and Patrick Neuweiler and Pradeep Niroula and Hassi Norlen and Lee James O'Riordan and Oluwatobi Ogunbayo and Pauline Ollitrault and Steven Oud and Dan Padilha and Hanhee Paik and Simone Perriello and Anna Phan and Francesco Piro and Marco Pistoia and Alejandro Pozas-iKerstjens and Viktor Prutyanov and Daniel Puzzuoli and Jes{\'u}s P{\'e}rez and Quintiii and Rudy Raymond and Rafael Mart{\'\i}n-Cuevas Redondo and Max Reuter and Julia Rice and Diego M. Rodr{\'\i}guez and RohithKarur and Max Rossmannek and Mingi Ryu and Tharrmashastha SAPV and SamFerracin and Martin Sandberg and Hayk Sargsyan and Ninad Sathaye and Bruno Schmitt and Chris Schnabel and Zachary Schoenfeld and Travis L. Scholten and Eddie Schoute and Joachim Schwarm and Ismael Faro Sertage and Kanav Setia and Nathan Shammah and Yunong Shi and Adenilton Silva and Andrea Simonetto and Nick Singstock and Yukio Siraichi and Iskandar Sitdikov and Seyon Sivarajah and Magnus Berg Sletfjerding and John A. Smolin and Mathias Soeken and Igor Olegovich Sokolov and SooluThomas and Dominik Steenken and Matt Stypulkoski and Jack Suen and Shaojun Sun and Kevin J. Sung and Hitomi Takahashi and Ivano Tavernelli and Charles Taylor and Pete Taylour and Soolu Thomas and Mathieu Tillet and Maddy Tod and Enrique de la Torre and Kenso Trabing and Matthew Treinish and TrishaPe and Wes Turner and Yotam Vaknin and Carmen Recio Valcarce and Francois Varchon and Almudena Carrera Vazquez and Desiree Vogt-Lee and Christophe Vuillot and James Weaver and Rafal Wieczorek and Jonathan A. Wildstrom and Robert Wille and Erick Winston and Jack J. Woehr and Stefan Woerner and Ryan Woo and Christopher J. Wood and Ryan Wood and Stephen Wood and Steve Wood and James Wootton and Daniyar Yeralin and Richard Young and Jessie Yu and Christopher Zachow and Laura Zdanski and Christa Zoufal and Zoufalc and a-matsuo and adekusar-drl and azulehner and bcamorrison and brandhsn and chlorophyll-zz and dan1pal and dime10 and drholmie and elfrocampeador and faisaldebouni and fanizzamarco and gadial and gruu and jliu45 and kanejess and klinvill and kurarrr and lerongil and ma5x and merav-aharoni and michelle4654 and ordmoj and sethmerkel and strickroman and sumitpuri and tigerjack and toural and vvilpas and welien and willhbang and yang.luh and yelojakit and yotamvakninibm},
+           title = {Qiskit: An Open-source Framework for Quantum Computing},
+           year = {2019},
+           doi = {10.5281/zenodo.2562110}
+    },
+    @misc{pyquil,
+        title={A Practical Quantum Instruction Set Architecture},
+        author={Robert S. Smith and Michael J. Curtis and William J. Zeng},
+        year={2016},
+        eprint={1608.03355},
+        archivePrefix={arXiv},
+        primaryClass={quant-ph}
+    }
+    @techreport{pep8,
+        author  = {Guido van Rossum and Barry Warsaw and Nick Coghlan},
+        title   = {Style Guide for {Python} Code},
+        year    = {2001},
+        type    = {PEP},
+        number  = {8},
+        url     = {https://www.python.org/dev/peps/pep-0008/},
+    },
+    @article{numpy,
+        author={S. {van der Walt} and S. C. {Colbert} and G. {Varoquaux}},
+        journal={Computing in Science \& Engineering},
+        title={The {NumPy} Array: A Structure for Efficient Numerical Computation},
+        year={2011},
+        volume={13},
+        number={2},
+        pages={22-30},
+    },
+    @book{python3,
+        author = {Van Rossum, Guido and Drake, Fred L.},
+        title = {Python 3 Reference Manual},
+        year = {2009},
+        isbn = {1441412697},
+        publisher = {CreateSpace},
+        address = {Scotts Valley, CA}
+    },
+    @manual{cirq,
+        author = "{The Cirq Developers}",
+        title = {Cirq Documentation},
+        year = {2020}
+    },
+    @manual{operators,
+        author = {Qiskit},
+        title = {Operators},
+        year = {2020},
+        note = {\url{https://qiskit.org/documentation/tutorials/circuits_advanced/2_operators_overview.html}}
+    },
+    @manual{circuits,
+        author = {Qiskit},
+        title = {QuantumCircuits},
+        year = {2020},
+        note = {\url{https://qiskit.org/documentation/apidoc/circuit.html}}
+    },
+    @manual{gates,
+        author = {Qiskit},
+        title = {Proving Universality},
+        year = {2020},
+        note = {\url{https://qiskit.org/textbook/ch-gates/proving-universality.html}}
+    },
+    @article{opt,
+      author    = {Xin Zhang and
+                   Hong Xiang and
+                   Tao Xiang and
+                   Li Fu and
+                   Jun Sang},
+      title     = {An efficient quantum circuits optimizing scheme compared with QISKit},
+      journal   = {CoRR},
+      volume    = {abs/1807.01703},
+      year      = {2018},
+      url       = {http://arxiv.org/abs/1807.01703},
+      archivePrefix = {arXiv},
+      eprint    = {1807.01703},
+      timestamp = {Mon, 13 Aug 2018 16:48:09 +0200},
+      biburl    = {https://dblp.org/rec/journals/corr/abs-1807-01703.bib},
+      bibsource = {dblp computer science bibliography, https://dblp.org}
+    },
+    @manual{rigetti,
+        author = {Rigetti},
+        title = {Forest SDK Documentation},
+        year = {2020}
+    }
+\end{filecontents}
+
+\begin{document}
+\mktitle
+\startbody
+
+\section{Design}
+
+\subsection[Mathematical explanation]{Mathematical explanation\protect\footnote{\textbf{NB:} This section is identical to Section 1.1 in the \emph{Algorithms in PyQuil} report.  Regardless, it is repeated here for the sake of completeness.}}
+
+All four algorithms take as input a function $f$ in the form:
+\[
+    f : \{0,1\}^n \to \{0,1\}^m
+\]
+In the case of Deutsch-Josza, Bernstein-Vazirani, and Grover, we have $m=1$.
+Simon, on the other hand, has $m=n$.
+
+For Deutsch-Josza, Bernstein-Vazirani, and Simon, the quantum oracle of $f$, denoted $U_f$, is defined as:
+\[
+    U_f\ket{x}\ket{b} = \ket{x}\ket{b \oplus f(x)}
+\]
+Here, we have $b \in \{0,1\}^m$.
+The $\oplus$ operator represents bitwise XOR, or equivalently bitwise addition mod 2.
+
+Grover's algorithm makes use of a gate denoted by $Z_f$, which is defined as:
+\[
+    Z_f\ket{x} = (-1)^{f(x)}\ket{x}
+\]
+Notice that this is precisely the application of the phase kickback trick for gates of a form equivalent to $U_f$ where $\ket{b} = \ket{-}$:
+\[
+    Z_f\ket{x}\ket{-} = (-1)^{f(x)}\ket{x}\ket{-}
+\]
+Clearly, we can also define $Z_f$ as a quantum oracle for Grover's algorithm in the same way $U_f$ was defined for the three other algorithms.
+Given that all four algorithms' quantum oracles have the same general form, we created a single function which could generate a quantum oracle and reused it for each program.
+
+\begin{lemma}
+    $\sum_{q \in \{0,1\}^k}{\ket{q}\bra{q}} = I_{2^k}$ where $I_{2^k}$ is the identity matrix in $\mathcal{H}_{2^k}$ (corresponding to $k$ qubits).
+\end{lemma}
+
+\begin{proof}
+    Let $q \in \{0, 1\}^k$.
+    We have $\ket{q} = \begin{bmatrix} q_1 & q_2 & \dots & q_{2^k} \end{bmatrix}^T$ where $q_i = 1$  for some $1 \le i \le 2^k$ and $q_j = 0$ for all $j \neq i$.
+    Then, $\ket{q}\bra{q}$ is a $2^k \times 2^k$ matrix of the form$ \begin{bmatrix} q_{ab} \end{bmatrix}$ where:
+    \[
+        q_{ab} =
+        \begin{cases}
+            1 & \text{if } a = b = i \\
+            0 & \text{otherwise}
+        \end{cases}
+    \]
+
+    For $\alpha, \beta \in \{0,1\}^k$ such that $\alpha \neq \beta$, we have $\ket{\alpha} \neq \ket{\beta} \implies \ket{\alpha}\bra{\alpha} \neq \ket{\beta}\bra{\beta}$.
+    Thus:
+    \begin{align*}
+        \sum_{q \in \{0,1\}^k}{\ket{q}\bra{q}} &=
+            \begin{bmatrix}
+                1 & 0 & \dots & 0 \\
+                0 & 0 & \dots & 0 \\
+                \vdots & \vdots & \ddots & \vdots \\
+                0 & 0 & \dots & 0
+            \end{bmatrix} +
+            \begin{bmatrix}
+                0 & 0 & \dots & 0 \\
+                0 & 1 & \dots & 0 \\
+                \vdots & \vdots & \ddots & \vdots \\
+                0 & 0 & \dots & 0
+            \end{bmatrix} + \dots + 
+            \begin{bmatrix}
+                0 & 0 & \dots & 0 \\
+                0 & 0 & \dots & 0 \\
+                \vdots & \vdots & \ddots & \vdots \\
+                0 & 0 & \dots & 1
+            \end{bmatrix} = I_{2^k}
+    \end{align*}
+\end{proof}
+
+Consider the application of $U_f$ to the outer product of $\ket{x}\ket{b}$ with itself:
+\begin{align*}
+    U_f \ket{x}\ket{b}\bra{x}\bra{b} &= \ket{x}\ket{b \oplus f(x)} \bra{x}\bra{b} \\
+                                     &= \ket{x}\bra{x} \ket{b \oplus f(x)}\bra{b} \\
+\end{align*}
+
+Let $k = n+m$. By taking the sum of this over all bit strings $xb \in \{0,1\}^k$, we get:
+\begin{align*}
+    \sum_{xb \in \{0,1\}^{k}}U_f\left(\ket{x}\ket{b}\bra{x}\bra{b}\right)
+        &= U_f \left(\sum_{xb \in \{0,1\}^{k}}\ket{x}\ket{b}\bra{x}\bra{b}\right) \\
+        &= U_f \circ I_{2^{k}} \\
+        &= U_f
+\end{align*}
+
+And so:
+\begin{equation}\label{eq:1}
+        U_f = \sum_{xb \in \{0,1\}^{k}}\ket{x}\bra{x} \ket{b \oplus f(x)}\bra{b}
+\end{equation}
+
+\subsection{Python implementation}
+
+In our PyQuil assignment, we noted that we had to use the \href{https://numpy.org/}{\texttt{numpy}} library in order to implement \autoref{eq:1} in Python, as PyQuil does not have native methods of creating custom gates from scratch.
+Qiskit, on the other hand, possesses its own way to define and manipulate custom gates on the matrix level: the \texttt{Operator} class \cite{operators}, as seen in \autoref{code:py-uf}.
+
+We chose to make this change for a few reasons.
+For one, using the \texttt{Operator} class would allow for easier interoperability with actual Qiskit QuantumCircuits \cite{circuits}, and while we could just as easily use \texttt{numpy} to calculate $U_f$ and then convert it to an \texttt{Operator} just before appending it to a circuit, we felt that using the \texttt{Operator} class for said calculation would be more idiomatic Qiskit.
+Also, we found that interestingly, the \texttt{Operator} class was capable of performing the necessary tensor products rather faster than \texttt{numpy}.
+Specifically, the time taken to generate $U_f$ using \texttt{Operator} methods was about 0.847\% faster than doing so with \texttt{numpy} (the full set of readings is omitted for brevity).
+
+Apart from this minor change, our implementation of generating $U_f$ is the same it was with PyQuil.
+That is, as seen in \autoref{code:py-uf}, we still accept a function definition \texttt{f} in the form of a Python dictionary, not a physical function, for the same reasons as discussed in our PyQuil report (it allows more flexibility of input, and it makes it far easier to parametrize our solutions in \texttt{n}).
+
+Also, the \texttt{oracle.gen\_matrix} method, along with any other methods which require the dimension of the domain and/or range of $f$, still accepts \texttt{n} and \texttt{m} (as defined previously) as arguments.
+While \texttt{m} is algorithm-dependent and so assigned inside the code, the user can pass in a value for $n$ using the \texttt{-{}-num} option\footnote{Discussed in further detail in the README.}.
+
+\codesnippet[language=Python, linerange={134-155}, firstnumber=134]{../oracle.py}{Excerpt from the \texttt{gen\_matrix} function in \texttt{oracle.py} showing the implementation of \autoref{eq:1} using Qiskit's \texttt{Operator} class.}{py-uf}
+
+\subsubsection{Readability}
+
+In terms of the readability of our oracle functions such as the one seen in \autoref{code:py-uf}, there is not much we can say here that is different from what we described in our PyQuil report.
+Our reasons for implementing \texttt{gen\_matrix} as seen above are the same---we felt it is more concise to iterate through the decimal equivalents of \texttt{x} and \texttt{b} and extract relevant bits on the fly---and we still comment our code with PyDocs, loosely conforming to PEP/8 guidelines \cite{pep8}.
+
+In terms of the readability of our actual implementations of the different algorithms, we found that Qiskit's way of building quantum circuits with custom gates was in some ways more intuitive and cleaner than that of PyQuil.
+Compare the following lines of code:
+\begin{figure}[h]
+    \centering
+    \begin{lstlisting}[numbers=none, language=Python]
+    # p is a PyQuil Program, u_f is a NumPy matrix, n is the number of qubits
+    U_f_def = DefGate('U_f', u_f)
+    U_f = U_f_def.get_constructor()
+    p += U_f_def
+    p += U_f(*(tuple(range(n))))
+\end{lstlisting}
+    \label{code:#2}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \begin{lstlisting}[numbers=none, language=Python]
+    # circuit is a Qiskit QuantumCircuit, u_f is a NumPy matrix, n is the number of qubits
+    U_f = Operator(u_f)
+    circuit.append(U_f, list(range(n))[::-1])
+\end{lstlisting}
+    \label{code:#2}
+\end{figure}
+
+The equivalent Qiskit implementation is much less verbose, without sacrificing clarity.
+By accepting a list of qubit indices instead of requiring them to be passed as arguments, it is far easier to parametrize a gate in this manner.
+
+However, note the addition of \texttt{[::-1]} to the Qiskit code.
+One perhaps unintuitive aspect of Qiskit's multi-qubit gates is that qubits are ordered in reverse, where qubit 0 is the least significant qubit, and qubit $n$ is the most significant qubit.
+As such, the way we generate matrices for each $U_f$ require that we pass in a reversed list of qubits; similarly, for multi-qubit outputs, we must again reverse the output.
+
+\section{Evaluation}
+
+\subsection{Shared code}
+Just as with PyQuil, as opposed to copying identical sections of code between each of our four programs, we opted to have a central module, \texttt{oracle.py}, which contains common code relating to the generation of functions $f$ (bit mappings, to be precise) and quantum oracles, which was discussed in the previous section.
+
+Of course, there is still some duplication of code between programs.
+Each program has a \texttt{getUf} function (named \texttt{getZf} for Grover) which checks if a $U_f$ matrix for the desired value of $n$ has already been generated and stored\footnote{This generation and storing of matrices ahead of actually running the algorithms is discussed in the README.},
+in which case it loads it from its file; otherwise, it simply generates a new $U_f$.
+All the implementations of this function are identical.
+
+Also, our programs use the \href{https://docs.python.org/3/library/argparse.html}{\texttt{argparse}} library \cite{python3} to read and process user-defined options\footnote{Also discussed in the README.}.
+The code for doing so is largely the same across programs, save for some minor algorithm-specific differences (like the names).
+Furthermore, we included code that measures each program's execution time as well.
+
+Overall, we estimate that each program file has an average of approximately 33 lines of code that is shared (within a reasonable threshold of a few characters' difference) with the other files.
+Excluding \texttt{oracle.py}, the average length of a single program's Python file is 167 lines (not including .
+As such, the percentage of shared code between programs is approximately 20\%.
+
+Notice that this number is lower than the 31\% code reuse percentage quoted for PyQuil.
+We attribute this drop to the fact that, overall, Qiskit is less verbose than PyQuil, as well as the fact that we added some more wrapping code in order to measure execution time provide more verbose output if desired.
+
+It is possible for us to minimize code reuse.
+A lot of the aforementioned code to measure execution time is largely identical between programs, save for small differences.
+With more time, perhaps this could be removed and placed into a separate utility Python module.
+
+\subsection{Testing}
+
+As mentioned earlier, our implementation of generating and storing quantum oracle gate matrices and usage of \texttt{argparse} to handle user input greatly facilitated testing.
+As such, there was no compilation time to speak of, and execution was incredibly fast.
+Instead, we simply used Qiskit's Aer simulator as the backend for running our programs.
+
+For our implementation of Grover, we configured the program such that it would automatically calculate the minimum number of trials required to minimize error based on the size of the input using the equation $k = \lfloor\pi\sqrt{N}/4\rfloor$ with $N = 2^n$. For our implementation of Simon, given that a full "iteration" was $n-1$ applications of the quantum oracle (to generate $n-1$ values for $y$), we multiplied the user's input number of trials by $4$ to minimize error using the equation $\mathcal{P}(\text{not linearly independent}) = \exp(-t/4)$ with $t$ being the number of trials.
+
+We tested our code with a variety of values of $n$ (the length of the input bit string).
+For Simon and Grover, we also tested with differing values of $t$ (the number of trials); this was unnecessary for Deutsch-Josza and Bernstein-Vazirani, which are deterministic algorithms.
+We found that our results very closely matched the expected outcomes of applying our algorithms.
+
+For each value of $n$ up to about 5-9 depending on the algorithm, we generated randomized functions (following the appropriate constraints for its corresponding algorithm) and subsequently $U_f$ matrices, storing them locally for later use.
+We limited $n$ to 5-9 mostly because any values greater than those resulted in massive $U_f$ matrices (the file size of a $10$-qubit $U_f$ matrix stored as an \texttt{.npy} array exceeded 100 MB), or otherwise took too much time to generate such a $U_f$.
+
+For smaller $n$, however, we were able to make some observations:
+
+\begin{itemize}
+    \item Deutsch-Josza was the fastest algorithm of the four, able to reach 9 qubits before crashing.
+    \item Whether the input function to Deutsch-Josza was balanced or constant did not seem to signficantly affect execution time.
+    \item Despite being probabilistic, Simon's and Grover's algorithms are in fact quite accurate even for a smaller number of trials. Of course, this is in an ideal setting on a simulator without noise.
+    \item For PyQuil, we found that compiling our code was incredibly CPU-intensive, taking many minutes to simply compile our quantum circuit into the QUIL assembly language.
+        On the other hand, Qiskit needed to do no such thing, perhaps due to the fact that Qiskit's fundamental gate set is far larger than PyQuil---PyQuil at its core uses the gate operators $R_Z(\theta)$, $R_X(\frac{k\pi}{2})$, $CZ$ \cite{rigetti}, while Qiskit uses the universal gate set $U_1$, $U_2$, $U_3$, $CX$ and $I$ \cite{gates}, allowing for much more flexibility in implementing other gates \cite{opt}.
+    \item We were only able to test Simon's algorithm with up to 5 input qubits; beyond that, the time taken to generate $U_f$ was unreasonably long. This is expected behavior; while the other three algorithms have one additional helper qubit, Simon's algorithm must use $n$ additional qubits. Thus, increasing the input bitstring by 1 causes the resulting quantum oracle matrix to balloon to $2^4 = 16$ times its original size.
+\end{itemize}
+
+\subsection{Scalability}\label{section:scale}
+
+As with PyQuil, we tested our code on a machine with an \texttt{8-core Intel(R) Core(TM) i7-8550U @ 1.80GHz} and a RAM of \texttt{16GiB System Memory} (x2 \texttt{8GiB SODIMM DDR4 Synchronous Unbuffered 2400 MHz}).
+
+As mentioned earlier, there was no compilation time to speak of as there was with PyQuil, and we 
+Thus, we were able to measure execution time simply by using Python's built-in \texttt{time} module, measuring the time taken to call our functions (from the creation of a circuit to the obtaining of a \texttt{counts} object).
+
+\diagram{%
+    \begin{axis}[
+        xlabel={Length $n$ of input bitstring $x$},
+        ylabel={Execution time [ms]},
+        xmin=0, xmax=9,
+        ymin=0, ymax=30000,
+        xtick={0,1,2,3,4,5,6,7,8,9},
+        ymode=log,
+        log basis y=10,
+        legend pos=outer north east,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    \addplot[
+        color=blue,
+        mark=square,
+        ]
+        coordinates {
+            (1,445.8)
+            (2, 510.7)
+            (3, 630.0)
+            (4, 513.7)
+            (5, 702.3)
+            (6, 734.1)
+            (7, 775.1)
+            (8, 893.0)
+            (9, 1934.8)
+        };
+        \addlegendentry{Deutsch-Josza (Balanced)}
+    \addplot[
+        color=cyan,
+        mark=square,
+        ]
+        coordinates {
+            (1, 464.8)
+            (2, 466.3)
+            (3, 531.6)
+            (4, 508.1)
+            (5, 682.5)
+            (6, 696.5)
+            (7, 787.9)
+            (8, 945.7)
+            (9, 1922.3)
+        };
+        \addlegendentry{Deutsch-Josza (Constant)}
+    \addplot[
+        color=olive,
+        mark=square,
+        ]
+        coordinates {
+            (1, 463.4)
+            (2, 507.8)
+            (3, 490.5)
+            (4, 521.5)
+            (5, 670.1)
+            (6, 649.1)
+            (7, 754.3)
+            (8, 917.8)
+            (9, 2012.6)
+        };
+        \addlegendentry{Bernstein-Vazirani}
+    \addplot[
+        color=orange,
+        mark=square,
+        ]
+        coordinates {
+            (2, 196.3)
+            (3, 332.0)
+            (4, 377.7)
+            (5, 2589.6)
+        };
+        \addlegendentry{Simon}
+    \addplot[
+        color=purple,
+        mark=square,
+        ]
+        coordinates {
+            (1, 59.3)
+            (2, 59.8)
+            (3, 62.2)
+            (4, 63.7)
+            (5, 103.7)
+            (6, 202.8)
+            (7, 555.6)
+            (8, 3019.3)
+            (9, 24526.8)
+        };
+        \addlegendentry{Grover}
+    \end{axis}
+}{Graph of execution time (ms) vs. the length of the input bitstring. Note that the $y$-axis is logarithmically scaled.}{exec}
+
+\autoref{fig:exec} portrays execution time against $n$.
+The execution time growths of Deutsch-Josza and Bernstein-Vazirani are both very similar, with a soft exponentional growth (shown on a logarithmic graph as apparently linear).
+Simon's algorithm appears to grow exponentially, at a much, much faster rate than DJ and BV.
+
+Note the execution time growth for Grover's algorithm, on the other hand, which has the shape of an exponential curve despite being plotted on a logarithmic scale.
+Although enough data could not be collected for Simon's algorithm, it is expected that a similar growth would be observed for it as well.
+This is expected behavior, and appears for a specific reason: the number of times Simon's and Grover's algorithm are to be run is directly dependent on the number of input qubits.
+In the case of Simon's algorithm, to minimize error, the entire circuit must be executed $(n-1)\times4m$ times, where $m$ is a user-defined parameter (chosen to be equal to $5$ for our tests).
+For Grover's algorithm, the entire circuit is to be called once, but the Grover rotation gate is appended to the circuit $\lfloor\frac{\pi}{4}\sqrt{2^n}\rfloor$ times.
+As such, it is natural that the execution time for each of these algorithms increases at a double-exponential rate.
+On a log-log graph, the plots for these two algorithms' growth rates would indeed appear in a linear form.
+
+\section{Reflection on PyQuil}
+
+\subsection{Learning to use PyQuil}
+
+Our brief introduction to PyQuil showed us that there were a handful of gates which were provided as part of the library.
+A such, we expected that it would be challenging to create our own gates.
+Fortunately, we discovered that it was in fact very simple.
+We had to generate our own matrix, which was straightforward with the help of \texttt{numpy}, but the creation of an actual quantum gate was quite literally only two lines (see \autoref{code:pyquil-gate}).
+
+\codesnippet[language=Python, linerange={57-58}, firstnumber=57]{../simon.py}{The two lines needed to create a quantum gate that can be used in a PyQuil program. Excerpt from \texttt{simon.py}}{pyquil-gate}
+
+In addition, building the program was actually quite easy and intuitive.
+It seemed quite natural to use simple concatenation operators as \texttt{p+=<gate>} to build our program.
+The ability to ``run and measure'' was also very helpful, because it entirely abstracted the compilation process from quil $\to$ native quil $\to$ binary executable $\to$ result from the user.
+For people who are more interested in functionality and output, it is extremely useful to have that process abstracted but also readily available to use.
+The \texttt{quilc} and \texttt{qvm} server logs were verbose resources for debugging, whether it be a memory issue or a logical issue in our coding.
+Indeed, the act of programming these circuits was actually trivial in comparison to debugging and understanding the underlying operation of the simulator.
+
+We of course had some gripes with PyQuil.
+As mentioned previously, the ability to pre-compile executables or amortize compilation time a lot quicker is something that PyQuil lacks support for.
+Also, we ran into a lot of problems with the allocated heap for \texttt{qvm} running out of space.
+Some way to mitigate the sheer amount of space used or to understand how to combat it technically would be useful.
+Finally, it would be nice to better methods of visualizing our quantum circuits.
+Especially while using our custom gates, we had to resort to a rather unusual notation to expand a tuple into function arguments (which can be seen in our submitted code, as seen in \autoref{code:simon-tuple}.
+
+\codesnippet[language=Python, linerange={66-66}, firstnumber=66]{../simon.py}{Passing a variable number of inputs to a custom quantum gate. Excerpt from \texttt{simon.py}}{simon-tuple}
+
+We do have the option of doing \texttt{print(to\_latex(p))} to generate a Ti\textit{k}z diagram, but it is a cumbersome process to copy the output into a file and compile it into a PDF or PNG when we would much prefer to be able to instantly view the state of our circuit (not unlike how Google's Cirq does it \cite{cirq}).
+
+% \mathdiag{%
+%     \lstick{\ket{q_{0}}} & \gate{H} & \qw & \gate[wires=3]{Z_f} & \gate{H} & \gate[wires=2]{Z_0} & \gate{H} & \qw \\%
+%     \lstick{\ket{q_{1}}} & \gate{H} & \qw & \qw & \gate{H} & \qw & \gate{H} & \qw \\%
+%     \lstick{\ket{q_{2}}} & \gate{X} & \gate{H} & \qw & \qw & \qw & \qw & \qw%
+% }{caption}{label}
+
+\subsection{A suggestion}
+
+Similar to how a C or C++ program can be compiled by something like \texttt{gcc}, it would be extremely beneficial if PyQuil could support externally saving compiled quantum programs.
+Obviously, it would be somewhat impractical as to the volatility of user input.
+For example, a compiled program or \texttt{PyQuilExecutableResponse} for a \texttt{3q-qvm} would not work for a 5 qubit system.
+Still, a way to reduce programming downtime would be at least to amortize compilation.
+
+We also noticed that one of the biggest challenges in terms of time was the conversion of pyquil program to native quil or (shown in the logs as \texttt{quil\_to\_native\_quil}).
+While PyQuil supports a handful of gates including the Hadamard gate, controlled NOT, and more, Rigetti QPUs (and by extension the QVM we would use) have gate operators constrained to lie in $RZ(\theta)$, $RX(k\pi/2)$, and $CZ$---in other words, in the $Z$ basis.
+With simple quantum oracle matrices like identity matrices, the compiler did not have to worry about calculating the correct rotation matrices.
+However, for most other gates, especially unoptimized ones like our generated $U_f$ gates, the compiler would spend a lot of time transforming them into a combination of the three above gates.
+
+Unfortunately, this always needs to be executed after every step, and the PyquilExecutableResponse is sometimes inspectable.
+For security and for compilation purposes, it might be better to make the compiled object to be a BinaryExecutableResponse and opaque.
+
+\subsection{Reading the documentation}
+
+The documentation for PyQuil provides a fine introduction to PyQuil and quantum programming.
+The \textbf{Getting Started} page clearly and concisely explains how to build a quantum circuit, make a custom gate, and more.
+Also, the documentation provides a lot of sample code for everything it explains, which was especially useful for the both of us, given that we are both not overly experienced with Python\footnote{Our fortes lie more in the field of statically-typed languages.}.
+We discovered an \textbf{Exercises} section in the documentation which we want to explore further; it provides a set of problems and solutions for implementing quantum algorithms. (We chose not to look at this in more detail during this assignment because one of these problems was in fact Grover's algorithm! We had rather figure that out ourselves.)
+
+However, explaining more intermediate or advanced usage and concepts is where the documentation fell short, in our opinion.
+We found it difficult to understand things like what exactly \texttt{run\_and\_measure} does under all those layers of abstraction, or how to manually compile and store a PyQuil program.
+A specific issue we faced was what kind of QVM to choose when running our programs.
+It seemed there were only a couple of options, such as \texttt{9q-qvm} or \texttt{9q-square-qvm}.
+To use a larger number of qubits seemed impossible, until we discovered that the number of qubits in these directives could was in fact variable---we could just as easily use \texttt{3q-qvm} or \texttt{14q-qvm}.
+This was not very clearly stated in the documentation, relegated to a single statement under a block of code.
+However, the documentation seemed to lack information on the implication of choosing arbitrary values like this.
+It was entirely possible that there are certain numbers of qubits on a virtual QPU that more closely mimic a real QPU, but we were not aware of this.
+
+\subsection{Translating key concepts}
+
+As is our understanding, below are some key concepts in quantum programming as they are referred to with PyQuil:
+\begin{itemize}
+    \item \textbf{quil}: pyquil program ($H$(0) $H$(1) … $H$($n$)).
+    \item \textbf{native quil}: modified quil program that is dependent on the ISA of the compiler, built of all native rotations matrices.
+    \item \textbf{PyQuilExecutableResponse:} Executable for a QVM or QPU.
+    \item \textbf{RX gate:} Universal gate for native quil, rotation gate for angle $= \pm\pi/2$.
+    \item \textbf{RZ gate:} Universal gate for native quil, rotation gate for an arbitrary angle.
+    \item \textbf{CZ gate:} Universal gate for native quil, Controlled-Z gate for neighboring qubits.
+    \item \textbf{Measure:} Measure instruction to measure qubit state into a classical register.
+\end{itemize}
+
+\subsection{Joining PyQuil with classical code}
+
+Our approach to our PyQuil implementation was to make the most robust program possible to show the true power of quantum computing.
+We reasoned that user input will most likely lead to undefined behavior and decided to mitigate that by randomizing function parameters.
+While doing so, we made it easy to substitute our function parameters with whatever desired parameters of your choosing, but for the purposes of showing the prowess of quantum computing, we reasoned it would be best to abstract that classical input.
+
+For example, Deutsch-Josza gave users the ability to choose if they wanted a balanced or constant function as opposed to putting in their own function.
+If we allowed users to put in their own function, we would first have to check whether the function is balanced or constant classically to determine if it was a valid function to pass into our algorithm.
+This would entirely defeat the purpose of running the algorithm, hence the utilization of entirely random balanced/constant $U_f$ matrices.
+
+\nocite{pyquil}
+\nocite{Qiskit}
+\bib{apalike}
+
+\end{document}
