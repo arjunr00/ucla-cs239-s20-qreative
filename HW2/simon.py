@@ -102,7 +102,7 @@ def qc_program(n, t, reload, verbose):
             continue
         if verbose:
             print(f'    Trial {i+1}:')
-        
+
         potential_ys = []
         for index, y in enumerate(results.keys()):
             potential_ys.append(y)
@@ -116,8 +116,8 @@ def qc_program(n, t, reload, verbose):
     if verbose:
         print('====================================\n')
     return None
-    
-parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Simon', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Simon on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 parser.set_defaults(reload=False, verbose=False)
 parser.add_argument("--num", "-n", type=int, default=3, help="Set length of input bitstring")
@@ -151,3 +151,17 @@ if __name__ == '__main__':
         ret_str = "Fail :("
     print(f'Simon\'s Algorithm: {ret_str}')
     print(f'(Took {end - start:.2f} s to complete.)')
+
+    # Store times
+    TIMES_FILE = 'times/simon.csv'
+
+    with open(TIMES_FILE, 'r') as file:
+        times = file.readlines()
+
+    lineno = n
+    line=times[lineno].split(',')
+    line[1] = f'{end - start:.4f}\n'
+    times[lineno] = ','.join(line)
+
+    with open(TIMES_FILE, 'w') as file:
+        file.writelines(times)
