@@ -15,12 +15,16 @@ def get_z0(n):
     m *= -1
     return m
 
-def get_zf(n, reload):
+def get_zf(n, reload, verbose):
     path = f'uf/grover/grover{n}.npy'
     if not reload and os.path.exists(path):
         Z_f = np.load(path)
     else:
+        if verbose: 
+            print(f'Getting new Zf .. ', end='', flush=True)
         Z_f = oracle.uf(n, 1, algo=oracle.Algos.GROVER)
+        if verbose:
+            print('done')
     return Z_f
 
 def check_validity(n, qubits, verbose):
@@ -52,7 +56,7 @@ def qc_program(n, reload, verbose):
         print(f'[k \u2248 \u230a(\u03c0\u221aN)/4\u230b = {k}\t(N = 2\u207f = 2^{n})]\n')
 
     z0 = Operator(get_z0(n))
-    zf = Operator(get_zf(n, reload))
+    zf = Operator(get_zf(n, reload, verbose))
 
     simulator = Aer.get_backend('qasm_simulator')
     circuit = QuantumCircuit(n+1, n)
@@ -69,9 +73,17 @@ def qc_program(n, reload, verbose):
         circuit.h(range(n))
 
     circuit.measure(range(n), range(n))
+    if verbose: 
+        print(f'Executing Circuit .. ', end='', flush=True)
     job = execute(circuit, simulator, shots=1)
+    if verbose: 
+        print('done')
     results = job.result().get_counts(circuit)
     qubits = [str(i) for i in results.keys()][0][::-1]
+
+    if verbose:
+        print(f'Measured Qubits: {qubits}')
+        print('====================================\n')
     return check_validity(n, qubits, verbose)
 
 
