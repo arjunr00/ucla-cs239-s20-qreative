@@ -21,7 +21,6 @@ def get_zf(n, reload):
         Z_f = np.load(path)
     else:
         Z_f = oracle.uf(n, 1, algo=oracle.Algos.GROVER)
-
     return Z_f
 
 def check_validity(n, qubits, verbose):
@@ -70,7 +69,6 @@ def qc_program(n, reload, verbose):
         circuit.h(range(n))
 
     circuit.measure(range(n), range(n))
-    print(circuit)
     job = execute(circuit, simulator, shots=1)
     results = job.result().get_counts(circuit)
     qubits = [str(i) for i in results.keys()][0][::-1]
@@ -79,7 +77,7 @@ def qc_program(n, reload, verbose):
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Grover', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.set_defaults(reload=False, verbose=False)
-parser.add_argument("--num", "-n", type=int, default=2, help="Set length of input bitstring")
+parser.add_argument("--num", "-n", type=int, default=4, help="Set length of input bitstring")
 parser.add_argument("--reload", "-r", action="store_true", help='Reload new U_f matrix')
 parser.add_argument("--verbose", "-v", action="store_true", help='Print out measured bits and steps')
 args = parser.parse_args()

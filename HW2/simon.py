@@ -95,6 +95,8 @@ def qc_program(n, t, reload, verbose):
 
     circuit.measure(range(n), range(n))
 
+    print(circuit)
+
     for i in range(4*t):
         job = execute(circuit, simulator, shots=(n-1))
         results = job.result().get_counts(circuit)
