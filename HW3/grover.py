@@ -6,9 +6,11 @@ import os
 import oracle
 import time
 
-from qiskit import QuantumCircuit, execute, Aer
+from qiskit import QuantumCircuit, execute, Aer, IBMQ, assemble, transpile
 from qiskit.visualization import plot_histogram
 from qiskit.quantum_info.operators import Operator
+
+from dotenv import load_dotenv
 
 def get_z0(n):
     m = np.identity(2**n)
@@ -36,9 +38,18 @@ def check_validity(n, qubits, verbose):
         return True
 
     f = np.load(FPATH, allow_pickle=True).item()[n]
+    success = 0
+    total = 0
+    for qubits, frequency in qubits.items():
+        if verbose:
+            print(f'    => f({qubits}) = {f[qubits]}')
+        if f[qubits[::-1]] == '1':
+            success += int(frequency)
+        total += frequency
     if verbose:
-        print(f'    => f({qubits}) = {f[qubits]}')
-    return f[qubits] == '1'
+        print(f'Number of Success: {success}')
+        print(f'Number Total: {total}')
+    return (success / total) > 0.5
 
 def generate_circuit(n, reload, v):
     SAVEDIR = 'plots/'
@@ -92,6 +103,9 @@ def generate_circuit(n, reload, v):
         print('done\n', flush=True)
     return circuit
 
+##################################
+###          LOCAL             ###
+##################################
 def qc_program(n, reload, verbose):
     circuit = generate_circuit(n, reload, verbose)
     simulator = Aer.get_backend('qasm_simulator')
@@ -108,6 +122,44 @@ def qc_program(n, reload, verbose):
         print(f'Measured Qubits: {qubits}')
         print('====================================\n')
     return check_validity(n, qubits, verbose)
+
+##################################
+###           IMBQ             ###
+##################################
+def load_api_token():
+  load_dotenv()
+  API_TOKEN = os.getenv('API_TOKEN')
+  IBMQ.save_account(API_TOKEN)
+
+def run_on_ibmq(n, reload, verbose, draw=False, waitForResult=False, backend='ibmq_burlington'):
+    print('Loading account .. ', end='', flush=True)
+    provider = IBMQ.load_account()
+    print('done')
+    backend = getattr(provider.backends, backend)
+    circuit = generate_circuit(n, reload, verbose)
+
+    print('Transpiling .. ', end='')
+    transpiled = transpile(circuit, backend)
+    print('done')
+    print('Assembling .. ', end='')
+    qobj = assemble(transpiled, backend, shots=1000)
+    print('done')
+    print(f'Sending to {backend} .. ', end='')
+    job = backend.run(qobj)
+    print('done')
+    if waitForResult:
+        print(f'Waiting for result .. ', end='', flush=True)
+        delayed_result = backend.retrieve_job(job.job_id()).result()
+        delayed_counts = delayed_result.get_counts()
+        print('done')
+        print(f'\nTotal counts: {delayed_counts}')
+        if verbose:
+            print(f'Measured Qubits: {qubits}')
+            print('====================================\n')
+        return check_validity(n, delayed_counts, verbose)
+    else:
+        print(f'\nJob ID: {job.job_id()}')
+        return False
 
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Grover', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -130,7 +182,8 @@ if __name__ == '__main__':
     print('=======================================================\n')
 
     start = time.time()
-    ret = qc_program(n, r, v)
+    # ret = qc_program(n, r, v)
+    ret = run_on_ibmq(n, r, v, waitForResult=True, backend="ibmq_qasm_simulator")
     end = time.time()
 
     if ret is True:
