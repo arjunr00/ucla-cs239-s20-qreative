@@ -1,0 +1,6 @@
+qiskit
+matplotlib
+ipywidgets
+seaborn
+pygments
+python-dotenv
