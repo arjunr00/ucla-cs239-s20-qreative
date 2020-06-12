@@ -1,5 +1,6 @@
 import numpy as np
 import argparse
+import matplotlib
 import math
 import os
 import oracle
@@ -39,13 +40,15 @@ def check_validity(n, qubits, verbose):
         print(f'    => f({qubits}) = {f[qubits]}')
     return f[qubits] == '1'
 
-def qc_program(n, reload, verbose):
+def generate_circuit(n, reload, v):
+    SAVEDIR = 'plots/'
+    CIRCUIT_FILENAME = f'grover_{n}.pdf'
     N = 2**n
     sqrtN = math.sqrt(N)
 
     # For "very large" N, this is a good approximation
     k = math.floor((math.pi * sqrtN)/4)
-    if verbose:
+    if v:
         print('====================================')
         # U+2248 is the Unicode encoding for approximately equal to
         # U+230A is the Unicode encoding for left floor
@@ -55,13 +58,16 @@ def qc_program(n, reload, verbose):
         # U+207f is the Unicode encoding for ^n
         print(f'[k \u2248 \u230a(\u03c0\u221aN)/4\u230b = {k}\t(N = 2\u207f = 2^{n})]\n')
 
+    if (v): print('Getting Z_0 .. ', end='', flush=True)
     z0 = Operator(get_z0(n))
-    zf = Operator(get_zf(n, reload, verbose))
+    if (v): print('done', flush=True)
+    if (v): print('Getting Z_f .. ', end='', flush=True)
+    zf = Operator(get_zf(n, reload, v))
+    if (v): print('done', flush=True)
 
-    simulator = Aer.get_backend('qasm_simulator')
-    circuit = QuantumCircuit(n+1, n)
-
+    if (v): print('Creating circuit .. ', end='', flush=True)
     # Intialize
+    circuit = QuantumCircuit(n+1, n)
     circuit.x(n)
     circuit.h(range(n+1))
     
@@ -73,6 +79,23 @@ def qc_program(n, reload, verbose):
         circuit.h(range(n))
 
     circuit.measure(range(n), range(n))
+
+    if v:
+        print('Circuit:', flush=True)
+        print(circuit.draw('text'), flush=True)
+        circuit.draw('mpl')
+        print(f'Saving circuit to {CIRCUIT_FILENAME} .. ', end='', flush=True)
+        if not os.path.exists(SAVEDIR):
+            os.mkdir(SAVEDIR)
+
+        matplotlib.pyplot.savefig(f'{SAVEDIR}{CIRCUIT_FILENAME}')
+        print('done\n', flush=True)
+    return circuit
+
+def qc_program(n, reload, verbose):
+    circuit = generate_circuit(n, reload, verbose)
+    simulator = Aer.get_backend('qasm_simulator')
+
     if verbose: 
         print(f'Executing Circuit .. ', end='', flush=True)
     job = execute(circuit, simulator, shots=1)
