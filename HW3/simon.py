@@ -80,13 +80,12 @@ def check_validity(potential_ys, s):
     else:
         return True
 
-def qc_program(n, t, reload, verbose):
+def generate_circuit(n, t, reload, verbose):
     trials = (n-1) * (4*t)
 
     u_f, s = getUf(n,reload)
-
     U_f = Operator(u_f)
-    simulator = Aer.get_backend('qasm_simulator')
+
     circuit = QuantumCircuit(2*n, n)
 
     circuit.h(range(n))
@@ -94,8 +93,16 @@ def qc_program(n, t, reload, verbose):
     circuit.h(range(n))
 
     circuit.measure(range(n), range(n))
-
     print(circuit)
+
+    return circuit, s
+
+##################################
+###          LOCAL             ###
+##################################
+def qc_program(n, t, reload, verbose):
+    circuit, s = generate_circuit(n, t, reload, verbose)
+    simulator = Aer.get_backend('qasm_simulator')
 
     for i in range(4*t):
         job = execute(circuit, simulator, shots=(n-1))
@@ -118,6 +125,42 @@ def qc_program(n, t, reload, verbose):
     if verbose:
         print('====================================\n')
     return None
+
+##################################
+###           IMBQ             ###
+##################################
+def load_api_token():
+  load_dotenv()
+  API_TOKEN = os.getenv('API_TOKEN')
+  IBMQ.save_account(API_TOKEN)
+
+# I think you just need to edit this to do the range stuff I did above in `qc_program`
+def run_on_ibmq(n, t, reload, verbose, draw=False, waitForResult=False, backend='ibmq_burlington'):
+    print('Loading account .. ', end='', flush=True)
+    provider = IBMQ.load_account()
+    print('done')
+    backend = getattr(provider.backends, backend)
+    circuit = generate_circuit(n, t, reload, verbose)
+
+    print('Transpiling .. ', end='')
+    transpiled = transpile(circuit, backend)
+    print('done')
+    print('Assembling .. ', end='')
+    qobj = assemble(transpiled, backend, shots=500)
+    print('done')
+    print(f'Sending to {backend} .. ', end='')
+    job = backend.run(qobj)
+    print('done')
+    if waitForResult:
+        print(f'Waiting for result .. ', end='', flush=True)
+        delayed_result = backend.retrieve_job(job.job_id()).result()
+        delayed_counts = delayed_result.get_counts()
+        print('done')
+        print(f'\nTotal counts: {delayed_counts}')
+        return check_validity(n, delayed_counts, verbose)
+    else:
+        print(f'\nJob ID: {job.job_id()}')
+        return False
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Simon on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
