@@ -42,7 +42,7 @@ def check_validity(n, qubits, verbose):
     total = 0
     for qubits, frequency in qubits.items():
         if verbose:
-            print(f'    => f({qubits}) = {f[qubits]}')
+            print(f'    => f({qubits}) = {f[qubits]}\n')
         if f[qubits[::-1]] == '1':
             success += int(frequency)
         total += frequency
@@ -142,7 +142,7 @@ def run_on_ibmq(n, reload, verbose, draw=False, waitForResult=False, backend='ib
     transpiled = transpile(circuit, backend)
     print('done')
     print('Assembling .. ', end='')
-    qobj = assemble(transpiled, backend, shots=1000)
+    qobj = assemble(transpiled, backend, shots=500)
     print('done')
     print(f'Sending to {backend} .. ', end='')
     job = backend.run(qobj)
@@ -153,9 +153,6 @@ def run_on_ibmq(n, reload, verbose, draw=False, waitForResult=False, backend='ib
         delayed_counts = delayed_result.get_counts()
         print('done')
         print(f'\nTotal counts: {delayed_counts}')
-        if verbose:
-            print(f'Measured Qubits: {qubits}')
-            print('====================================\n')
         return check_validity(n, delayed_counts, verbose)
     else:
         print(f'\nJob ID: {job.job_id()}')
