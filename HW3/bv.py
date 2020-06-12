@@ -5,8 +5,9 @@ import os
 import matplotlib
 import numpy as np
 import time
+
 from qiskit.quantum_info.operators import Operator
-from qiskit import QuantumCircuit,execute,Aer
+from qiskit import QuantumCircuit, execute, Aer, IBMQ, assemble, transpile
 print('done\n', flush=True)
 
 def load_ab_lists(n, reload):
@@ -112,6 +113,9 @@ def generate_circuit(n, reload, v):
         print('done\n', flush=True)
     return circuit
 
+##################################
+###          LOCAL             ###
+##################################
 def run_circuit(circuit, s):
     if v: print(f'Loading simulator .. ', end='', flush=True)
     simulator = Aer.get_backend('qasm_simulator')
@@ -121,6 +125,41 @@ def run_circuit(circuit, s):
     result = job.result()
     if v: print('done')
     return result.get_counts(circuit)
+
+##################################
+###           IMBQ             ###
+##################################
+def load_api_token():
+  load_dotenv()
+  API_TOKEN = os.getenv('API_TOKEN')
+  IBMQ.save_account(API_TOKEN)
+
+def run_on_ibmq(circuit, s, draw=False, waitForResult=False, backend='ibmq_burlington'):
+    print('Loading account .. ', end='', flush=True)
+    provider = IBMQ.load_account()
+    print('done')
+    backend = getattr(provider.backends, backend)
+    circuit = circuit
+
+    print('Transpiling .. ', end='')
+    transpiled = transpile(circuit, backend)
+    print('done')
+    print('Assembling .. ', end='')
+    qobj = assemble(transpiled, backend, shots=s)
+    print('done')
+    print(f'Sending to {backend} .. ', end='')
+    job = backend.run(qobj)
+    print('done')
+    if waitForResult:
+        print(f'Waiting for result .. ', end='', flush=True)
+        delayed_result = backend.retrieve_job(job.job_id()).result()
+        delayed_counts = delayed_result.get_counts()
+        print('done')
+        print(f'\nTotal counts: {delayed_counts}')
+        return delayed_counts
+    else:
+        print(f'\nJob ID: {job.job_id()}')
+        return None
 
 def check_valid(counts, shots, a, b):
     counts_list = list(counts)
@@ -150,7 +189,8 @@ print("=======================================================\n", flush=True)
 
 start = time.time()
 circuit = generate_circuit(n, r, v)
-counts = run_circuit(circuit, s)
+counts = run_on_ibmq(circuit, s, waitForResult=True, backend='ibmq_qasm_simulator')
+# counts = run_circuit(circuit, s)
 end = time.time()
 
 if v: print(f'\nCounts: {counts}\n')
