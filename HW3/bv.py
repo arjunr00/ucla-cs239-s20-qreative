@@ -5,6 +5,7 @@ import os
 import matplotlib
 import numpy as np
 import time
+from dotenv import load_dotenv
 
 from qiskit.quantum_info.operators import Operator
 from qiskit import QuantumCircuit, execute, Aer, IBMQ, assemble, transpile
@@ -74,15 +75,14 @@ def run_circuit(circuit, s):
 ###           IMBQ             ###
 ##################################
 def load_api_token():
-  load_dotenv()
-  API_TOKEN = os.getenv('API_TOKEN')
-  IBMQ.save_account(API_TOKEN)
-
-def run_on_ibmq(circuit, s):
+    load_dotenv()
+    API_TOKEN = os.getenv('API_TOKEN')
+    IBMQ.save_account(API_TOKEN)
     print('Loading account .. ', end='', flush=True)
     provider = IBMQ.load_account()
     print('done')
-    
+
+def run_on_ibmq(circuit, s):
     device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
     print("Running on current least busy device: ", device)
 
@@ -126,6 +126,17 @@ if v:
     print(f"                   reload U_f matrix = {r}", flush=True)
 print("=======================================================\n", flush=True)
 
+# Load IBMQ Account (if fails, then run locally)
+ibmq_flag = True
+try:
+    load_api_token()
+    print("\nSuccessfuly loaded API token for IBMQ\n")
+except Exception as e:
+    print(e)
+    print(f'\nFailed to load API token for IBMQ .. ', end='', flush=True)
+    ibmq_flag = False
+    print("running local\n")
+
 a=''
 for i in range(n):
     a += '0' if np.random.rand(1,1)[0][0] > 0.5 else '1'
@@ -134,9 +145,7 @@ print(a)
 
 start = time.time()
 circuit = generate_circuit(n, a, r, v)
-counts = run_on_ibmq(circuit, s)
-# counts = run_on_ibmq(circuit, s, waitForResult=True, backend='ibmq_qasm_simulator')
-# counts = run_circuit(circuit, s)
+counts = run_on_ibmq(circuit, s) if ibmq_flag else run_circuit(circuit, s)
 end = time.time()
 
 # (a, b) = load_ab_lists(n, r)

@@ -119,16 +119,13 @@ def qc_program(n, reload, verbose):
 
     if verbose: 
         print(f'Executing Circuit .. ', end='', flush=True)
-    job = execute(circuit, simulator, shots=1)
+    job = execute(circuit, simulator, shots=1000)
     if verbose: 
         print('done')
-    results = job.result().get_counts(circuit)
-    qubits = [str(i) for i in results.keys()][0][::-1]
-
-    if verbose:
-        print(f'Measured Qubits: {qubits}')
-        print('====================================\n')
-    return check_validity(n, qubits, verbose)
+    results = job.result()
+    counts = results.get_counts(circuit)
+    print(f'\nTotal counts: {counts}')
+    return check_validity(n, counts, verbose)
 
 ##################################
 ###           IMBQ             ###
@@ -142,7 +139,8 @@ def run_on_ibmq(n, reload, verbose):
     print('Loading account .. ', end='', flush=True)
     provider = IBMQ.load_account()
     print('done')
-
+ 
+    # device = getattr(provider.backends, 'ibmq_qasm_simulator')
     device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
     print("Running on current least busy device: ", device)
 
@@ -153,7 +151,7 @@ def run_on_ibmq(n, reload, verbose):
 
     results = job.result()
     counts = results.get_counts(circuit)
-    print(f'\nTotal counts: {counts}')
+    print(f'\nTotal counts: {counts}\n')
     return check_validity(n, counts, verbose)
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Grover', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -175,9 +173,19 @@ if __name__ == '__main__':
         print(f'                   reload U_f matrix = {r}')
     print('=======================================================\n')
 
+    # Load IBMQ Account (if fails, then run locally)
+    ibmq_flag = True
+    try:
+        load_api_token()
+        print("\nSuccessfuly loaded API token for IBMQ\n")
+    except Exception as e:
+        print(e)
+        print(f'\nFailed to load API token for IBMQ .. ', end='', flush=True)
+        ibmq_flag = False
+        print("running local\n")
+    
     start = time.time()
-    # ret = qc_program(n, r, v)
-    ret = run_on_ibmq(n, r, v )
+    ret = run_on_ibmq(n, r, v) if ibmq_flag else qc_program(n, r, v)    
     end = time.time()
 
     if ret is True:

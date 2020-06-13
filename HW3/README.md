@@ -1,4 +1,4 @@
-# CS 239 - Qiskit Implementation - HW 2
+# CS 239 - Qiskit Implementation (run on IBMQ) - HW 3
 
 Qiskit implementation of the following algorithms:
 
@@ -37,7 +37,12 @@ Preinstalled (Python3)):
     argparse
     os
     math
+    dotenv
 ```
+
+## IBMQ Requirements
+
+In order to access IBMQ 
 
 # Usage
 Below we discuss how to use our files to test and verify the 4 programs stated above.
@@ -46,7 +51,11 @@ We decided that function input from the user could lead to undefined behavior, s
 
 If you want to see the nitty gritty details of the state of our algorithm during run time and not just an output telling you if the algorithm worked or not, make sure to add the **-v** or **--verbose** flag.
 
-We also save all our matrices in a `/uf/{algo}` folder to reduce compute time during testing. Use the **-r** or **--reload** flag to reload U_f matrix.
+We save all our matrices in a `/uf/{algo}` folder to reduce compute time during testing. Use the **-r** or **--reload** flag to reload U_f matrix.
+
+We save pdf's of our matrices in a `/plots` folder whenever the **-v** or **--verbose** flag is added to help debugging and reporting purposes. 
+
+We save our runtimes in a `/times` folder to obtain runtime data.
 
 ## Deutsch-Josza
 
