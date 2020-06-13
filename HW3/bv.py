@@ -74,15 +74,25 @@ def run_circuit(circuit, s):
 ##################################
 ###           IMBQ             ###
 ##################################
-def load_api_token():
-    load_dotenv()
-    API_TOKEN = os.getenv('API_TOKEN')
-    IBMQ.save_account(API_TOKEN)
+def load_api_token():                 
+    try:
+        load_dotenv()
+        API_TOKEN = os.getenv('API_TOKEN')
+        IBMQ.save_account(API_TOKEN)
+        provider = IBMQ.load_account()
+        print(f'\nSuccessfully loaded API token for IBMQ\n')
+        ibmq_flag = True
+    except Exception as e:
+        print(e)
+        print(f'\nFailed to load API token for IBMQ .. ', end='', flush=True)
+        ibmq_flag = False
+        print("running local\n")
+    return ibmq_flag
+
+def run_on_ibmq(circuit, s):
     print('Loading account .. ', end='', flush=True)
     provider = IBMQ.load_account()
     print('done')
-
-def run_on_ibmq(circuit, s):
     device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
     print("Running on current least busy device: ", device)
 
@@ -127,15 +137,7 @@ if v:
 print("=======================================================\n", flush=True)
 
 # Load IBMQ Account (if fails, then run locally)
-ibmq_flag = True
-try:
-    load_api_token()
-    print("\nSuccessfuly loaded API token for IBMQ\n")
-except Exception as e:
-    print(e)
-    print(f'\nFailed to load API token for IBMQ .. ', end='', flush=True)
-    ibmq_flag = False
-    print("running local\n")
+ibmq_flag = load_api_token()
 
 a=''
 for i in range(n):

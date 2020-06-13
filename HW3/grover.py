@@ -130,10 +130,20 @@ def qc_program(n, reload, verbose):
 ##################################
 ###           IMBQ             ###
 ##################################
-def load_api_token():
-  load_dotenv()
-  API_TOKEN = os.getenv('API_TOKEN')
-  IBMQ.save_account(API_TOKEN)
+def load_api_token():                 
+    try:
+        load_dotenv()
+        API_TOKEN = os.getenv('API_TOKEN')
+        IBMQ.save_account(API_TOKEN)
+        provider = IBMQ.load_account()
+        print(f'\nSuccessfully loaded API token for IBMQ\n')
+        ibmq_flag = True
+    except Exception as e:
+        print(e)
+        print(f'\nFailed to load API token for IBMQ .. ', end='', flush=True)
+        ibmq_flag = False
+        print("running local\n")
+    return ibmq_flag
 
 def run_on_ibmq(n, reload, verbose):
     print('Loading account .. ', end='', flush=True)
@@ -174,19 +184,7 @@ if __name__ == '__main__':
     print('=======================================================\n')
 
     # Load IBMQ Account (if fails, then run locally)
-    ibmq_flag = True
-    try:
-        load_api_token()
-        print("\nSuccessfuly loaded API token for IBMQ\n")
-    except Exception as e:
-        print(e)
-        print(f'\nFailed to load API token for IBMQ .. ', end='', flush=True)
-        ibmq_flag = False
-        print("running local\n")
-    
-    start = time.time()
-    ret = run_on_ibmq(n, r, v) if ibmq_flag else qc_program(n, r, v)    
-    end = time.time()
+    ibmq_flag = load_api_token()
 
     if ret is True:
         ret_str = "Success!"
