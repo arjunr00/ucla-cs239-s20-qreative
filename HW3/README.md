@@ -40,9 +40,26 @@ Preinstalled (Python3)):
     dotenv
 ```
 
+# Running on IBMQ
+
+In order to run on real devices, we connect to [IBMQ](https://quantum-computing.ibm.com/) to run on their multiple servers.
+
+[```Usage```](#Usage) of the algorithms remain the same. When running with IBMQ, you will need an account and API Token. All our algorithms deploy a ```least_busy``` function that filters for the ***most available real device***. 
+
+Depending on global usage, programs can take anywhere from seconds to minutes to, sometimes, hours. 
+
 ## IBMQ Requirements
 
-In order to access IBMQ 
+In order to access IBMQ you need a ```.env``` file that contains your API token. 
+
+**Your .env file should look like this:**
+```
+API_TOKEN=[YOUR API TOKEN HERE]
+```
+
+```If you don't add a valid API Token, our program will run the quantum programs locally.```
+
+
 
 # Usage
 Below we discuss how to use our files to test and verify the 4 programs stated above.
