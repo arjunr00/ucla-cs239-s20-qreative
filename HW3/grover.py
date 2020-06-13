@@ -156,39 +156,6 @@ def run_on_ibmq(n, reload, verbose):
     print(f'\nTotal counts: {counts}')
     return check_validity(n, counts, verbose)
 
-def old_run_on_ibmq(n, reload, verbose, draw=False, waitForResult=False, backend='ibmq_burlington'):
-    print('Loading account .. ', end='', flush=True)
-    provider = IBMQ.load_account()
-    print('done')
-    backend = getattr(provider.backends, backend)
-    circuit = generate_circuit(n, reload, verbose)
-
-    print('Transpiling .. ', end='')
-    transpiled = transpile(circuit, backend, optimization_level=3)
-    print('done')
-    print('Assembling .. ', end='')
-    qobj = assemble(transpiled, backend, shots=2000)
-    print('done')
-    print(f'Sending to {backend} .. ', end='')
-    job = backend.run(qobj)
-    print('done')
-    if waitForResult:
-        try: 
-            print(f'Waiting for result .. ', end='', flush=True)
-            delayed_result = backend.retrieve_job(job.job_id()).result()
-            delayed_counts = delayed_result.get_counts()
-            print('done')
-            print(f'\nTotal counts: {delayed_counts}')
-            return check_validity(n, delayed_counts, verbose)
-        except Exception as e:
-            print(e)
-            print(job.error_message())
-
-    else:
-        print(f'\nJob ID: {job.job_id()}')
-        return False
-
-
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Grover', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.set_defaults(reload=False, verbose=False)
 parser.add_argument("--num", "-n", type=int, default=4, help="Set length of input bitstring")
