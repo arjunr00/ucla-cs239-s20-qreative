@@ -79,28 +79,36 @@ def getUf(n, reload, v):
 
     return U_f
 
-def generate_circuit(n, reload, v):
+def generate_circuit(n, a, reload, v):
     SAVEDIR = 'plots/'
     CIRCUIT_FILENAME = f'bv_{n}.pdf'
-
-    if (v): print('Getting U_f .. ', end='', flush=True)
-    U_f = getUf(n, reload, v)
-    if (v): print('done', flush=True)
 
     if (v): print('Creating circuit .. ', end='', flush=True)
     circuit = QuantumCircuit(n+1, n)
 
-    circuit.x(n)
     for i in range(n+1):
         circuit.h(i)
+    circuit.z(n)
 
-    circuit.append(U_f, list(range(n+1))[::-1])
+    # Apply barrier 
+    circuit.barrier()
+
+    # Apply the inner-product oracle
+    a = a[::-1] # reverse s to fit qiskit's qubit ordering
+    for q in range(n):
+        if a[q] == '0':
+            circuit.i(q)
+        else:
+            circuit.cx(q, n)
+            
+    # Apply barrier 
+    circuit.barrier()
 
     for i in range(n):
         circuit.h(i)
 
     # Map the quantum measurement to the classical bits
-    circuit.measure(list(range(n)), list(range(n))[::-1])
+    circuit.measure(list(range(n)), list(range(n)))
     if (v): print('done\n', flush=True)
 
     if v:
@@ -113,6 +121,7 @@ def generate_circuit(n, reload, v):
 
         matplotlib.pyplot.savefig(f'{SAVEDIR}{CIRCUIT_FILENAME}')
         print('done\n', flush=True)
+
     return circuit
 
 ##################################
@@ -141,7 +150,7 @@ def run_on_ibmq(circuit, s):
     provider = IBMQ.load_account()
     print('done')
     
-    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n and not x.configuration().simulator and x.status().operational==True))
+    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
     print("Running on current least busy device: ", device)
 
     job = execute(circuit, backend=device, shots=1000, optimization_level=3)
@@ -155,13 +164,12 @@ def run_on_ibmq(circuit, s):
 def check_valid(counts, shots, a, b):
     best = 0
     chosen = None
-    answer = ''.join(str(i) for i in a)
     for qubits, frequency in counts.items():
         if best < int(frequency):
             best = int(frequency)
-            chosen = qubits[::-1]
+            chosen = qubits
     print(f"Qubit chosen: {chosen}")
-    return chosen == answer
+    return chosen == a
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Deustch-Josza on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.set_defaults(reload=False, balanced=False, verbose=False)
@@ -185,17 +193,21 @@ if v:
     print(f"                   reload U_f matrix = {r}", flush=True)
 print("=======================================================\n", flush=True)
 
+a=''
+for i in range(n):
+    a += '0' if np.random.rand(1,1)[0][0] > 0.5 else '1'
+print(np.random.rand(1,1)[0][0])
+print(a)
+
 start = time.time()
-circuit = generate_circuit(n, r, v)
+circuit = generate_circuit(n, a, r, v)
 counts = run_on_ibmq(circuit, s)
 # counts = run_on_ibmq(circuit, s, waitForResult=True, backend='ibmq_qasm_simulator')
 # counts = run_circuit(circuit, s)
 end = time.time()
 
-if v: print(f'\nCounts: {counts}\n')
-
-(a, b) = load_ab_lists(n, r)
-ret = check_valid(counts, s, a, b)
+# (a, b) = load_ab_lists(n, r)
+ret = check_valid(counts, s, a, 0)
 print(f"Bernstein-Vazirani {'completed successfully!' if ret else 'failed...'}\n", flush=True)
 print(f'(Took {end - start:.2f} s to complete.)', flush=True)
 
