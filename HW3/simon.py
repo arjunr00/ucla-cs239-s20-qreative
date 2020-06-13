@@ -1,3 +1,4 @@
+print('Loading dependencies .. ', end='', flush=True)
 import numpy as np
 import sympy as sp
 import time
@@ -5,11 +6,13 @@ import argparse
 import os
 import oracle
 
-from qiskit import QuantumCircuit, execute, Aer
+from qiskit import QuantumCircuit, execute, Aer, IBMQ, assemble, transpile
 from qiskit.visualization import plot_histogram
 from qiskit.quantum_info.operators import Operator
 from qiskit.tools.monitor import job_monitor
 from qiskit.providers.ibmq import least_busy
+from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
+print('done\n', flush=True)
 
 def get_s(mapping):
     print(mapping)
@@ -95,7 +98,6 @@ def generate_circuit(n, t, reload, verbose):
     circuit.h(range(n))
 
     circuit.measure(range(n), range(n))
-    print(circuit)
 
     return circuit, s
 
@@ -136,24 +138,52 @@ def load_api_token():
   API_TOKEN = os.getenv('API_TOKEN')
   IBMQ.save_account(API_TOKEN)
 
-# I think you just need to edit this to do the range stuff I did above in `qc_program`
 def run_on_ibmq(n, t, reload, verbose):
     print('Loading account .. ', end='', flush=True)
     provider = IBMQ.load_account()
     print('done')
 
-    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
-    print("Running on current least busy device: ", device)
+    print('Choosing least busy device .. ', end='', flush=True)
+    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= (2*n)+1 and not x.configuration().simulator and x.status().operational==True))
+    print('done')
+    print(f'Running on {device}')
 
+    print('Generating circuit .. ', end='', flush=True)
     circuit = generate_circuit(n, t, reload, verbose)
+    print('done')
+    print(circuit[0])
+    print(f's = {circuit[1]}', flush=True)
 
-    job = execute(circuit, backend=device, shots=1000, optimization_level=3)
-    job_monitor(job, interval = 2)
+    s = circuit[1]
+    for i in range(4*t):
+        print('Executing circuit .. ', end='', flush=True)
+        try:
+            job = execute(circuit[0], backend=device, shots=n-1, optimization_level=3)
+            job_monitor(job, interval = 2)
+            results = job.result().get_counts(circuit[0])
+        except IBMQJobFailureError:
+            print(job.error_message())
+            return None
+        else:
+            print('done')
 
-    results = job.result()
-    counts = results.get_counts(circuit)
-    print(f'\nTotal counts: {counts}')
-    return check_validity(n, counts, verbose)
+            if len(results.keys()) != n-1:
+                continue
+            if verbose:
+                print(f'    Trial {i+1}:')
+
+            potential_ys = []
+            for index, y in enumerate(results.keys()):
+                potential_ys.append(y)
+                if verbose:
+                    print(f'        y_{index} = {y}')
+            if is_lin_indep(potential_ys):
+                if verbose:
+                    print(f'Found linearly independent ys!\nChecking if they solve to s correctly...')
+                    print('====================================\n')
+                return check_validity(potential_ys, s)
+    if verbose:
+        print('====================================\n')
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Simon on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
@@ -179,7 +209,8 @@ if __name__ == '__main__':
     print('=======================================================\n')
 
     start = time.time()
-    ret = qc_program(n, t, r, v)
+    #ret = qc_program(n, t, r, v)
+    ret = run_on_ibmq(n, t, r, v)
     end = time.time()
     if ret is None:
         ret_str = "Indeterminate... (Try a larger t with the --trials option?)"
