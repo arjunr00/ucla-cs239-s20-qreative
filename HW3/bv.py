@@ -141,7 +141,7 @@ def run_on_ibmq(circuit, s):
     provider = IBMQ.load_account()
     print('done')
     
-    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
+    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n and not x.configuration().simulator and x.status().operational==True))
     print("Running on current least busy device: ", device)
 
     job = execute(circuit, backend=device, shots=1000, optimization_level=3)
