@@ -8,6 +8,8 @@ import oracle
 from qiskit import QuantumCircuit, execute, Aer
 from qiskit.visualization import plot_histogram
 from qiskit.quantum_info.operators import Operator
+from qiskit.tools.monitor import job_monitor
+from qiskit.providers.ibmq import least_busy
 
 def get_s(mapping):
     print(mapping)
@@ -135,32 +137,23 @@ def load_api_token():
   IBMQ.save_account(API_TOKEN)
 
 # I think you just need to edit this to do the range stuff I did above in `qc_program`
-def run_on_ibmq(n, t, reload, verbose, draw=False, waitForResult=False, backend='ibmq_burlington'):
+def run_on_ibmq(n, t, reload, verbose):
     print('Loading account .. ', end='', flush=True)
     provider = IBMQ.load_account()
     print('done')
-    backend = getattr(provider.backends, backend)
+
+    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
+    print("Running on current least busy device: ", device)
+
     circuit = generate_circuit(n, t, reload, verbose)
 
-    print('Transpiling .. ', end='')
-    transpiled = transpile(circuit, backend)
-    print('done')
-    print('Assembling .. ', end='')
-    qobj = assemble(transpiled, backend, shots=500)
-    print('done')
-    print(f'Sending to {backend} .. ', end='')
-    job = backend.run(qobj)
-    print('done')
-    if waitForResult:
-        print(f'Waiting for result .. ', end='', flush=True)
-        delayed_result = backend.retrieve_job(job.job_id()).result()
-        delayed_counts = delayed_result.get_counts()
-        print('done')
-        print(f'\nTotal counts: {delayed_counts}')
-        return check_validity(n, delayed_counts, verbose)
-    else:
-        print(f'\nJob ID: {job.job_id()}')
-        return False
+    job = execute(circuit, backend=device, shots=1000, optimization_level=3)
+    job_monitor(job, interval = 2)
+
+    results = job.result()
+    counts = results.get_counts(circuit)
+    print(f'\nTotal counts: {counts}')
+    return check_validity(n, counts, verbose)
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Simon on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 

@@ -9,6 +9,8 @@ import time
 from qiskit import QuantumCircuit, execute, Aer, IBMQ, assemble, transpile
 from qiskit.visualization import plot_histogram
 from qiskit.quantum_info.operators import Operator
+from qiskit.tools.monitor import job_monitor
+from qiskit.providers.ibmq import least_busy
 
 from dotenv import load_dotenv
 
@@ -39,17 +41,22 @@ def check_validity(n, qubits, verbose):
 
     f = np.load(FPATH, allow_pickle=True).item()[n]
     success = 0
+    chosen = None
+    best = 0
     total = 0
     for qubits, frequency in qubits.items():
         if verbose:
-            print(f'    => f({qubits}) = {f[qubits]}\n')
+            print(f'    => f({qubits[::-1]}) = {f[qubits[::-1]]}\n')
         if f[qubits[::-1]] == '1':
             success += int(frequency)
+        if best < int(frequency):
+            best = int(frequency)
+            chosen = qubits[::-1]
         total += frequency
     if verbose:
         print(f'Number of Success: {success}')
         print(f'Number Total: {total}')
-    return (success / total) > 0.5
+    return ((success / total) > 0.5) or (f[chosen] == '1')
 
 def generate_circuit(n, reload, v):
     SAVEDIR = 'plots/'
@@ -131,7 +138,25 @@ def load_api_token():
   API_TOKEN = os.getenv('API_TOKEN')
   IBMQ.save_account(API_TOKEN)
 
-def run_on_ibmq(n, reload, verbose, draw=False, waitForResult=False, backend='ibmq_burlington'):
+def run_on_ibmq(n, reload, verbose):
+    print('Loading account .. ', end='', flush=True)
+    provider = IBMQ.load_account()
+    print('done')
+
+    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
+    print("Running on current least busy device: ", device)
+
+    circuit = generate_circuit(n, reload, verbose)
+
+    job = execute(circuit, backend=device, shots=1000, optimization_level=3)
+    job_monitor(job, interval = 2)
+
+    results = job.result()
+    counts = results.get_counts(circuit)
+    print(f'\nTotal counts: {counts}')
+    return check_validity(n, counts, verbose)
+
+def old_run_on_ibmq(n, reload, verbose, draw=False, waitForResult=False, backend='ibmq_burlington'):
     print('Loading account .. ', end='', flush=True)
     provider = IBMQ.load_account()
     print('done')
@@ -139,21 +164,26 @@ def run_on_ibmq(n, reload, verbose, draw=False, waitForResult=False, backend='ib
     circuit = generate_circuit(n, reload, verbose)
 
     print('Transpiling .. ', end='')
-    transpiled = transpile(circuit, backend)
+    transpiled = transpile(circuit, backend, optimization_level=3)
     print('done')
     print('Assembling .. ', end='')
-    qobj = assemble(transpiled, backend, shots=500)
+    qobj = assemble(transpiled, backend, shots=2000)
     print('done')
     print(f'Sending to {backend} .. ', end='')
     job = backend.run(qobj)
     print('done')
     if waitForResult:
-        print(f'Waiting for result .. ', end='', flush=True)
-        delayed_result = backend.retrieve_job(job.job_id()).result()
-        delayed_counts = delayed_result.get_counts()
-        print('done')
-        print(f'\nTotal counts: {delayed_counts}')
-        return check_validity(n, delayed_counts, verbose)
+        try: 
+            print(f'Waiting for result .. ', end='', flush=True)
+            delayed_result = backend.retrieve_job(job.job_id()).result()
+            delayed_counts = delayed_result.get_counts()
+            print('done')
+            print(f'\nTotal counts: {delayed_counts}')
+            return check_validity(n, delayed_counts, verbose)
+        except Exception as e:
+            print(e)
+            print(job.error_message())
+
     else:
         print(f'\nJob ID: {job.job_id()}')
         return False
@@ -180,7 +210,7 @@ if __name__ == '__main__':
 
     start = time.time()
     # ret = qc_program(n, r, v)
-    ret = run_on_ibmq(n, r, v, waitForResult=True, backend="ibmq_qasm_simulator")
+    ret = run_on_ibmq(n, r, v )
     end = time.time()
 
     if ret is True:
