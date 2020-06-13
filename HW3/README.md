@@ -2,10 +2,10 @@
 
 Qiskit implementation of the following algorithms:
 
-- Deutsch-Josza
-- Bernstein-Vazirani
-- Simon's
-- Grover's
+- [```Deutsch-Josza```](#Deutsch-Josza)
+- [```Bernstein-Vazirani```](#Bernstein-Vazirani)
+- [```Simon's```](#Simon's)
+- [```Grover's```](#Grover's)
 
 Every file tests for correctness of algorithm through **randomized** function parameters. 
 
