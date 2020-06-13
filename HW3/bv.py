@@ -153,8 +153,15 @@ def run_on_ibmq(circuit, s):
     return counts
 
 def check_valid(counts, shots, a, b):
-    counts_list = list(counts)
-    return (len(counts_list) == 1) and (''.join(str(i) for i in a) == counts_list[0])
+    best = 0
+    chosen = None
+    answer = ''.join(str(i) for i in a)
+    for qubits, frequency in counts.items():
+        if best < int(frequency):
+            best = int(frequency)
+            chosen = qubits[::-1]
+    print(f"Qubit chosen: {chosen}")
+    return chosen == answer
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Deustch-Josza on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.set_defaults(reload=False, balanced=False, verbose=False)
