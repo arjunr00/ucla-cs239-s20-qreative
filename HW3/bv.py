@@ -13,6 +13,8 @@ from qiskit.tools.monitor import job_monitor
 from qiskit.providers.ibmq import least_busy
 print('done\n', flush=True)
 
+outfile = open('times/bv.txt', 'a+')
+
 def generate_circuit(n, a, reload, v):
     SAVEDIR = 'plots/'
     CIRCUIT_FILENAME = f'bv_{n}.pdf'
@@ -96,11 +98,12 @@ def run_on_ibmq(circuit, s):
     device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
     print("Running on current least busy device: ", device)
 
-    job = execute(circuit, backend=device, shots=1000, optimization_level=3)
+    job = execute(circuit, backend=device, shots=s, optimization_level=3)
     job_monitor(job, interval = 2)
 
     results = job.result()
     counts = results.get_counts(circuit)
+    get_run_time(job)
     print(f'\nTotal counts: {counts}')
     return counts
 
@@ -114,10 +117,15 @@ def check_valid(counts, shots, a, b):
     print(f"Qubit chosen: {chosen}")
     return chosen == a
 
+def get_run_time(job):
+    data = {}
+    tdel = job.time_per_step()['COMPLETED'] - job.time_per_step()['RUNNING']
+    print(f'Execution Time .. {tdel}', file=outfile)
+
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Deustch-Josza on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.set_defaults(reload=False, balanced=False, verbose=False)
 parser.add_argument("--num", "-n", type=int, default=2, help="Set size of input string")
-parser.add_argument("--shots", "-s", type=int, default=100, help="Set num of shots")
+parser.add_argument("--shots", "-s", type=int, default=500, help="Set num of shots")
 parser.add_argument("--reload", "-r", action="store_true", help='Reload new U_f matrix')
 parser.add_argument("--verbose", "-v", action="store_true", help='Print out measured bits and steps')
 args = parser.parse_args()
@@ -142,16 +150,21 @@ ibmq_flag = load_api_token()
 a=''
 for i in range(n):
     a += '0' if np.random.rand(1,1)[0][0] > 0.5 else '1'
-print(np.random.rand(1,1)[0][0])
 print(a)
 
+print(f'Running with {n} qubits ..', file=outfile)
+print(f'a is {a}', file=outfile)
 start = time.time()
 circuit = generate_circuit(n, a, r, v)
 counts = run_on_ibmq(circuit, s) if ibmq_flag else run_circuit(circuit, s)
 end = time.time()
+print(f'Full execution time .. {end - start}', file=outfile)
 
 # (a, b) = load_ab_lists(n, r)
 ret = check_valid(counts, s, a, 0)
+
+print(f'{"success" if ret else "false"}\n', file=outfile)
+
 print(f"Bernstein-Vazirani {'completed successfully!' if ret else 'failed...'}\n", flush=True)
 print(f'(Took {end - start:.2f} s to complete.)', flush=True)
 

@@ -1,0 +1,29 @@
+Running with 1 qubits ..
+Execution Time .. 0:00:10.022000
+Full execution time .. 24.073474168777466
+Success!
+
+Running with 2 qubits ..
+Running with 1 qubits ..
+Execution Time .. 0:00:09.589000
+Full execution time .. 25.52182364463806
+Success!
+
+Running with 2 qubits ..
+Execution Time .. 0:00:12.224000
+Full execution time .. 27.309417009353638
+Success!
+
+Running with 3 qubits ..
+Execution Time .. 0:00:11.249000
+Full execution time .. 30.986592769622803
+Success!
+
+Running with 4 qubits ..
+Execution Time .. 0:00:12.163000
+Full execution time .. 39.15577530860901
+Fail :(
+
+Running with 5 qubits ..
+Running with 6 qubits ..
+Running with 5 qubits ..

@@ -12,7 +12,11 @@ from qiskit.quantum_info.operators import Operator
 from qiskit.tools.monitor import job_monitor
 from qiskit.providers.ibmq import least_busy
 
+import sys
+
 from dotenv import load_dotenv
+
+outfile = open('times/grover.txt', 'a+')
 
 def get_z0(n):
     m = np.identity(2**n)
@@ -136,7 +140,6 @@ def load_api_token():
         API_TOKEN = os.getenv('API_TOKEN')
         IBMQ.save_account(API_TOKEN)
         provider = IBMQ.load_account()
-        print(f'\nSuccessfully loaded API token for IBMQ\n')
         ibmq_flag = True
     except Exception as e:
         print(e)
@@ -161,8 +164,15 @@ def run_on_ibmq(n, reload, verbose):
 
     results = job.result()
     counts = results.get_counts(circuit)
+    
+    get_run_time(job)
     print(f'\nTotal counts: {counts}\n')
     return check_validity(n, counts, verbose)
+
+def get_run_time(job):
+    data = {}
+    tdel = job.time_per_step()['COMPLETED'] - job.time_per_step()['RUNNING']
+    print(f'Execution Time .. {tdel}', file=outfile)
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Grover', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.set_defaults(reload=False, verbose=False)
@@ -185,11 +195,19 @@ if __name__ == '__main__':
 
     # Load IBMQ Account (if fails, then run locally)
     ibmq_flag = load_api_token()
+    
+    print(f'Running with {n} qubits ..', file=outfile)
+    start = time.time()
+    ret = run_on_ibmq(n, r, v) if ibmq_flag else qc_program(n,r,v)
+    end = time.time()
+    print(f'Full execution time .. {end - start}', file=outfile)
 
     if ret is True:
         ret_str = "Success!"
     else:
         ret_str = "Fail :("
+
+    print(f'{ret_str}\n', file=outfile)
 
     print(f'Grover\'s Algorithm: {ret_str}')
     print(f'(Took {end - start:.2f} s to complete.)')

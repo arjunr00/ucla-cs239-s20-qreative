@@ -1,0 +1,90 @@
+Running with 1 qubits ..
+a is 0
+Execution Time .. 0:00:08.010000
+Full execution time .. 24.931291341781616
+success
+
+Running with 1 qubits ..
+a is 0
+Execution Time .. 0:00:07.849000
+Full execution time .. 23.66623044013977
+success
+
+Running with 2 qubits ..
+a is 01
+Execution Time .. 0:00:08.255000
+Full execution time .. 24.7840576171875
+success
+
+Running with 3 qubits ..
+a is 010
+Execution Time .. 0:00:07.811000
+Full execution time .. 29.546732664108276
+success
+
+Running with 4 qubits ..
+a is 0101
+Execution Time .. 0:00:07.953000
+Full execution time .. 22.93744444847107
+success
+
+Running with 5 qubits ..
+a is 10100
+Execution Time .. 0:00:09.059000
+Full execution time .. 63.00506830215454
+false
+
+Running with 6 qubits ..
+a is 100001
+Execution Time .. 0:00:08.865000
+Full execution time .. 90.50112318992615
+false
+
+Running with 7 qubits ..
+a is 1101001
+Execution Time .. 0:01:35.659000
+Full execution time .. 365.8395850658417
+false
+
+Running with 1 qubits ..
+a is 0
+Execution Time .. 0:00:08.441000
+Full execution time .. 25.462042331695557
+success
+
+Running with 2 qubits ..
+a is 01
+Execution Time .. 0:00:08.837000
+Full execution time .. 27.298935174942017
+success
+
+Running with 3 qubits ..
+a is 101
+Execution Time .. 0:00:09.335000
+Full execution time .. 24.541921377182007
+success
+
+Running with 4 qubits ..
+a is 1111
+Execution Time .. 0:00:08.494000
+Full execution time .. 32.554176568984985
+success
+
+Running with 5 qubits ..
+a is 01000
+Execution Time .. 0:01:27.414000
+Full execution time .. 537.9622631072998
+success
+
+Running with 6 qubits ..
+a is 101000
+Execution Time .. 0:01:20.816000
+Full execution time .. 485.4443700313568
+false
+
+Running with 7 qubits ..
+a is 1001110
+Execution Time .. 0:00:10.746000
+Full execution time .. 472.01660919189453
+false
+
