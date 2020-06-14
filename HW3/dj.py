@@ -6,7 +6,10 @@ import matplotlib
 import numpy as np
 import time
 from qiskit.quantum_info.operators import Operator
-from qiskit import QuantumCircuit,execute,Aer
+from qiskit import QuantumCircuit, execute, Aer, IBMQ, assemble, transpile
+from qiskit.tools.monitor import job_monitor
+from qiskit.providers.ibmq import least_busy
+from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
 print('done\n', flush=True)
 
 def getUf(n, f_type, reload, v):
@@ -44,9 +47,9 @@ def generate_circuit(n, f_type, reload, v):
     SAVEDIR = 'plots/'
     CIRCUIT_FILENAME = f'dj_{n}.pdf'
 
-    if (v): print('Getting U_f .. ', end='', flush=True)
-    U_f = getUf(n, f_type, reload, v)
-    if (v): print('done', flush=True)
+    # if (v): print('Getting U_f .. ', end='', flush=True)
+    # U_f = getUf(n, f_type, reload, v)
+    # if (v): print('done', flush=True)
 
     if (v): print('Creating circuit .. ', end='', flush=True)
     circuit = QuantumCircuit(n+1, n)
@@ -55,7 +58,16 @@ def generate_circuit(n, f_type, reload, v):
     for i in range(n+1):
         circuit.h(i)
 
-    circuit.append(U_f, list(range(n+1))[::-1])
+    #circuit.append(U_f, list(range(n+1))[::-1])
+    circuit.barrier()
+    if f_type == oracle.DJ.CONSTANT:
+        out = numpy.rand.randint(2)
+        if out == 1:
+            circuit.x(n)
+    elif f_type == oracle.DJ.BALANCED:
+        for i in range(n):
+            circuit.cx(i, n)
+    circuit.barrier()
 
     for i in range(n):
         circuit.h(i)
@@ -83,15 +95,49 @@ def run_circuit(circuit, s):
     if v: print(f'Running job .. ', end='', flush=True)
     job = execute(circuit, simulator, shots=s)
     result = job.result()
-    if v: print('done')
     return result.get_counts(circuit)
 
-def check_valid(counts, shots, f_type):
+def load_api_token():
+    try:
+        load_dotenv()
+        API_TOKEN = os.getenv('API_TOKEN')
+        IBMQ.save_account(API_TOKEN)
+        provider = IBMQ.load_account()
+        ibmq_flag = True
+    except Exception as e:
+        print(e)
+        print(f'\nFailed to load API token for IBMQ .. ', end='', flush=True)
+        ibmq_flag = False
+        print("running local\n")
+    return ibmq_flag
+
+def run_on_ibmq(circuit, s):
+    if v: print('Loading account .. ', end='', flush=True)
+    provider = IBMQ.load_account()
+    if v: print('done')
+    if v: print('Choosing least busy device .. ', end='', flush=True)
+    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
+    if v: print(device)
+
+    if v: print(f'Running job .. ', end='', flush=True)
+    try:
+        job = execute(circuit, backend=device, shots=s, optimization_level=3)
+        job_monitor(job, interval = 2)
+        results = job.result()
+    except IBMQJobFailureError:
+        print(job.error_message())
+        return {}
+
+    counts = results.get_counts(circuit)
+    return counts
+
+def check_valid(counts, shots, f_type, threshold):
+    if counts == {}: return False
     n = len(list(counts.keys())[0])
     if f_type == oracle.DJ.CONSTANT:
-        return '0'*n in counts and counts['0'*n] == shots
+        return '0'*n in counts and counts['0'*n] >= shots * threshold
     else:
-        return '0'*n not in counts or counts['0'.n] != shots
+        return '0'*n not in counts or counts['0'*n] <= shots * (1 - threshold)
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Deustch-Josza on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.set_defaults(reload=False, balanced=False, verbose=False)
@@ -120,10 +166,10 @@ print("=======================================================\n", flush=True)
 
 start = time.time()
 circuit = generate_circuit(n, f_type, r, v)
-counts = run_circuit(circuit, s)
+counts = run_on_ibmq(circuit, s)
 end = time.time()
-if v: print(f'\nCounts: {counts}\n')
-ret = check_valid(counts, s, f_type)
+if v and counts != {}: print(f'\nCounts: {counts}\n')
+ret = check_valid(counts, s, f_type, 0.9)
 print(f"Deutsch-Josza {'completed successfully!' if ret else 'failed...'}\n", flush=True)
 print(f'(Took {end - start:.2f} s to complete.)', flush=True)
 

@@ -62,8 +62,10 @@ def getUf(n, reload):
 
     return U_f, s
 
-def is_lin_indep(potential_ys):
-    return ('0' * n) not in potential_ys and len(potential_ys) == len(set(potential_ys))
+def is_lin_indep(potential_ys, n):
+    if '0'*n in potential_ys:
+        potential_ys.remove('0'*n)
+    return len(potential_ys) == (n-1) and len(potential_ys) == len(set(potential_ys))
 
 def check_validity(potential_ys, s):
     ys = [list(i) for i in potential_ys]
@@ -94,10 +96,23 @@ def generate_circuit(n, t, reload, verbose):
     circuit = QuantumCircuit(2*n, n)
 
     circuit.h(range(n))
-    circuit.append(U_f, range(2*n)[::-1])
+    # circuit.append(U_f, range(2*n)[::-1])
+    circuit.barrier()
+    for i in range(n):
+        circuit.cx(i, n+i)
+        if s[i] == '1':
+            circuit.x(n+i)
+    circuit.barrier()
+    for i in range(n):
+        k = n+i
+        while k == n+i:
+            k = np.random.randint(low=n, high=2*n)
+        circuit.swap(n+i, k)
     circuit.h(range(n))
+    circuit.barrier()
 
-    circuit.measure(range(n), range(n))
+    circuit.measure(range(0, n), range(n))
+    circuit.measure(range(n, 2*n), range(n))
 
     return circuit, s
 
@@ -105,12 +120,17 @@ def generate_circuit(n, t, reload, verbose):
 ###          LOCAL             ###
 ##################################
 def qc_program(n, t, reload, verbose):
-    circuit, s = generate_circuit(n, t, reload, verbose)
+    print('Generating circuit .. ', end='', flush=True)
+    circuit = generate_circuit(n, t, reload, verbose)
+    print('done')
+    print(circuit[0])
+    print(f's = {circuit[1]}', flush=True)
     simulator = Aer.get_backend('qasm_simulator')
 
+    s = circuit[1]
     for i in range(4*t):
-        job = execute(circuit, simulator, shots=(n-1))
-        results = job.result().get_counts(circuit)
+        job = execute(circuit[0], simulator, shots=(n-1))
+        results = job.result().get_counts(circuit[0])
         if len(results.keys()) != n-1:
             continue
         if verbose:
@@ -121,9 +141,9 @@ def qc_program(n, t, reload, verbose):
             potential_ys.append(y)
             if verbose:
                 print(f'        y_{index} = {y}')
-        if is_lin_indep(potential_ys):
+        if is_lin_indep(potential_ys, n):
             if verbose:
-                print(f'Found linearly independent ys!\nChecking if they solve to s correctly...')
+                print(f'Checking if they solve to s correctly...')
                 print('====================================\n')
             return check_validity(potential_ys, s)
     if verbose:
@@ -134,9 +154,19 @@ def qc_program(n, t, reload, verbose):
 ###           IMBQ             ###
 ##################################
 def load_api_token():
-  load_dotenv()
-  API_TOKEN = os.getenv('API_TOKEN')
-  IBMQ.save_account(API_TOKEN)
+    try:
+        load_dotenv()
+        API_TOKEN = os.getenv('API_TOKEN')
+        IBMQ.save_account(API_TOKEN)
+        provider = IBMQ.load_account()
+        print(f'\nSuccessfully loaded API token for IBMQ\n')
+        ibmq_flag = True
+    except Exception as e:
+        print(e)
+        print(f'\nFailed to load API token for IBMQ. Running locally.')
+        ibmq_flag = False
+
+    return ibmq_flag
 
 def run_on_ibmq(n, t, reload, verbose):
     print('Loading account .. ', end='', flush=True)
@@ -154,34 +184,35 @@ def run_on_ibmq(n, t, reload, verbose):
     print(circuit[0])
     print(f's = {circuit[1]}', flush=True)
 
+
+    print('Executing circuit .. ', end='', flush=True)
+    try:
+        job = execute(circuit[0], backend=device, shots=4*t*(n-1), optimization_level=3)
+        job_monitor(job, interval = 1)
+        results = job.result().get_counts(circuit[0])
+    except IBMQJobFailureError:
+        print(job.error_message())
+        return None
+
+    print(results)
     s = circuit[1]
-    for i in range(4*t):
-        print('Executing circuit .. ', end='', flush=True)
-        try:
-            job = execute(circuit[0], backend=device, shots=n-1, optimization_level=3)
-            job_monitor(job, interval = 2)
-            results = job.result().get_counts(circuit[0])
-        except IBMQJobFailureError:
-            print(job.error_message())
-            return None
-        else:
-            print('done')
+    potential_ys = [k for k, _ in sorted(results.items(), key=lambda item: item[1])]
+    print(potential_ys)
+    if '0'*n in potential_ys:
+        potential_ys.remove('0'*n)
+    if len(potential_ys) < n-1:
+        return None
 
-            if len(results.keys()) != n-1:
-                continue
-            if verbose:
-                print(f'    Trial {i+1}:')
+    print(f'Found ys: {potential_ys}.\nChecking for linear independence .. ', end = '', flush=True)
+    if not is_lin_indep(potential_ys, n):
+        print('failed')
+        return False
+    print('done')
+    if verbose:
+        print(f'Checking if they solve to s correctly...')
+        print('====================================\n')
 
-            potential_ys = []
-            for index, y in enumerate(results.keys()):
-                potential_ys.append(y)
-                if verbose:
-                    print(f'        y_{index} = {y}')
-            if is_lin_indep(potential_ys):
-                if verbose:
-                    print(f'Found linearly independent ys!\nChecking if they solve to s correctly...')
-                    print('====================================\n')
-                return check_validity(potential_ys, s)
+    return check_validity(potential_ys, s)
     if verbose:
         print('====================================\n')
 
