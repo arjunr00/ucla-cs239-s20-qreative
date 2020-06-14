@@ -3,6 +3,7 @@ import numpy as np
 import sympy as sp
 import time
 import argparse
+import matplotlib
 import os
 import oracle
 
@@ -88,6 +89,8 @@ def check_validity(potential_ys, s):
         return True
 
 def generate_circuit(n, t, reload, verbose):
+    SAVEDIR = 'plots/'
+    CIRCUIT_FILENAME = f'simon_{n}.pdf'
     trials = (n-1) * (4*t)
 
     u_f, s = getUf(n,reload)
@@ -98,21 +101,28 @@ def generate_circuit(n, t, reload, verbose):
     circuit.h(range(n))
     # circuit.append(U_f, range(2*n)[::-1])
     circuit.barrier()
+    # for i in range(n):
+    #     for j in range(n):
+    #         circuit.cx(i, n+j)
     for i in range(n):
-        circuit.cx(i, n+i)
         if s[i] == '1':
-            circuit.x(n+i)
+            for j in range(n):
+                circuit.cx(n-1-i, n+j)
     circuit.barrier()
-    for i in range(n):
-        k = n+i
-        while k == n+i:
-            k = np.random.randint(low=n, high=2*n)
-        circuit.swap(n+i, k)
     circuit.h(range(n))
     circuit.barrier()
 
     circuit.measure(range(0, n), range(n))
-    circuit.measure(range(n, 2*n), range(n))
+    #circuit.measure(range(n, 2*n), range(n))
+
+    if v:
+        circuit.draw('mpl')
+        print(f'Saving circuit to {CIRCUIT_FILENAME} .. ', end='', flush=True)
+        if not os.path.exists(SAVEDIR):
+            os.mkdir(SAVEDIR)
+
+        matplotlib.pyplot.savefig(f'{SAVEDIR}{CIRCUIT_FILENAME}')
+        print('done\n', flush=True)
 
     return circuit, s
 
@@ -196,13 +206,13 @@ def run_on_ibmq(n, t, reload, verbose):
 
     print(results)
     s = circuit[1]
-    potential_ys = [k for k, _ in sorted(results.items(), key=lambda item: item[1])]
+    potential_ys = [k for k, _ in sorted(results.items(), key=lambda item: item[1], reverse=True)]
     print(potential_ys)
-    if '0'*n in potential_ys:
-        potential_ys.remove('0'*n)
+
     if len(potential_ys) < n-1:
         return None
 
+    potential_ys = potential_ys[:n]
     print(f'Found ys: {potential_ys}.\nChecking for linear independence .. ', end = '', flush=True)
     if not is_lin_indep(potential_ys, n):
         print('failed')

@@ -45,7 +45,7 @@ def getUf(n, f_type, reload, v):
 
 def generate_circuit(n, f_type, reload, v):
     SAVEDIR = 'plots/'
-    CIRCUIT_FILENAME = f'dj_{n}.pdf'
+    CIRCUIT_FILENAME = f'dj_{"bal" if f_type == oracle.DJ.BALANCED else "const"}{n}.pdf'
 
     # if (v): print('Getting U_f .. ', end='', flush=True)
     # U_f = getUf(n, f_type, reload, v)
@@ -61,7 +61,7 @@ def generate_circuit(n, f_type, reload, v):
     #circuit.append(U_f, list(range(n+1))[::-1])
     circuit.barrier()
     if f_type == oracle.DJ.CONSTANT:
-        out = numpy.rand.randint(2)
+        out = np.random.randint(2)
         if out == 1:
             circuit.x(n)
     elif f_type == oracle.DJ.BALANCED:
@@ -115,13 +115,13 @@ def run_on_ibmq(circuit, s):
     if v: print('Loading account .. ', end='', flush=True)
     provider = IBMQ.load_account()
     if v: print('done')
-    if v: print('Choosing least busy device .. ', end='', flush=True)
-    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
-    if v: print(device)
+    #if v: print('Choosing least busy device .. ', end='', flush=True)
+    #device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= n+1 and not x.configuration().simulator and x.status().operational==True))
+    #if v: print(device)
 
-    if v: print(f'Running job .. ', end='', flush=True)
+    if v: print(f'Running job on ibmq_16_melbourne .. ', end='', flush=True)
     try:
-        job = execute(circuit, backend=device, shots=s, optimization_level=3)
+        job = execute(circuit, backend=provider.backends.ibmq_16_melbourne, shots=s, optimization_level=3)
         job_monitor(job, interval = 2)
         results = job.result()
     except IBMQJobFailureError:
