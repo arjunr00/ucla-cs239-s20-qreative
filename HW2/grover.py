@@ -117,3 +117,17 @@ if __name__ == '__main__':
 
     print(f'Grover\'s Algorithm: {ret_str}')
     print(f'(Took {end - start:.2f} s to complete.)')
+
+    # Store times
+    TIMES_FILE = 'times/grover.csv'
+
+    with open(TIMES_FILE, 'r') as file:
+        times = file.readlines()
+
+    lineno = n
+    line=times[lineno].split(',')
+    line[1] = f'{end - start:.4f}\n'
+    times[lineno] = ','.join(line)
+
+    with open(TIMES_FILE, 'w') as file:
+        file.writelines(times)
