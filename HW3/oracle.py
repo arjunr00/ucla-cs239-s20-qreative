@@ -19,7 +19,7 @@ class Simon(Enum):
     ONE_TO_ONE = 0
     TWO_TO_ONE = 1
 
-def init_bit_mapping(n, algo=None, func=None):
+def init_bit_mapping(n, algo=None, func=None, s=None):
     """
     Generates a bit mapping for a given function:
         f: {0,1}^n -> {0,1}^m
@@ -65,9 +65,10 @@ def init_bit_mapping(n, algo=None, func=None):
                         break
                 oracle_map[x] = fx
         elif func is None or func is Simon.TWO_TO_ONE:
-            s = ""
-            for i in range(0,n):
-                s += np.random.choice(['0', '1'])
+            if s is None:
+                s = ""
+                for i in range(0,n):
+                    s += np.random.choice(['0', '1'])
 
             for x in qubits:
                 sXx = f'{int(x, 2) ^ int(s, 2):0{n}b}'

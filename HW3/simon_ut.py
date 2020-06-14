@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import os
 import oracle
@@ -29,13 +30,13 @@ def is_valid(s, mapping):
             return False
     return True
 
-def unit_test(n):
+def unit_test(n, s=None):
     if not os.path.exists('uf/simon'):
         os.makedirs('uf/simon')
 
-    if not os.path.exists(f'{SAVEDIR}simon{str(n)}.npy'):
+    if not os.path.exists(f'{SAVEDIR}simon{str(n)}.npy') or s is not None:
         print(f'Generating bit mapping for {n}-qubit Simon .. ', end='', flush=True)
-        mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON)
+        mapping = oracle.init_bit_mapping(n, algo=oracle.Algos.SIMON, s=s)
         print('done')
 
         print(f'Generating s value for newly generated {n}-bit mapping Simon .. ', end='', flush=True)
@@ -69,10 +70,12 @@ def unit_test(n):
     print(f'Check if U_f is unitary .. ', end='', flush=True)
     assert U_f.is_unitary()
     print('done')
-    if not os.path.exists(f'{SAVEDIR}simon{str(n)}.npy'):
-        print(f'Saving U_f for {n}-qubit Simon from {SAVEDIR}simon{str(n)}.npy .. ', end='', flush=True)
-        np.save(f'{SAVEDIR}simon{str(n)}.npy', U_f.data)
-        print("done")
+    print(f'Saving U_f for {n}-qubit Simon from {SAVEDIR}simon{str(n)}.npy .. ', end='', flush=True)
+    np.save(f'{SAVEDIR}simon{str(n)}.npy', U_f.data)
+    print("done")
 
-for n in range(1, 6):
-    unit_test(n)
+if len(sys.argv) > 2:
+    unit_test(int(sys.argv[1]), sys.argv[2])
+else:
+    for n in range(1, 6):
+        unit_test(n)

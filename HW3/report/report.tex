@@ -1,0 +1,290 @@
+\documentclass[12pt]{article}
+
+\usepackage{report}
+\usepackage{braket}
+\usepackage{amsthm}
+\usetikzlibrary{quantikz}
+
+\orgname{COM SCI 239}
+\project{Quantum Programming}
+\title{Running Qiskit on a Quantum Computer}
+\author{Arjun Raghavan and Bryan Pan}
+\date{May 29, 2020}
+\contentstrue
+
+\newtheorem{lemma}{Lemma}
+
+\begin{filecontents}{\jobname.bib}
+    @misc{ Qiskit,
+           author = {H{\'e}ctor Abraham and AduOffei and Ismail Yunus Akhalwaya and Gadi Aleksandrowicz and Thomas Alexander and Gadi Alexandrowics and Eli Arbel and Abraham Asfaw and Carlos Azaustre and AzizNgoueya and Panagiotis Barkoutsos and George Barron and Luciano Bello and Yael Ben-Haim and Daniel Bevenius and Lev S. Bishop and Sorin Bolos and Samuel Bosch and Sergey Bravyi and David Bucher and Artemiy Burov and Fran Cabrera and Padraic Calpin and Lauren Capelluto and Jorge Carballo and Gin{\'e}s Carrascal and Adrian Chen and Chun-Fu Chen and Richard Chen and Jerry M. Chow and Christian Claus and Christian Clauss and Abigail J. Cross and Andrew W. Cross and Simon Cross and Juan Cruz-Benito and Chris Culver and Antonio D. C{\'o}rcoles-Gonzales and Sean Dague and Tareq El Dandachi and Matthieu Dartiailh and DavideFrr and Abd{\'o}n Rodr{\'\i}guez Davila and Anton Dekusar and Delton Ding and Jun Doi and Eric Drechsler and Drew and Eugene Dumitrescu and Karel Dumon and Ivan Duran and Kareem EL-Safty and Eric Eastman and Pieter Eendebak and Daniel Egger and Mark Everitt and Paco Mart{\'\i}n Fern{\'a}ndez and Axel Hern{\'a}ndez Ferrera and Albert Frisch and Andreas Fuhrer and MELVIN GEORGE and Julien Gacon and Gadi and Borja Godoy Gago and Claudio Gambella and Jay M. Gambetta and Adhisha Gammanpila and Luis Garcia and Shelly Garion and Austin Gilliam and Juan Gomez-Mosquera and Salvador de la Puente Gonz{\'a}lez and Jesse Gorzinski and Ian Gould and Donny Greenberg and Dmitry Grinko and Wen Guan and John A. Gunnels and Mikael Haglund and Isabel Haide and Ikko Hamamura and Vojtech Havlicek and Joe Hellmers and {\L}ukasz Herok and Stefan Hillmich and Hiroshi Horii and Connor Howington and Shaohan Hu and Wei Hu and Haruki Imai and Takashi Imamichi and Kazuaki Ishizaki and Raban Iten and Toshinari Itoko and JamesSeaward and Ali Javadi and Ali Javadi-Abhari and Jessica and Kiran Johns and Tal Kachmann and Naoki Kanazawa and Kang-Bae and Anton Karazeev and Paul Kassebaum and Spencer King and Knabberjoe and Arseny Kovyrshin and Rajiv Krishnakumar and Vivek Krishnan and Kevin Krsulich and Gawel Kus and Ryan LaRose and Rapha{\"e}l Lambert and Joe Latone and Scott Lawrence and Dennis Liu and Peng Liu and Yunho Maeng and Aleksei Malyshev and Jakub Marecek and Manoel Marques and Dolph Mathews and Atsushi Matsuo and Douglas T. McClure and Cameron McGarry and David McKay and Dan McPherson and Srujan Meesala and Martin Mevissen and Antonio Mezzacapo and Rohit Midha and Zlatko Minev and Abby Mitchell and Nikolaj Moll and Michael Duane Mooring and Renier Morales and Niall Moran and MrF and Prakash Murali and Jan M{\"u}ggenburg and David Nadlinger and Ken Nakanishi and Giacomo Nannicini and Paul Nation and Edwin Navarro and Yehuda Naveh and Scott Wyman Neagle and Patrick Neuweiler and Pradeep Niroula and Hassi Norlen and Lee James O'Riordan and Oluwatobi Ogunbayo and Pauline Ollitrault and Steven Oud and Dan Padilha and Hanhee Paik and Simone Perriello and Anna Phan and Francesco Piro and Marco Pistoia and Alejandro Pozas-iKerstjens and Viktor Prutyanov and Daniel Puzzuoli and Jes{\'u}s P{\'e}rez and Quintiii and Rudy Raymond and Rafael Mart{\'\i}n-Cuevas Redondo and Max Reuter and Julia Rice and Diego M. Rodr{\'\i}guez and RohithKarur and Max Rossmannek and Mingi Ryu and Tharrmashastha SAPV and SamFerracin and Martin Sandberg and Hayk Sargsyan and Ninad Sathaye and Bruno Schmitt and Chris Schnabel and Zachary Schoenfeld and Travis L. Scholten and Eddie Schoute and Joachim Schwarm and Ismael Faro Sertage and Kanav Setia and Nathan Shammah and Yunong Shi and Adenilton Silva and Andrea Simonetto and Nick Singstock and Yukio Siraichi and Iskandar Sitdikov and Seyon Sivarajah and Magnus Berg Sletfjerding and John A. Smolin and Mathias Soeken and Igor Olegovich Sokolov and SooluThomas and Dominik Steenken and Matt Stypulkoski and Jack Suen and Shaojun Sun and Kevin J. Sung and Hitomi Takahashi and Ivano Tavernelli and Charles Taylor and Pete Taylour and Soolu Thomas and Mathieu Tillet and Maddy Tod and Enrique de la Torre and Kenso Trabing and Matthew Treinish and TrishaPe and Wes Turner and Yotam Vaknin and Carmen Recio Valcarce and Francois Varchon and Almudena Carrera Vazquez and Desiree Vogt-Lee and Christophe Vuillot and James Weaver and Rafal Wieczorek and Jonathan A. Wildstrom and Robert Wille and Erick Winston and Jack J. Woehr and Stefan Woerner and Ryan Woo and Christopher J. Wood and Ryan Wood and Stephen Wood and Steve Wood and James Wootton and Daniyar Yeralin and Richard Young and Jessie Yu and Christopher Zachow and Laura Zdanski and Christa Zoufal and Zoufalc and a-matsuo and adekusar-drl and azulehner and bcamorrison and brandhsn and chlorophyll-zz and dan1pal and dime10 and drholmie and elfrocampeador and faisaldebouni and fanizzamarco and gadial and gruu and jliu45 and kanejess and klinvill and kurarrr and lerongil and ma5x and merav-aharoni and michelle4654 and ordmoj and sethmerkel and strickroman and sumitpuri and tigerjack and toural and vvilpas and welien and willhbang and yang.luh and yelojakit and yotamvakninibm},
+           title = {Qiskit: An Open-source Framework for Quantum Computing},
+           year = {2019},
+           doi = {10.5281/zenodo.2562110}
+    },
+    @manual{qiskitsimon,
+        author = {Qiskit},
+        title = {Simon},
+        year = {2020},
+        note = {\url{https://qiskit.org/textbook/ch-algorithms/simon.html#oracle}}
+    },
+    @article{opt,
+      author    = {Xin Zhang and
+                   Hong Xiang and
+                   Tao Xiang and
+                   Li Fu and
+                   Jun Sang},
+      title     = {An efficient quantum circuits optimizing scheme compared with QISKit},
+      journal   = {CoRR},
+      volume    = {abs/1807.01703},
+      year      = {2018},
+      url       = {http://arxiv.org/abs/1807.01703},
+      archivePrefix = {arXiv},
+      eprint    = {1807.01703},
+      timestamp = {Mon, 13 Aug 2018 16:48:09 +0200},
+      biburl    = {https://dblp.org/rec/journals/corr/abs-1807-01703.bib},
+      bibsource = {dblp computer science bibliography, https://dblp.org}
+    }
+\end{filecontents}
+
+\begin{document}
+\mktitle
+\startbody
+
+\section{Experience}
+For all the programs, we added a couple of functions that were specific for IBMQ. We decided that it would be best to maintain the local backend implementation in case users didn’t have a valid API Token.
+
+We added a \texttt{load\_api\_token()} function that looks at a \texttt{.env} file to add and load the user’s API Token. We also utilized Qiskit’s functions such as \texttt{least\_busy} and \texttt{job\_monitor} to add some optimization for user experience purposes (specifically, to choose the least busy IBMQ backend for speediest execution, and to wait for execution to complete).
+
+We use a function, \texttt{check\_validity}, to read the \texttt{counts} dictionary returned from an executed job, as we did in the previous assignment.
+However, due to the fact that real qubits are more volatile and prone to decoherence and other inaccuracies, we had to slightly change many of these functions.
+We also made adjustments to our circuits because we found that the $U_f$ matrices we constructed based (see section 1.1 of our previous report) were not optimized for real devices.
+We noticed that one of the biggest issues with using real devices was that two-qubit operations required said qubits to be \textit{physically adjacent} to one another.
+With a simulator, we got away with treating our circuit as fully-connected, allowing for our gates to be directly applied.
+However, we found that with real devices, this adjacency constraint added significant overhead to our circuits, causing them to produce the following unfortunate error message:
+\begin{lstlisting}[numbers=none]
+    Circuit runtime is greater than the device repetition rate [8020].
+\end{lstlisting}
+We went about changing our programs to utilize only basic gates---specifically, $Z$, $X$, and $CNOT$ (a.k.a. $CX$) to approximate the algorithms we learned in class.
+They are detailed individually below.
+
+\subsection{Deutsch-Josza}
+\subsubsection*{Circuit}
+This algorithm is simple enough that even the original oracle matrix held up fine on actual devices for up to 4-bit strings.
+However, on $5$ and more qubits, the above error reared its head.
+Luckily, implementing a Deutsch-Josza oracle for a given function $f$ using only basic gates is rather simple:
+\begin{itemize}
+    \item If $f$ is constant and only returns 1, apply $X$ to the helper qubit, as seen in \autoref{fig:djc6}.
+    \img[width=0.8\linewidth]{../plots/dj_const6.pdf}{Circuit diagram for 6-bit Deutsch-Josza for a constant function that always returns 1.}{djc6}
+    \item If $f$ is balanced, simply apply $CNOT(q_i, b)$ for each $q_i \in x$, where $x$ is the input qubit register and $b$ is the helper qubit.
+        In doing so, any input qubit with an odd number of 1s will set the helper qubit to 1, and any input qubit with an even number of 1s will set the helper qubit to 0.
+        This is shown in \autoref{fig:dj3}.
+    \img[width=0.8\linewidth]{../plots/dj_3.pdf}{Circuit diagram for 3-bit Deutsch-Josza for a balanced function.}{dj3}
+\end{itemize}
+
+\subsubsection*{Validity}
+Because of noise in the results of running this circuit, it is not helpful to check for whether the output is only \texttt{00...0} in the case of a constant function, and otherwise for a balanced function---in most cases, a variety of outputs will be recorded.
+Instead, validity is determined by checking whether the number of occurrences of \texttt{00...0} is above a certain threshold percentage of the total number of shots, such as 90\% of 1000 shots (the values chosen for this report).
+
+\subsection{Bernstein-Vazirani}
+
+\subsubsection*{Circuit}
+We adjusted the Bernstein-Vazirani circuit to apply an oracle constructed as follows.
+If the secret bit string’s $i$th bit was a \texttt{1} then apply a $CNOT(q_i, b)$ where $b$ is the helper qubit.
+We found this to be an adequate approximation of the $U_f$ matrix that we implemented in the previous two assignments, and it had a significantly smaller circuit size.
+\autoref{fig:bv3} portrays such a circuit.
+
+    \img[width=0.9\linewidth]{../plots/bv_3.pdf}{Circuit diagram for 3-qubit Bernstein-Vazirani, with $a = $ \texttt{011} and $b = $ \texttt{0}.}{bv3}
+
+\subsubsection*{Validity}
+Similar to Deutsch-Josza, Bernstein-Vazirani was adjusted to look at the bit string with the highest return rate across 1000 shots to account for qubit volatility.
+
+\subsection{Simon}
+
+\subsubsection*{Circuit}
+Simon's algorithm proved the most difficult algorithm by far to implement as a generalized set of simple gates.
+We attribute this drastic spike in difficulty to the fact that instead of working with a single helper qubit, as is the case with the other three algorithms, we were in fact working with a helper qubit register of size $n$ in addition to the input $n$ qubits.
+
+However, detailed below are some of our attempts to arrive at a way to produced a generalized set of gates for this algorithm:
+
+\begin{itemize}
+    \item We looked for actionable patterns in the $U_f$ matrices we had used in the previous assignment. As can be seen in \autoref{fig:simonpattern}, for example, it turns out there were noticeable patterns in the arrangement of block matrices along the diagonal of the overall matrix.
+    \img[width=0.75\linewidth]{images/simonpattern.png}{$U_f$ matrices for 2-qubit Simon with mappings (from left to right):
+    \texttt{\{00}$\to$\texttt{00}$\leftarrow$\texttt{01}, \texttt{10}$\to$\texttt{01}$\leftarrow$\texttt{11\}},
+    \texttt{\{00}$\to$\texttt{11}$\leftarrow$\texttt{01}, \texttt{10}$\to$\texttt{01}$\leftarrow$\texttt{11\}}, and
+    \texttt{\{00}$\to$\texttt{01}$\leftarrow$\texttt{10}, \texttt{01}$\to$\texttt{10}$\leftarrow$\texttt{11\}}.
+    The solid block represents a \texttt{1}, and the other blocks are \texttt{0}.
+    Notice the regular patterns along the diagonal, which consists entirely of tensor products of $I$ and $X$ gates in varying orders.
+}{simonpattern}
+
+        To be specific, consider each 4-by-4 block matrix along the diagonal of $U_f$.
+        Let them be indexed in increasing order, beginning with $0$, considering the binary equivalent of each index.
+        That is, for a 2-qubit $U_f$ as in \autoref{fig:simonpattern}, the top-left block matrix is matrix \texttt{00}, the next one is matrix \texttt{01}, the one after that is \texttt{10}, and the bottom-right one is \texttt{11}.
+
+        Then, each matrix represents an ``encoding'' of the output of $f$ when applied to its index, where a \texttt{0} corresponds to the identity $I$ and a \texttt{1} corresponds to the Pauli $X$ gate.
+        Suppose for index \texttt{10}, we have $f(\text{\texttt{10}}) = \text{\texttt{01}}$.
+        Then the corresponding block matrix at that index along the diagonal is of the form $I \otimes X$.
+
+        Unfortunately, our discoveries stopped at recognizing this pattern.
+        We were unsure how to proceed with this knowledge---how can we decompose a block matrix such as this one into fundamental gates?
+        Perhaps with more time, we could arrive at a reasonable solution.
+    \item We attempted to apply some of the principles outlined in Qiskit's documentation on implementing Simon's algorithm \cite{qiskitsimon}.
+        However, this proved futile, because while the documentation's steps were useful in directly producing a randomized quantum oracle, it would not be useful for our architecture, which involved the creation of a function mapping for $f$ and a choice of $s$ which is then used to produce an oracle.
+        We were not willing to compromise and change our architecture specifically for Simon because it would render us unable to draw any meaningful comparisons with the other algorithms and implementation.
+\end{itemize}
+
+In the end, for the single case of $n = 2$, we resorted to a method inspired by the Qiskit documentation mentioned above \cite{qiskitsimon}, as seen in \autoref{fig:simon}.
+
+    \img[width=0.8\linewidth]{../plots/simon_2.pdf}{Circuit diagram for 2-bit Simon with $s = $\texttt{10}.}{simon}
+
+    For each bit $s_i$ of $s$, whenever $s_i = $ \texttt{1}, we have $CNOT(q_{n-1-i}, b_i)$.
+    This is only an approximation, and is not precise---hence why the algorithm is not accurate for $n > 2$, on top of the already-present noise of a real quantum device.
+    However, for $n=2$, it works perfectly.
+
+\subsubsection*{Validity}
+
+No changes needed to be made to the linear independence solver, thankfully.
+However, for generally checking validity, we made a few minor changes.
+For one, because of noise in the results returned by the quantum computer, we decided to choose the $n-1$ \textit{most common} output bit strings, as we felt that this was a reasonable approximation of determining a set of linearly independent $y$s.
+However, we later realized that this approach was flawed, because it was entirely possible that a set of linearly independent $y$s in one set of runs was not linearly independent with the $y$s in a different set.
+However, the nature of IBMQ, in that we had to batch all of our operations as a single \texttt{execute} call, forced us to take this shortcut.
+
+\subsection{Grover}
+
+\subsubsection*{Circuit}
+We kept the oracle unchanged, as we found that converting it to gates was difficult and didn’t dramatically change the output.
+
+\subsubsection*{Validity}
+Again, Grover was adjusted to look for the bit string with highest return rate, and if the number of successful calls was in the majority (in case there were multiple bit-strings x that f(x) = 1).
+
+That is, we discovered that our implementation of Grover did not necessarily return a bit string on which the application of the input function $f$ would return \texttt{1}.
+In reality, we found that we received as output one of the inputs on which the application of $f$ produced whatever output formed the \textit{majority} of outputs, which could very well be (and in some of our randomly-generated test cases, was) equal to \texttt{0} instead of \texttt{1}.
+
+\section{Evaluation}
+
+\subsection{Testing}
+
+As mentioned earlier, our implementation of generating and storing quantum oracle gate matrices and usage of \texttt{argparse} to handle user input greatly facilitated testing.
+Also, in manually using basic gates to implement the quantum oracles, we limited transpilation time to only adding those gates required to swap adjacent qubits (so as to allow virtual operations on multiple qubits).
+As such, there was no compilation time to speak of, and execution was incredibly fast.
+
+We tested our code with a variety of values of $n$ (the length of the input bit string).
+We found that our results very closely matched the expected outcomes of applying our algorithms.
+
+Unfortunately, due to limitations in our implementation of Simon's algorithm, we were unable to implement it for values of $n$ greater than 2, as noted in the previous section.
+As such, it has been omitted from the below graphs.
+Instead, we decided to focus on its runtime variance for different functions $f$, i.e. varying $U_f$ matrices.
+
+Also, we found that Deutsch-Josza, being the simplest of the four algorithms, was able to be run for up to 14 qubits, the largest number we were able to achieve yet.
+Therefore, we used it as a benchmark for testing the reliability of IBM's largest device, Melbourne (\texttt{imbq\_16\_melbourne}).
+
+\subsection{Noise and volatility}
+Naturally, the volatility of physical qubits means that results will more often than not be extremely noisy, to the point where probabilistic algorithms such as Simon and Grover may produce entirely incorrect answers.
+This was the case for Simon moreso than Grover, and so we have chosen to use 2-qubit Simon as a benchmark in charting the noisiness of a few of IBM's devices.
+
+\subsection{Scalability}\label{section:scale}
+
+\diagram{%
+    \begin{axis}[
+        xlabel={Length $n$ of input bitstring $x$},
+        ylabel={Execution time [ms]},
+        xmin=0, xmax=9,
+        ymin=0, ymax=30000,
+        xtick={0,1,2,3,4,5,6,7,8,9},
+        ymode=log,
+        log basis y=10,
+        legend pos=outer north east,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
+    \addplot[
+        color=blue,
+        mark=square,
+        ]
+        coordinates {
+            (1,445.8)
+            (2, 510.7)
+            (3, 630.0)
+            (4, 513.7)
+            (5, 702.3)
+            (6, 734.1)
+            (7, 775.1)
+            (8, 893.0)
+            (9, 1934.8)
+        };
+        \addlegendentry{Deutsch-Josza (Balanced)}
+    \addplot[
+        color=cyan,
+        mark=square,
+        ]
+        coordinates {
+            (1, 464.8)
+            (2, 466.3)
+            (3, 531.6)
+            (4, 508.1)
+            (5, 682.5)
+            (6, 696.5)
+            (7, 787.9)
+            (8, 945.7)
+            (9, 1922.3)
+        };
+        \addlegendentry{Deutsch-Josza (Constant)}
+    \addplot[
+        color=olive,
+        mark=square,
+        ]
+        coordinates {
+            (1, 463.4)
+            (2, 507.8)
+            (3, 490.5)
+            (4, 521.5)
+            (5, 670.1)
+            (6, 649.1)
+            (7, 754.3)
+            (8, 917.8)
+            (9, 2012.6)
+        };
+        \addlegendentry{Bernstein-Vazirani}
+    \addplot[
+        color=orange,
+        mark=square,
+        ]
+        coordinates {
+            (2, 196.3)
+            (3, 332.0)
+            (4, 377.7)
+            (5, 2589.6)
+        };
+        \addlegendentry{Simon}
+    \addplot[
+        color=purple,
+        mark=square,
+        ]
+        coordinates {
+            (1, 59.3)
+            (2, 59.8)
+            (3, 62.2)
+            (4, 63.7)
+            (5, 103.7)
+            (6, 202.8)
+            (7, 555.6)
+            (8, 3019.3)
+            (9, 24526.8)
+        };
+        \addlegendentry{Grover}
+    \end{axis}
+}{Graph of execution time (ms) vs. the length of the input bitstring. Note that the $y$-axis is logarithmically scaled.}{exec}
+
+\subsection{Differences from simulation}
+
+For our implementation of Grover on a simulation, we configured the program such that it would automatically calculate the minimum number of trials required to minimize error based on the size of the input using the equation $k = \lfloor\pi\sqrt{N}/4\rfloor$ with $N = 2^n$.
+Similarly, for our implementation of Simon on the simulator, given that a full "iteration" was $n-1$ applications of the quantum oracle (to generate $n-1$ values for $y$), we multiplied the user's input number of trials by $4$ to minimize error using the equation $\mathcal{P}(\text{not linearly independent}) = \exp(-t/4)$ with $t$ being the number of trials.
+
+However, as noted above, running on an actual quantum computer threw a wrench into things.
+Because of rate limitations, queue times, and other inhibitors, we had no choice but to run every iteration of our circuit with a single \texttt{execute} call and a parametrized number of shots.
+This was especially problematic for Simon, which relied on the entire circuit being repeated $4m(n-1)$ times---we had no way of accurately separating each set of $n-1$ results, but we also could not simply send $n-1$ \texttt{execute}s at a time, which would be infeasible.
+
+\nocite{pyquil}
+\nocite{Qiskit}
+\bib{apalike}
+
+\end{document}
