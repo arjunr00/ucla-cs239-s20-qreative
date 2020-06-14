@@ -307,7 +307,9 @@ Clearly, the growth in runtime for each algorithm is clearly far lower than it w
     \end{axis}
 }{Graph of runtime (s) vs. the length of the input bitstring.}{exec}
 
-However, notice how the $y$-axis is in seconds, and \textit{not} milliseconds like it was for the simulation.
+\subsubsection*{Differences from simulation}
+
+Notice how the $y$-axis is in seconds, and \textit{not} milliseconds like it was for the simulation.
 This is also expected behavior, in fact.
 These algorithms are \textit{asymptotically better} than their classical counterparts, meaning that for extremely large values of $n$---that is, of an order of magnitude higher than, say $10^5$---quantum algorithms will reign supreme.
 However, we are nowhere near capable of using quantum algorithms for such values of $n$; as such, it remains clear that classical algorithms are still faster for these extremely low values of $n$.
@@ -315,15 +317,12 @@ However, we are nowhere near capable of using quantum algorithms for such values
 Regardless, as noted, the growth of runtime for these algorithms is very, very slow.
 Compare that to the exponential growth of classical algorithms; it is evident that eventually, the quantum algorithms will be faster.
 
-
-\subsection{Differences from simulation}
-
 For our implementation of Grover on a simulation, we configured the program such that it would automatically calculate the minimum number of trials required to minimize error based on the size of the input using the equation $k = \lfloor\pi\sqrt{N}/4\rfloor$ with $N = 2^n$.
 Similarly, for our implementation of Simon on the simulator, given that a full "iteration" was $n-1$ applications of the quantum oracle (to generate $n-1$ values for $y$), we multiplied the user's input number of trials by $4$ to minimize error using the equation $\mathcal{P}(\text{not linearly independent}) = \exp(-t/4)$ with $t$ being the number of trials.
 
 However, as noted above, running on an actual quantum computer threw a wrench into things.
 Because of rate limitations, queue times, and other inhibitors, we had no choice but to run every iteration of our circuit with a single \texttt{execute} call and a parametrized number of shots.
-This was especially problematic for Simon, which relied on the entire circuit being repeated $4m(n-1)$ times---we had no way of accurately separating each set of $n-1$ results, but we also could not simply send $n-1$ \texttt{execute}s at a time, which would be infeasible.
+This meant that our readings for runtime formed an unfair comparison; while we were able to prematurely stop executing another iteration of the circuit on a simulator, we had no choice but to run the total number of shots on the quantum computer.
 
 \nocite{pyquil}
 \nocite{Qiskit}
