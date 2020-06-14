@@ -183,10 +183,13 @@ def run_on_ibmq(n, t, reload, verbose):
     provider = IBMQ.load_account()
     print('done')
 
-    print('Choosing least busy device .. ', end='', flush=True)
-    device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= (2*n)+1 and not x.configuration().simulator and x.status().operational==True))
+    print('Finding devices .. ', end='', flush=True)
+    #device = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits >= (2*n)+1 and not x.configuration().simulator and x.status().operational==True))
+    devices = provider.backends(filters=lambda x: x.configuration().n_qubits >= (2*n)+1 and not x.configuration().simulator and x.status().operational==True)
     print('done')
-    print(f'Running on {device}')
+    print(f'Running on ', end='')
+    for d in devices[:-1]: print(f'{d}, ', end='')
+    print(f'and {devices[-1]}')
 
     print('Generating circuit .. ', end='', flush=True)
     circuit = generate_circuit(n, t, reload, verbose)
@@ -195,36 +198,45 @@ def run_on_ibmq(n, t, reload, verbose):
     print(f's = {circuit[1]}', flush=True)
 
 
+    counts = []
     print('Executing circuit .. ', end='', flush=True)
-    try:
-        job = execute(circuit[0], backend=device, shots=4*t*(n-1), optimization_level=3)
-        job_monitor(job, interval = 1)
-        results = job.result().get_counts(circuit[0])
-    except IBMQJobFailureError:
-        print(job.error_message())
-        return None
+    for d in devices:
+        try:
+            job = execute(circuit[0], backend=d, shots=4*t*(n-1), optimization_level=3, memory=True)
+            job.update_name(f'simon_{n}_{d}')
+            job_monitor(job, interval = 1)
+            results = job.result()
+        except IBMQJobFailureError:
+            print(job.error_message())
+            continue
 
-    print(results)
-    s = circuit[1]
-    potential_ys = [k for k, _ in sorted(results.items(), key=lambda item: item[1], reverse=True)]
-    print(potential_ys)
+        s = circuit[1]
 
-    if len(potential_ys) < n-1:
-        return None
+        mem = results.get_memory(circuit[0])
+        for i in range(4*t):
+            potential_ys = mem[i:i+n]
+            if len(potential_ys) < n-1:
+                print('failed')
+                continue
+            print(f'Found ys: {potential_ys}.\nChecking for linear independence .. ', end = '', flush=True)
+            if not is_lin_indep(potential_ys, n):
+                print('failed')
+                continue
+            print('done')
+            if verbose:
+                print(f'Checking if they solve to s correctly...')
+                print('====================================\n')
 
-    potential_ys = potential_ys[:n]
-    print(f'Found ys: {potential_ys}.\nChecking for linear independence .. ', end = '', flush=True)
-    if not is_lin_indep(potential_ys, n):
-        print('failed')
-        return False
-    print('done')
-    if verbose:
-        print(f'Checking if they solve to s correctly...')
-        print('====================================\n')
+            if check_validity(potential_ys, s): break
+            if verbose:
+                print('====================================\n')
+        counts.append(results.get_counts(circuit[0]))
 
-    return check_validity(potential_ys, s)
-    if verbose:
-        print('====================================\n')
+    for i in len(counts):
+        print(f'{devices[i]}: {counts[i]}')
+
+    # potential_ys = [k for k, _ in sorted(results.items(), key=lambda item: item[1], reverse=True)]
+    # print(potential_ys)
 
 parser = argparse.ArgumentParser(description='CS239 - Spring 20 - Simon on Qiskit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 

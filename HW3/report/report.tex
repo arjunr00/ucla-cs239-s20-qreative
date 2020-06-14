@@ -9,7 +9,7 @@
 \project{Quantum Programming}
 \title{Running Qiskit on a Quantum Computer}
 \author{Arjun Raghavan and Bryan Pan}
-\date{May 29, 2020}
+\date{June 14, 2020}
 \contentstrue
 
 \newtheorem{lemma}{Lemma}
@@ -143,10 +143,11 @@ In the end, for the single case of $n = 2$, we resorted to a method inspired by 
 \subsubsection*{Validity}
 
 No changes needed to be made to the linear independence solver, thankfully.
-However, for generally checking validity, we made a few minor changes.
-For one, because of noise in the results returned by the quantum computer, we decided to choose the $n-1$ \textit{most common} output bit strings, as we felt that this was a reasonable approximation of determining a set of linearly independent $y$s.
+For checking validity, we thought we would have to make some changes, but we found that we did not have to.
+Initially, because of noise in the results returned by the quantum computer, we decided to choose the $n-1$ \textit{most common} output bit strings, as we felt that this was a reasonable approximation of determining a set of linearly independent $y$s.
 However, we later realized that this approach was flawed, because it was entirely possible that a set of linearly independent $y$s in one set of runs was not linearly independent with the $y$s in a different set.
-However, the nature of IBMQ, in that we had to batch all of our operations as a single \texttt{execute} call, forced us to take this shortcut.
+We then discovered that an IBMQ \texttt{Result} actually had another function, \texttt{get\_memory}, which returned an array of every single output bit string for each shot (so long as the \texttt{memory} option for the \texttt{execute} call was \texttt{True}).
+So, we elected to use this output in post processing, and so we could use the exact same process we had used for the previous report, using the IBMQ simulator.
 
 \subsection{Grover}
 
@@ -168,7 +169,8 @@ Also, in manually using basic gates to implement the quantum oracles, we limited
 As such, there was no compilation time to speak of, and execution was incredibly fast.
 
 We tested our code with a variety of values of $n$ (the length of the input bit string).
-We found that our results very closely matched the expected outcomes of applying our algorithms.
+We found that even despite the noise, our results still closely matched the expected outcomes of applying our algorithms.
+We found that (naturally) a larger number of shots ended up producing more accurate results, so we decided on a fixed number of \textbf{1000 shots} for all of our trials.
 
 Unfortunately, due to limitations in our implementation of Simon's algorithm, we were unable to implement it for values of $n$ greater than 2, as noted in the previous section.
 As such, it has been omitted from the below graphs.
@@ -179,19 +181,79 @@ Therefore, we used it as a benchmark for testing the reliability of IBM's larges
 
 \subsection{Noise and volatility}
 Naturally, the volatility of physical qubits means that results will more often than not be extremely noisy, to the point where probabilistic algorithms such as Simon and Grover may produce entirely incorrect answers.
-This was the case for Simon moreso than Grover, and so we have chosen to use 2-qubit Simon as a benchmark in charting the noisiness of a few of IBM's devices.
+This was the case for Simon moreso than Grover, and so, as mentioned above, we have chosen to use 2-qubit Simon as a benchmark in charting the noisiness of a few of IBM's devices.
 
-\subsection{Scalability}\label{section:scale}
+We tested Simon's algorithm specifically for a function $f$ for which we had $s = $ \texttt{10}.
+As such, based on an implementation of the oracle similar to that shown in \autoref{fig:simon}, we expect the circuit to produce \texttt{00} and \texttt{01} in relatively equal probability, i.e. approximately 50\% each.
+
+As Simon's algorithm on a 2-bit string input requires 4 qubits, we were able to run the circuit on \texttt{ibmq\_rome}, \texttt{ibmq\_essex}, \texttt{ibmq\_burlington}, \texttt{ibmq\_london}, \texttt{ibmq\_ourense}, \texttt{ibmq\_vigo}, \texttt{ibmqx2}, and of course, \texttt{ibmq\_16\_melbourne}, providing us with a wide variety of results.
+In order to gauge the variation of results from the expected probabilities of our outputs, we used the formula for the root mean squared error:
+\begin{align*}
+    \mathrm{RMSE} = \sqrt{\frac{1}{2^n}\sum_{q\in\{\text{\texttt{0}},\text{\texttt{1}}\}^2}\left(\mathrm{Pr}(q) - \widehat{\mathrm{Pr}(q)}\right)^2}
+\end{align*}
+Here, $n$ is the length of the output bit string ($n=2$ in our case), $\widehat{\mathrm{Pr}(q)}$ is the expected probability of producing the bit string \texttt{q}, and $\mathrm{Pr}(q)$ is the actual such probability.
+
+The RMSE for each of the mentioned devices are plotted on the histogram in \autoref{fig:simonhisto}.
 
 \diagram{%
     \begin{axis}[
+        width = \linewidth,
+        height = 7cm,
+        ylabel = {RMSE ($\cdot 10^{-2}$)},
+        ymin=0, ymax=15,
+        ymajorgrids=true,
+        minor y tick num = 3,
+        xtickstyle={draw=none},
+        xtick={0,1,2,3,4,5,6,7},
+        xticklabels={
+            \texttt{ibmq\_rome },
+            \texttt{ibmq\_essex },
+            \texttt{ibmq\_burlington },
+            \texttt{ibmq\_london },
+            \texttt{ibmq\_ourense },
+            \texttt{ibmq\_vigo },
+            \texttt{ibmqx2 },
+            \texttt{ibmq\_16\_melbourne }
+        },
+        x tick label style={rotate=40, anchor=east}
+        ]
+        \addplot[ybar,fill=cyan,draw=teal] coordinates {
+            (0, 1.36)
+            (1, 6.21)
+            (2, 14.36)
+            (3, 3.76)
+            (4, 2.06)
+            (5, 1.15)
+            (6, 9.76)
+            (7, 3.48)
+        };
+    \end{axis}
+}{Root mean squared errors in outputs for 2-qubit Simon on each quantum device. Notice the scale of the $y$-axis is $10^{-2}$}{simonhisto}
+
+Notice the high error rates for \texttt{ibmq\_burlington}, \texttt{ibmq\_essex}, and \texttt{ibmqx2}.
+This is expected, as some of the qubits used in the ciruit are those which produced the highest error rate.
+For example, \autoref{fig:burlcirc} portrays the circuit that was actually run on \texttt{ibmq\_burlington}; notice the use of qubit 2.
+\img[width=0.7\linewidth]{images/burlcirc.png}{The circuit run on \texttt{ibmq\_burlington}.}{burlcirc}
+
+IBM allows us to view the structure of each device and the reliability of each qubit in it.
+As can be seen in \autoref{fig:burlington}, the individual error rates for a single-qubit unitary gate and a CNOT on qubit 2 are comparatively extremely high.
+\img[width=0.7\linewidth]{images/burlington.png}{The structure and reliability of \texttt{ibmq\_burlington}.}{burlington}
+
+The lower error rates for the various other devices correlates with their popularity; for \texttt{ibmq\_rome}, we experience the longest queue time of all our tests (coming in at 19 entire minutes).
+
+\subsection{Scalability}\label{section:scale}
+
+\autoref{fig:exec} plots the running time versus the length of the input for each of the three other algorithms.
+Clearly, the growth in runtime for each algorithm is clearly far lower than it was for the simulator (which at its core exhibits behavior similar to that of classical algorithms), inching higher at a linear pace, as expected.
+
+\diagram{%
+    \begin{axis}[
+        height=7cm,
         xlabel={Length $n$ of input bitstring $x$},
-        ylabel={Execution time [ms]},
-        xmin=0, xmax=9,
-        ymin=0, ymax=30000,
-        xtick={0,1,2,3,4,5,6,7,8,9},
-        ymode=log,
-        log basis y=10,
+        ylabel={Execution time [s]},
+        xmin=0, xmax=13,
+        ymin=6, ymax=15,
+        xtick={0,1,2,3,4,5,6,7,8,9,10,11,12,13},
         legend pos=outer north east,
         ymajorgrids=true,
         grid style=dashed,
@@ -201,78 +263,58 @@ This was the case for Simon moreso than Grover, and so we have chosen to use 2-q
         mark=square,
         ]
         coordinates {
-            (1,445.8)
-            (2, 510.7)
-            (3, 630.0)
-            (4, 513.7)
-            (5, 702.3)
-            (6, 734.1)
-            (7, 775.1)
-            (8, 893.0)
-            (9, 1934.8)
+            (1, 6.8)
+            (2, 6.6)
+            (4, 6.9)
+            (5, 6.7)
+            (6, 6.7)
+            (7, 6.8)
+            (8, 6.9)
+            (9, 7.5)
+            (10, 7.2)
+            (11, 7.2)
+            (12, 7.6)
+            (13, 7.8)
         };
-        \addlegendentry{Deutsch-Josza (Balanced)}
-    \addplot[
-        color=cyan,
-        mark=square,
-        ]
-        coordinates {
-            (1, 464.8)
-            (2, 466.3)
-            (3, 531.6)
-            (4, 508.1)
-            (5, 682.5)
-            (6, 696.5)
-            (7, 787.9)
-            (8, 945.7)
-            (9, 1922.3)
-        };
-        \addlegendentry{Deutsch-Josza (Constant)}
+        \addlegendentry{Deutsch-Josza}
     \addplot[
         color=olive,
         mark=square,
         ]
         coordinates {
-            (1, 463.4)
-            (2, 507.8)
-            (3, 490.5)
-            (4, 521.5)
-            (5, 670.1)
-            (6, 649.1)
-            (7, 754.3)
-            (8, 917.8)
-            (9, 2012.6)
+            (1, 7.849)
+            (2, 8.255)
+            (3, 7.811)
+            (4, 7.953)
+            (5, 9.059)
+            (6, 8.865)
+            (7, 10.746)
+            (8, 8.441)
+            (9, 8.837)
         };
         \addlegendentry{Bernstein-Vazirani}
-    \addplot[
-        color=orange,
-        mark=square,
-        ]
-        coordinates {
-            (2, 196.3)
-            (3, 332.0)
-            (4, 377.7)
-            (5, 2589.6)
-        };
-        \addlegendentry{Simon}
     \addplot[
         color=purple,
         mark=square,
         ]
         coordinates {
-            (1, 59.3)
-            (2, 59.8)
-            (3, 62.2)
-            (4, 63.7)
-            (5, 103.7)
-            (6, 202.8)
-            (7, 555.6)
-            (8, 3019.3)
-            (9, 24526.8)
+            (1, 10.022)
+            (2, 12.224)
+            (3, 11.249)
+            (4, 12.16)
         };
         \addlegendentry{Grover}
     \end{axis}
-}{Graph of execution time (ms) vs. the length of the input bitstring. Note that the $y$-axis is logarithmically scaled.}{exec}
+}{Graph of runtime (s) vs. the length of the input bitstring.}{exec}
+
+However, notice how the $y$-axis is in seconds, and \textit{not} milliseconds like it was for the simulation.
+This is also expected behavior, in fact.
+These algorithms are \textit{asymptotically better} than their classical counterparts, meaning that for extremely large values of $n$---that is, of an order of magnitude higher than, say $10^5$---quantum algorithms will reign supreme.
+However, we are nowhere near capable of using quantum algorithms for such values of $n$; as such, it remains clear that classical algorithms are still faster for these extremely low values of $n$.
+
+Regardless, as noted, the growth of runtime for these algorithms is very, very slow.
+Compare that to the exponential growth of classical algorithms; it is evident that eventually, the quantum algorithms will be faster.
+
 
 \subsection{Differences from simulation}
 
