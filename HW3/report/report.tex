@@ -273,6 +273,8 @@ For our implementation of Grover on a simulation, we configured the program such
 Similarly, for our implementation of Simon on the simulator, given that a full "iteration" was $n-1$ applications of the quantum oracle (to generate $n-1$ values for $y$), we multiplied the user's input number of trials by $4$ to minimize error using the equation $\mathcal{P}(\text{not linearly independent}) = \exp(-t/4)$ with $t$ being the number of trials.
 
 However, as noted above, running on an actual quantum computer threw a wrench into things.
+Because of rate limitations, queue times, and other inhibitors, we had no choice but to run every iteration of our circuit with a single \texttt{execute} call and a parametrized number of shots.
+This was especially problematic for Simon, which relied on the entire circuit being repeated $4m(n-1)$ times---we had no way of accurately separating each set of $n-1$ results, but we also could not simply send $n-1$ \texttt{execute}s at a time, which would be infeasible.
 
 \nocite{pyquil}
 \nocite{Qiskit}
