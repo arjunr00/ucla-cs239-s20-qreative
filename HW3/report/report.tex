@@ -74,26 +74,29 @@ However, on $5$ and more qubits, the above error reared its head.
 Luckily, implementing a Deutsch-Josza oracle for a given function $f$ using only basic gates is rather simple:
 \begin{itemize}
     \item If $f$ is constant and only returns 1, apply $X$ to the helper qubit, as seen in \autoref{fig:djc6}.
-    \img[width=0.7\linewidth]{../plots/dj_const6.pdf}{Circuit diagram for 6-bit Deutsch-Josza for a constant function that always returns 1.}{djc6}
+    \img[width=0.8\linewidth]{../plots/dj_const6.pdf}{Circuit diagram for 6-bit Deutsch-Josza for a constant function that always returns 1.}{djc6}
     \item If $f$ is balanced, simply apply $CNOT(q_i, b)$ for each $q_i \in x$, where $x$ is the input qubit register and $b$ is the helper qubit.
         In doing so, any input qubit with an odd number of 1s will set the helper qubit to 1, and any input qubit with an even number of 1s will set the helper qubit to 0.
-        This is shown in \autoref{fig:dj3}
-    \img[width=0.7\linewidth]{../plots/dj_3.pdf}{Circuit diagram for 3-bit Deutsch-Josza for a balanced function.}{dj3}
+        This is shown in \autoref{fig:dj3}.
+    \img[width=0.8\linewidth]{../plots/dj_3.pdf}{Circuit diagram for 3-bit Deutsch-Josza for a balanced function.}{dj3}
 \end{itemize}
 
 \subsubsection*{Validity}
 Because of noise in the results of running this circuit, it is not helpful to check for whether the output is only \texttt{00...0} in the case of a constant function, and otherwise for a balanced function---in most cases, a variety of outputs will be recorded.
 Instead, validity is determined by checking whether the number of occurrences of \texttt{00...0} is above a certain threshold percentage of the total number of shots, such as 90\% of 1000 shots (the values chosen for this report).
 
-\subsection{Bernstein-Varizani}
+\subsection{Bernstein-Vazirani}
 
 \subsubsection*{Circuit}
-We adjusted the Bernstein-Varizani circuit to apply an oracle constructed as follows.
+We adjusted the Bernstein-Vazirani circuit to apply an oracle constructed as follows.
 If the secret bit string’s $i$th bit was a \texttt{1} then apply a $CNOT(q_i, b)$ where $b$ is the helper qubit.
 We found this to be an adequate approximation of the $U_f$ matrix that we implemented in the previous two assignments, and it had a significantly smaller circuit size.
+\autoref{fig:bv3} portrays such a circuit.
+
+    \img[width=0.9\linewidth]{../plots/bv_3.pdf}{Circuit diagram for 3-qubit Bernstein-Vazirani, with $a = $ \texttt{011} and $b = $ \texttt{0}.}{bv3}
 
 \subsubsection*{Validity}
-Similar to Deutsch-Josza, Bernstein-Varizani was adjusted to look at the bit string with the highest return rate across 1000 shots to account for qubit volatility.
+Similar to Deutsch-Josza, Bernstein-Vazirani was adjusted to look at the bit string with the highest return rate across 1000 shots to account for qubit volatility.
 
 \subsection{Simon}
 
