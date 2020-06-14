@@ -174,6 +174,10 @@ Instead, we decided to focus on its runtime variance for different functions $f$
 Also, we found that Deutsch-Josza, being the simplest of the four algorithms, was able to be run for up to 14 qubits, the largest number we were able to achieve yet.
 Therefore, we used it as a benchmark for testing the reliability of IBM's largest device, Melbourne (\texttt{imbq\_16\_melbourne}).
 
+\subsection{Noise and volatility}
+Naturally, the volatility of physical qubits means that results will more often than not be extremely noisy, to the point where probabilistic algorithms such as Simon and Grover may produce entirely incorrect answers.
+This was the case for Simon moreso than Grover, and so we have chosen to use 2-qubit Simon as a benchmark in charting the noisiness of a few of IBM's devices.
+
 \subsection{Scalability}\label{section:scale}
 
 \diagram{%
